@@ -1,0 +1,25 @@
+require 'spec_helper'
+require 'shared_contexts'
+
+<% @classes_and_defines.each do | value |  %>
+    <% types = value[:types]  %>
+    <% types.each do |type| %>
+    <% tname = type[:name] %>
+
+describe '<%= tname %>' do
+        #include_context :hiera
+        let(:facts) do
+            {:somefact => 'somevalue'}
+        end
+        #let(:params) do
+        #    {:someparam => 'somevalue'}
+        #end
+        <% includes = included_declarations[tname] %>
+        <% includes.each do |name| %>
+
+        #it { should include_class('<%= name %>') }
+        <% end %>
+    <% end %>
+<% end %>
+
+
