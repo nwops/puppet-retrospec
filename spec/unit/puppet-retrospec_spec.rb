@@ -38,7 +38,6 @@ describe "puppet-retrospec" do
     # ie. [{:filename=>"includes-class", :types=>[{:type_name=>"class", :name=>"includes-class"}]}]
     classes = @retro.classes_and_defines(['spec/fixtures/includes-defines.pp'])
     types = classes.first[:types]
-    puts classes.inspect
     types.first[:type_name].should eq('define')
     types.first[:name].should eq("webinstance")
   end
