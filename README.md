@@ -6,4 +6,4 @@ Generates puppet rspec test code based on the classes and defines inside the man
 
 Build Status
 ============
-
+[![Build Status](https://travis-ci.org/logicminds/puppet-retrospec.png)](https://travis-ci.org/logicminds/puppet-retrospec)
