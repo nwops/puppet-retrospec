@@ -1,11 +1,12 @@
 require 'spec_helper'
-require 'retrospec'
+require 'puppet-retrospec'
 require 'helpers'
 
-describe "Retrospec" do
+describe "puppet-retrospec" do
 
   before :all do
-    @retro = Retrospec.new('spec/fixtures/*.pp')
+    @retro = Puppet::Retrospec.new('spec/fixtures/*.pp')
+
 
   end
 
@@ -29,7 +30,6 @@ describe "Retrospec" do
     # ie. [{:filename=>"includes-class", :types=>[{:type_name=>"class", :name=>"includes-class"}]}]
     classes = @retro.classes_and_defines(['spec/fixtures/includes-class.pp'])
     types = classes.first[:types]
-    puts classes.inspect
     types.first[:type_name].should eq('class')
     types.first[:name].should eq("includes-class")
   end
@@ -39,20 +39,21 @@ describe "Retrospec" do
     classes = @retro.classes_and_defines(['spec/fixtures/includes-defines.pp'])
     types = classes.first[:types]
     puts classes.inspect
-
     types.first[:type_name].should eq('define')
     types.first[:name].should eq("webinstance")
   end
 
   it 'should create resource spec files' do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
-   # Helpers.should_receive(:safe_create_file).with('includes-defines',anything).once
+    Helpers.should_receive(:safe_mkdir).with('spec/classes').once
+    Helpers.should_receive(:safe_mkdir).with('spec/defines').once
+    Helpers.should_receive(:safe_create_file).with(an_instance_of(String), an_instance_of(String)).once
     @retro.safe_create_resource_spec_files('lib/templates/resource-spec_file.erb')
   end
 
   it 'should create proper spec helper file' do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
-    #Helpers.should_receive(:safe_create_file).with('spec/spec_helper.rb',anything).once
+    Helpers.should_receive(:safe_create_file).with('spec/spec_helper.rb',anything).once
     @retro.safe_create_spec_helper('lib/templates/spec_helper_file.erb')
 
   end
@@ -64,17 +65,17 @@ describe "Retrospec" do
 
   it 'should create proper fixtures file' do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
-    #Helpers.should_receive(:safe_create_file).with('.fixtures.yml',anything).once
+    Helpers.should_receive(:safe_create_file).with('.fixtures.yml',anything).once
     @retro.safe_create_fixtures_file('lib/templates/fixtures_file.erb')
 
   end
 
   it 'included_declarations should not be nil' do
-    @retro.included_declarations.length.should be >= 1
+    @retro.included_declarations.length.should >= 1
   end
 
   it 'classes_and_defines should not be nil' do
-    @retro.classes_and_defines.length.should be >= 1
+    @retro.classes_and_defines.length.should >= 1
   end
 
   it 'module_name should not be nil' do

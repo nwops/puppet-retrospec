@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/logicminds/puppet-retrospec"
   gem.license = "MIT"
   gem.summary = %Q{Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns.}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.description = %Q{Retrofits and generates valid puppet rspec test code to existing modules}
   gem.email = "corey@logicminds.biz"
   gem.authors = ["Corey Osman"]
   # dependencies defined in Gemfile
