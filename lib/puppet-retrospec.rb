@@ -63,9 +63,13 @@ module Puppet
           p = Puppet::Parser::Lexer.new
           p.string = File.read(file)
           tokens = p.fullscan
-          tokens.index do | token|
+          tokens.each do | token|
             if [:CLASS, :DEFINE].include? token.first
               k = tokens.index { |token| [:NAME].include? token.first }
+              # there is some sort of ordering bug here with ruby 1.8.7 and I have to modify the code like below
+              # to get it working. I think its this index method above
+              # TODO make this work with ruby versions 1.8.7 and above
+              #resources.push({:type_name => tokens[k-1].last[:value], :name => token.last[:value] })
               resources.push({:type_name => token.last[:value] , :name => tokens[k].last[:value] })
             end
           end

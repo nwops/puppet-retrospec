@@ -4,7 +4,7 @@ require 'helpers'
 
 describe "puppet-retrospec" do
 
-  before :all do
+  before :each do
     @retro = Puppet::Retrospec.new('spec/fixtures/*.pp')
 
 
@@ -46,7 +46,7 @@ describe "puppet-retrospec" do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
     Helpers.should_receive(:safe_mkdir).with('spec/classes').once
     Helpers.should_receive(:safe_mkdir).with('spec/defines').once
-    Helpers.should_receive(:safe_create_file).with(an_instance_of(String), an_instance_of(String)).once
+    Helpers.should_receive(:safe_create_file).with(an_instance_of(String), an_instance_of(String)).twice
     @retro.safe_create_resource_spec_files('lib/templates/resource-spec_file.erb')
   end
 
@@ -78,6 +78,7 @@ describe "puppet-retrospec" do
   end
 
   it 'module_name should not be nil' do
+    Helpers.should_receive(:get_module_name).and_return('mymodule')
     @retro.module_name.should_not be_nil
   end
 
