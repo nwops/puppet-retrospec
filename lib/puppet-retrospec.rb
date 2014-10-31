@@ -55,7 +55,6 @@ module Puppet
 
     end
 
-
     def classes_and_defines(filepaths=files)
         @classes_and_defines = []
         filepaths.each do |file|
@@ -133,12 +132,14 @@ module Puppet
           else
             type_dir_name = "spec/defines"
           end
-          if enable_sub_folders
-            self.safe_mkdir("#{type_dir_name}/#{dir_name}")
-          end
           file_name = tokens.last
-          safe_create_template_file("#{type_dir_name}/#{file_name}_spec.rb", template)
-
+          if enable_sub_folders
+            dir_name =  "#{type_dir_name}/#{dir_name}"
+            self.safe_mkdir(dir_name)
+            safe_create_template_file("#{dir_name}/#{file_name}_spec.rb", template)
+          else
+            safe_create_template_file("#{type_dir_name}/#{file_name}_spec.rb", template)
+          end
         end
 
       end
@@ -160,8 +161,5 @@ module Puppet
       end
 
     end
-
-
-
   end
 end

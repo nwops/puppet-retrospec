@@ -9,15 +9,15 @@ require 'shared_contexts'
 describe '<%= tname %>' do
         #include_context :hiera
         let(:facts) do
-            {:somefact => 'somevalue'}
+            {}
         end
         #let(:params) do
-        #    {:someparam => 'somevalue'}
+        #    {}
         #end
         <% includes = included_declarations[tname] %>
         <% includes.each do |name| %>
 
-        #it { should include_class('<%= name %>') }
+        it { should compile }
         <% end %>
     <% end %>
 <% end %>
