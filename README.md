@@ -21,7 +21,7 @@ require 'puppet-retrospec'
 
 desc "Scans the module directory and automatically creates basic spec tests"
 task :retrospec do
-  Puppet::Retrospec.run
+  Retrospec.run
 end
 
 ```

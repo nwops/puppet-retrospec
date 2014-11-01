@@ -11,6 +11,9 @@ class Retrospec
   attr_accessor :files
   attr_accessor :default_modules
 
+  def template_dir
+    @template_dir ||= File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
+  end
 
   def modules_included
     if @modules_included.nil?
@@ -107,13 +110,13 @@ class Retrospec
   end
 
 
-  def self.safe_make_shared_context(template='templates/shared_context.erb')
+  def self.safe_make_shared_context(template='shared_context.erb')
     safe_create_template_file('spec/shared_contexts.rb', template)
   end
 
   # Gets all the classes and define types from all the files in the manifests directory
   # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
-  def safe_create_resource_spec_files(template='templates/resource-spec_file.erb', enable_sub_folders=false)
+  def safe_create_resource_spec_files(template='resource-spec_file.erb', enable_sub_folders=false)
     classes_dir = 'spec/classes'
     defines_dir = 'spec/defines'
     Helpers.safe_mkdir('spec/classes')
@@ -135,25 +138,26 @@ class Retrospec
         if enable_sub_folders
           dir_name =  "#{type_dir_name}/#{dir_name}"
           self.safe_mkdir(dir_name)
-          safe_create_template_file("#{dir_name}/#{file_name}_spec.rb", template)
+          safe_create_template_file(File.join(dir_name,"#{file_name}_spec.rb"), template)
         else
-          safe_create_template_file("#{type_dir_name}/#{file_name}_spec.rb", template)
+          safe_create_template_file(File.join(type_dir_name,"#{file_name}_spec.rb"), template)
         end
       end
 
     end
   end
 
-  def safe_create_fixtures_file(template='templates/fixtures_file.erb')
+  def safe_create_fixtures_file(template='fixtures_file.erb')
     safe_create_template_file('.fixtures.yml', template)
   end
 
-  def safe_create_spec_helper(template='templates/spec_helper_file.erb')
+  def safe_create_spec_helper(template='spec_helper_file.erb')
     safe_create_template_file('spec/spec_helper.rb', template)
   end
 
   def safe_create_template_file(path, template)
-    File.open(template) do |file|
+    template_path = File.join(template_dir, template)
+    File.open(template_path) do |file|
       renderer = ERB.new(file.read, 0, '>')
       content = renderer.result binding
       Helpers.safe_create_file(path, content)

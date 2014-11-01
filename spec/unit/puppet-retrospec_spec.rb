@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'puppet-retrospec'
 require 'helpers'
-
+require 'pry'
 describe "puppet-retrospec" do
 
   before :each do
-    @retro = Puppet::Retrospec.new('spec/fixtures/*.pp')
+    @retro = Retrospec.new('spec/fixtures/*.pp')
 
 
   end
@@ -47,13 +47,13 @@ describe "puppet-retrospec" do
     Helpers.should_receive(:safe_mkdir).with('spec/classes').once
     Helpers.should_receive(:safe_mkdir).with('spec/defines').once
     Helpers.should_receive(:safe_create_file).with(an_instance_of(String), an_instance_of(String)).twice
-    @retro.safe_create_resource_spec_files('lib/templates/resource-spec_file.erb')
+    @retro.safe_create_resource_spec_files('resource-spec_file.erb')
   end
 
   it 'should create proper spec helper file' do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
     Helpers.should_receive(:safe_create_file).with('spec/spec_helper.rb',anything).once
-    @retro.safe_create_spec_helper('lib/templates/spec_helper_file.erb')
+    @retro.safe_create_spec_helper('spec_helper_file.erb')
 
   end
 
@@ -65,7 +65,7 @@ describe "puppet-retrospec" do
   it 'should create proper fixtures file' do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
     Helpers.should_receive(:safe_create_file).with('.fixtures.yml',anything).once
-    @retro.safe_create_fixtures_file('lib/templates/fixtures_file.erb')
+    @retro.safe_create_fixtures_file('fixtures_file.erb')
 
   end
 
@@ -85,6 +85,5 @@ describe "puppet-retrospec" do
   it 'modules_included should not be nil' do
     @retro.modules_included.length.should eq(1)
   end
-
 
 end
