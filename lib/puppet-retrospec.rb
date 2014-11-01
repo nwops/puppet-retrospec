@@ -57,25 +57,31 @@ class Retrospec
   end
 
   def classes_and_defines(filepaths=files)
-    @classes_and_defines = []
-    filepaths.each do |file|
-      resources = []
-      p = Puppet::Parser::Lexer.new
-      p.string = File.read(file)
-      tokens = p.fullscan
-      tokens.each do | token|
-        if [:CLASS, :DEFINE].include? token.first
-          k = tokens.index { |token| [:NAME].include? token.first }
-          # there is some sort of ordering bug here with ruby 1.8.7 and I have to modify the code like below
-          # to get it working. I think its this index method above
-          # TODO make this work with ruby versions 1.8.7 and above
-          #resources.push({:type_name => tokens[k-1].last[:value], :name => token.last[:value] })
-          resources.push({:type_name => token.last[:value] , :name => tokens[k].last[:value] })
+    if @classes_and_defines.nil?
+      @classes_and_defines ||= []
+      # for each file we are going to use the puppet lexer to find the class or define
+      filepaths.each do |file|
+        resources = []
+        p = Puppet::Parser::Lexer.new
+        p.string = File.read(file)
+        tokens = p.fullscan
+        tokens.each do | token|
+          if [:CLASS, :DEFINE].include? token.first
+            k = tokens.index { |token| [:NAME].include? token.first }
+            # there is some sort of ordering bug here with ruby 1.8.7 and I have to modify the code like below
+            # to get it working. I think its this index method above
+            # TODO make this work with ruby versions 1.8.7 and above
+            #resources.push({:type_name => tokens[k-1].last[:value], :name => token.last[:value] })
+            resources.push({:type_name => token.last[:value] , :name => tokens[k].last[:value] })
+          end
+        end
+        # sometimes the manifest can be blank and not include a class or define statement
+        if resources.length > 0
+          @classes_and_defines.push({:filename => File.basename(file, '.pp'), :types => resources })
         end
       end
-      @classes_and_defines.push({:filename => File.basename(file, '.pp'), :types => resources })
     end
-    return @classes_and_defines
+    @classes_and_defines
   end
 
   def included_declarations(filepaths=files)
@@ -120,7 +126,7 @@ class Retrospec
     defines_dir = 'spec/defines'
     Helpers.safe_mkdir('spec/classes')
     Helpers.safe_mkdir('spec/defines')
-    @classes_and_defines.each do |value|
+    classes_and_defines.each do |value|
       types = value[:types]
       types.each do |type|
         # run template

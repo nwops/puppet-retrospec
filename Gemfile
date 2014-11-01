@@ -10,4 +10,5 @@ group :development do
   gem "bundler", "~> 1.0"
   gem "jeweler", "~> 1.8.7"
   gem 'pry'
+  #gem "fakefs", :require => "fakefs/safe"
 end

@@ -2,6 +2,8 @@ require 'spec_helper'
 require 'puppet-retrospec'
 require 'helpers'
 require 'pry'
+#require 'fakefs/safe'
+
 describe "puppet-retrospec" do
 
   before :each do
@@ -9,9 +11,14 @@ describe "puppet-retrospec" do
 
 
   end
+  # it 'should run without errors' do
+  #   FakeFS do
+  #
+  #   end
+  # end
 
   it 'should return a list of files' do
-    @retro.files.length.should be(2)
+    @retro.files.length.should == 3
   end
 
   it 'should retrieve a list of includes' do
@@ -34,9 +41,16 @@ describe "puppet-retrospec" do
     types.first[:name].should eq("includes-class")
   end
 
+  it 'should not retrieve 0 defines or classes' do
+    my_retro = Retrospec.new('spec/fixtures/not_a_resource_defination.pp')
+    classes = my_retro.classes_and_defines(['spec/fixtures/not_a_resource_defination.pp'])
+    classes.count.should == 0
+  end
+
   it 'should retrieve a list of define names' do
     # ie. [{:filename=>"includes-class", :types=>[{:type_name=>"class", :name=>"includes-class"}]}]
-    classes = @retro.classes_and_defines(['spec/fixtures/includes-defines.pp'])
+    my_retro = Retrospec.new('spec/fixtures/includes-defines.pp')
+    classes = my_retro.classes_and_defines(['spec/fixtures/includes-defines.pp'])
     types = classes.first[:types]
     types.first[:type_name].should eq('define')
     types.first[:name].should eq("webinstance")
