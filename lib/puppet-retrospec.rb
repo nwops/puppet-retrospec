@@ -137,7 +137,7 @@ class Retrospec
         file_name = tokens.last
         if enable_sub_folders
           dir_name =  "#{type_dir_name}/#{dir_name}"
-          self.safe_mkdir(dir_name)
+          Helpers.safe_mkdir(dir_name)
           safe_create_template_file(File.join(dir_name,"#{file_name}_spec.rb"), template)
         else
           safe_create_template_file(File.join(type_dir_name,"#{file_name}_spec.rb"), template)
@@ -156,6 +156,9 @@ class Retrospec
   end
 
   def safe_create_template_file(path, template)
+    if ! File.exists?(File.dirname(path))
+      Helpers.safe_mkdir(File.dirname(path))
+    end
     template_path = File.join(template_dir, template)
     File.open(template_path) do |file|
       renderer = ERB.new(file.read, 0, '>')

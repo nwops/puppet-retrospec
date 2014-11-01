@@ -44,8 +44,8 @@ describe "puppet-retrospec" do
 
   it 'should create resource spec files' do
     #Helpers.should_receive(:get_module_name).and_return('mymodule')
-    Helpers.should_receive(:safe_mkdir).with('spec/classes').once
-    Helpers.should_receive(:safe_mkdir).with('spec/defines').once
+    Helpers.should_receive(:safe_mkdir).with('spec/classes').twice
+    Helpers.should_receive(:safe_mkdir).with('spec/defines').twice
     Helpers.should_receive(:safe_create_file).with(an_instance_of(String), an_instance_of(String)).twice
     @retro.safe_create_resource_spec_files('resource-spec_file.erb')
   end
