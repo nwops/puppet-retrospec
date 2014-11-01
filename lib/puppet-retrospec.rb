@@ -109,7 +109,7 @@ class Retrospec
   end
 
 
-  def self.safe_make_shared_context(template='shared_context.erb')
+  def safe_make_shared_context(template='shared_context.erb')
     safe_create_template_file('spec/shared_contexts.rb', template)
   end
 
