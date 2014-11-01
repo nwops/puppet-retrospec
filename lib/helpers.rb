@@ -27,7 +27,6 @@ class Helpers
 
 
     safe_create_spec_helper
-    safe_create_rakefile
     safe_create_fixtures_file
     safe_create_resource_spec_files
     safe_make_shared_context

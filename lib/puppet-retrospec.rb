@@ -50,7 +50,6 @@ class Retrospec
   def self.run
     spec = Retrospec.new
     spec.safe_create_spec_helper
-    spec.safe_create_rakefile
     spec.safe_create_fixtures_file
     spec.safe_create_resource_spec_files
     spec.safe_make_shared_context
