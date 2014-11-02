@@ -1,4 +1,7 @@
 fixtures:
     symlinks:
         <%= @module_name %>: "#{source_dir}"
-        <% @modules_included.each do |mod| %><%= mod %>: "../../../../<%= mod %>" <% end %>
+    repositories:
+      stdlib:
+        repo: https://github.com/puppetlabs/puppetlabs-stdlib.git
+        ref: 4.3.2

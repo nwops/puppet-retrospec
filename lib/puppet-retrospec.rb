@@ -138,7 +138,7 @@ class Retrospec
 
   # Gets all the classes and define types from all the files in the manifests directory
   # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
-  def safe_create_resource_spec_files(manifest_file,template='resource-spec_file.erb')
+  def safe_create_resource_spec_files(manifest_file,template='resource_spec_file.erb')
     classes_dir = 'spec/classes'
     defines_dir = 'spec/defines'
     classes_and_defines(manifest_file).each do |value|

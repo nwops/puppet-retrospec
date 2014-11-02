@@ -1,1 +1,28 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
+require 'hiera_puppet'
+
+# Uncomment this to show coverage report, also useful for debugging
+#at_exit { RSpec::Puppet::Coverage.report! }
+
+# the hiera_data variable will need to be customized to suit your environment
+hiera_data = File.expand_path(File.join(File.dirname(__FILE__), '..','hieradata'))
+
+# this should be the path to your hiera.yaml file which i presume is in your hieradata directory
+hiera_yaml = File.join(hiera_data, 'hiera.yaml')
+
+shared_context "hieradata" do
+    let(:hiera_config) do
+        config = YAML.load_file(hiera_yaml)
+        config[:logger] = 'puppet'
+        config[:yaml][:datadir] = hiera_data
+        config
+    end
+end
+
+RSpec.configure do |c|
+    c.mock_framework = :rspec
+    # don't remove this or the hiera binding will not work
+    c.before(:each) do
+        HieraPuppet.stub(:hiera_config => hiera_config)
+    end
+end
