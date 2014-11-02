@@ -4,7 +4,7 @@ require 'helpers'
 
 describe "puppet-retrospec" do
   after :all do
-    FileUtils.rm_rf(fixture_modules_path)
+    #FileUtils.rm_rf(fixture_modules_path)
   end
 
   before :each do
