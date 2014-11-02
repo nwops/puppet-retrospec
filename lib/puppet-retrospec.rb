@@ -1,7 +1,6 @@
 require 'erb'
 require 'puppet'
 require 'helpers'
-require 'pry'
 
 class Retrospec
   attr_reader :included_declarations

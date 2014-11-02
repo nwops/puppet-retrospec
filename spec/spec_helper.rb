@@ -12,6 +12,7 @@ end
 
 def install_module(module_name)
   FileUtils.mkdir_p(fixture_modules_path)
+  puts "Downloading modules to fixtures directory"
   `puppet module install -i #{fixture_modules_path} #{module_name}`
   Dir.glob('spec/fixtures/modules/**/spec').each do |dir|
     FileUtils.rm_rf(dir)

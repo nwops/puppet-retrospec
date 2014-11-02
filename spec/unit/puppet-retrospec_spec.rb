@@ -1,10 +1,11 @@
 require 'spec_helper'
 require 'puppet-retrospec'
 require 'helpers'
-require 'pry'
-#require 'fakefs/safe'
 
 describe "puppet-retrospec" do
+  after :all do
+    FileUtils.rm_rf(fixture_modules_path)
+  end
 
   before :each do
     @retro = Retrospec.new(Dir.glob('spec/fixtures/manifests/*.pp'))
