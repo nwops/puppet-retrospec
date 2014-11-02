@@ -14,12 +14,11 @@ describe '<%= tname %>' do
         let(:params) do
             {}
         end
-        <% includes = included_declarations[tname] %>
-        <% includes.each do |name| %>
 
         it { should compile }
         <% end %>
     <% end %>
-<% end %>
+
+end
 
 

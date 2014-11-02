@@ -7,66 +7,66 @@ require 'pry'
 describe "puppet-retrospec" do
 
   before :each do
-    @retro = Retrospec.new('spec/fixtures/*.pp')
-
-
+    @retro = Retrospec.new(Dir.glob('spec/fixtures/manifests/*.pp'))
   end
-  # it 'should run without errors' do
-  #   FakeFS do
-  #
-  #   end
-  # end
+
+  it 'should run without errors' do
+    install_module('puppetlabs-tomcat')
+    tomcat = Retrospec.new('spec/fixtures/modules/tomcat')
+    tomcat.create_files
+  end
+
+  it 'manifest path is calculated correctly' do
+     @retro.manifest_dir.should eq('spec/fixtures/manifests')
+  end
 
   it 'should return a list of files' do
-    @retro.files.length.should == 3
+    @retro.manifest_files.length.should == 3
   end
 
   it 'should retrieve a list of includes' do
     # ie. {"includes-class"=>["class1", "class2", "class3", "class6"]}
-     includes = @retro.included_declarations(['spec/fixtures/includes-class.pp'])
+     includes = @retro.included_declarations('spec/fixtures/manifests/includes-class.pp')
      includes['includes-class'].should eq(["class1", "class2", "class3", "class6"])
   end
 
   it 'should not include the require statements' do
     # ie. {"includes-class"=>["class1", "class2", "class3", "class6"]}
-    includes = @retro.included_declarations(['spec/fixtures/includes-class.pp'])
+    includes = @retro.included_declarations('spec/fixtures/manifests/includes-class.pp')
     includes['includes-class'].should_not eq(["class1", "class2", "class3", "class4", "class5", "class6"])
   end
 
   it 'should retrieve a list of class names' do
     # ie. [{:filename=>"includes-class", :types=>[{:type_name=>"class", :name=>"includes-class"}]}]
-    classes = @retro.classes_and_defines(['spec/fixtures/includes-class.pp'])
+    classes = @retro.classes_and_defines('spec/fixtures/manifests/includes-class.pp')
     types = classes.first[:types]
     types.first[:type_name].should eq('class')
     types.first[:name].should eq("includes-class")
   end
 
-  it 'should not retrieve 0 defines or classes' do
-    my_retro = Retrospec.new('spec/fixtures/not_a_resource_defination.pp')
-    classes = my_retro.classes_and_defines(['spec/fixtures/not_a_resource_defination.pp'])
+  it 'should retrieve 0 defines or classes' do
+    my_retro = Retrospec.new('spec/fixtures/manifests/not_a_resource_defination.pp')
+    classes = my_retro.classes_and_defines('spec/fixtures/manifests/not_a_resource_defination.pp')
     classes.count.should == 0
+  end
+
+  it 'should not create any files when 0 resources exists' do
+    my_retro = Retrospec.new('spec/fixtures/manifests/not_a_resource_defination.pp')
+    my_retro.safe_create_resource_spec_files(my_retro.manifest_files.first)
   end
 
   it 'should retrieve a list of define names' do
     # ie. [{:filename=>"includes-class", :types=>[{:type_name=>"class", :name=>"includes-class"}]}]
-    my_retro = Retrospec.new('spec/fixtures/includes-defines.pp')
-    classes = my_retro.classes_and_defines(['spec/fixtures/includes-defines.pp'])
+    my_retro = Retrospec.new('spec/fixtures/manifests/includes-defines.pp')
+    classes = my_retro.classes_and_defines('spec/fixtures/manifests/includes-defines.pp')
     types = classes.first[:types]
     types.first[:type_name].should eq('define')
     types.first[:name].should eq("webinstance")
   end
 
-  it 'should create resource spec files' do
-    #Helpers.should_receive(:get_module_name).and_return('mymodule')
-    Helpers.should_receive(:safe_mkdir).with('spec/classes').twice
-    Helpers.should_receive(:safe_mkdir).with('spec/defines').twice
-    Helpers.should_receive(:safe_create_file).with(an_instance_of(String), an_instance_of(String)).twice
-    @retro.safe_create_resource_spec_files('resource-spec_file.erb')
-  end
-
   it 'should create proper spec helper file' do
-    #Helpers.should_receive(:get_module_name).and_return('mymodule')
-    Helpers.should_receive(:safe_create_file).with('spec/spec_helper.rb',anything).once
+    filepath = File.expand_path(File.join(fixtures_path, 'spec/spec_helper.rb'))
+    Helpers.should_receive(:safe_create_file).with(filepath,anything).once
     @retro.safe_create_spec_helper('spec_helper_file.erb')
 
   end
@@ -77,18 +77,18 @@ describe "puppet-retrospec" do
   end
 
   it 'should create proper fixtures file' do
-    #Helpers.should_receive(:get_module_name).and_return('mymodule')
-    Helpers.should_receive(:safe_create_file).with('.fixtures.yml',anything).once
+    filepath = File.expand_path(File.join(fixtures_path, '.fixtures.yml'))
+    Helpers.should_receive(:safe_create_file).with(filepath,anything).once
     @retro.safe_create_fixtures_file('fixtures_file.erb')
 
   end
 
   it 'included_declarations should not be nil' do
-    @retro.included_declarations.length.should >= 1
+    @retro.included_declarations(@retro.manifest_files.first).length.should >= 1
   end
 
   it 'classes_and_defines should not be nil' do
-    @retro.classes_and_defines.length.should >= 1
+    @retro.classes_and_defines(@retro.manifest_files.first).length.should >= 1
   end
 
   it 'module_name should not be nil' do

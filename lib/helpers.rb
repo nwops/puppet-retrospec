@@ -41,7 +41,6 @@ class Helpers
     module_name
   end
 
-
   def self.get_module_name_from_file(file)
     p = Puppet::Parser::Lexer.new
     module_name = nil
