@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Corey Osman"]
-  s.date = "2014-11-02"
+  s.date = "2014-11-03"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.extra_rdoc_files = [
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
     "lib/helpers.rb",
     "lib/puppet-retrospec.rb",
     "lib/templates/fixtures_file.erb",
-    "lib/templates/resource-spec_file.erb",
+    "lib/templates/resource_spec_file.erb",
     "lib/templates/shared_context.erb",
     "lib/templates/spec_helper_file.erb",
     "puppet-retrospec.gemspec",
