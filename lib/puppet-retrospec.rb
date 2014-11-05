@@ -1,6 +1,7 @@
 require 'erb'
 require 'puppet'
 require 'helpers'
+require 'fileutils'
 
 class Retrospec
   attr_reader :included_declarations
@@ -10,11 +11,17 @@ class Retrospec
   attr_accessor :default_path
   attr_accessor :manifest_files
   attr_accessor :default_modules
+  attr_accessor :template_dir
 
 
-  def initialize(path=nil)
+  def initialize(path=nil, default_template_dir=ENV['RETROSPEC_TEMPLATES_PATH'])
+    # user supplied a template path or user wants to use local templates
+    if not default_template_dir.nil? or ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] =~ /true/i
+      default_template_dir = Helpers.setup_user_template_dir(default_template_dir)
+    end
     @default_path = path
     @default_modules = ['stdlib']
+    @template_dir = default_template_dir
     module_name
     modules_included
   end
@@ -31,13 +38,18 @@ class Retrospec
   # pass in either the path to the module directory
   # or the path to a specific manifest
   # defaults to all manifests in the current directory
-  def self.run(path=nil)
-    spec = Retrospec.new(path)
+  # if ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] = 'true' the use the default user templates path
+  # if ENV["RETROSPEC_TEMPLATES_PATH"] is set then we will override the default user template path
+  # with the path provided
+  # we will use the necessary templates from that directory instead of the default gem path
+  def self.run(path=nil, template_dir=ENV['RETROSPEC_TEMPLATES_PATH'])
+    spec = Retrospec.new(path, template_dir)
     spec.create_files
   end
 
+  # if user doesn't supply template directory we assume we should use the templates in this gem
   def template_dir
-    @template_dir ||= File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
+    @template_dir ||= Helpers.gem_template_dir
   end
 
   def modules_included

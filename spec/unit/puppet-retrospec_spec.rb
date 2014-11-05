@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'puppet-retrospec'
 require 'helpers'
+require 'fakefs/safe'
+require 'pry'
 
 describe "puppet-retrospec" do
   after :all do
@@ -9,6 +11,10 @@ describe "puppet-retrospec" do
 
   before :each do
     @retro = Retrospec.new(Dir.glob('spec/fixtures/manifests/*.pp'))
+    ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] = nil
+    ENV['RETROSPEC_TEMPLATES_PATH'] = nil
+
+
   end
 
   it 'should run without errors' do
@@ -17,8 +23,55 @@ describe "puppet-retrospec" do
     tomcat.create_files
   end
 
+  it 'should create a local templates directory when flag is on' do
+    ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] = 'true'
+    FakeFS do
+      user_directory = Helpers.default_user_template_dir
+      FileUtils.mkdir_p(Helpers.gem_template_dir)
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'fixtures_file.erb'))
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'resource_spec_file.erb'))
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'shared_context.erb'))
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'spec_helper_file.erb'))
+
+      FileUtils.mkdir_p('/modules/tomcat/manifests')
+      FileUtils.touch('/modules/tomcat/manifests/init.pp')
+      Retrospec.new('/modules/tomcat')
+      expect(File.exists?(user_directory)).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'fixtures_file.erb'))).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'resource_spec_file.erb'))).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'shared_context.erb'))).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'spec_helper_file.erb'))).to eq(true)
+    end
+    ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] = nil
+    ENV['RETROSPEC_TEMPLATES_PATH'] = nil
+  end
+
+  it 'should create and use the user supplied templates directory when variable is set' do
+    ENV['RETROSPEC_TEMPLATES_PATH'] = '/tmp/my_templates'
+    FakeFS do
+      FileUtils.mkdir_p(Helpers.gem_template_dir)
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'fixtures_file.erb'))
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'resource_spec_file.erb'))
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'shared_context.erb'))
+      FileUtils.touch(File.join(Helpers.gem_template_dir, 'spec_helper_file.erb'))
+      FileUtils.mkdir_p('/modules/tomcat/manifests')
+      FileUtils.touch('/modules/tomcat/manifests/init.pp')
+      r = Retrospec.new('/modules/tomcat')
+      user_directory = r.template_dir
+      expect(user_directory).to eq('/tmp/my_templates')
+      r.create_files
+      expect(File.exists?(user_directory)).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'fixtures_file.erb'))).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'resource_spec_file.erb'))).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'shared_context.erb'))).to eq(true)
+      expect(File.exists?(File.join(user_directory, 'spec_helper_file.erb'))).to eq(true)
+    end
+    ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] = nil
+    ENV['RETROSPEC_TEMPLATES_PATH'] = nil
+  end
+
   it 'manifest path is calculated correctly' do
-     @retro.manifest_dir.should eq('spec/fixtures/manifests')
+    @retro.manifest_dir.should eq('spec/fixtures/manifests')
   end
 
   it 'should return a list of files' do
@@ -27,8 +80,8 @@ describe "puppet-retrospec" do
 
   it 'should retrieve a list of includes' do
     # ie. {"includes-class"=>["class1", "class2", "class3", "class6"]}
-     includes = @retro.included_declarations('spec/fixtures/manifests/includes-class.pp')
-     includes['includes-class'].should eq(["class1", "class2", "class3", "class6"])
+    includes = @retro.included_declarations('spec/fixtures/manifests/includes-class.pp')
+    includes['includes-class'].should eq(["class1", "class2", "class3", "class6"])
   end
 
   it 'should not include the require statements' do

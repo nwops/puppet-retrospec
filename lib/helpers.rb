@@ -1,3 +1,4 @@
+require 'fileutils'
 
 class Helpers
 
@@ -67,6 +68,60 @@ class Helpers
     else
       FileUtils.mkdir_p dir
       puts " + #{dir}/"
+    end
+  end
+
+  # creates the user supplied or default template directory
+  # returns: user_template_dir
+  def self.create_user_template_dir(user_template_directory=nil)
+    if user_template_directory.nil?
+      user_template_directory = default_user_template_dir
+    end
+    # create default user template path or supplied user template path
+    if not File.exists?(user_template_directory)
+      FileUtils.mkdir_p(File.expand_path(user_template_directory))
+    end
+    user_template_directory
+  end
+
+  # creates and/or copies all templates in the gem to the user templates path
+  # returns: user_template_dir
+  def self.sync_user_template_dir(user_template_directory)
+    Dir.glob(File.join(gem_template_dir, "*.erb")).each do |src|
+      filename = File.basename(src)
+      dest = File.expand_path(File.join(user_template_directory, filename))
+      safe_copy_file(src, dest)
+    end
+    user_template_directory
+  end
+
+  # creates and syncs the specifed user template diretory
+  # returns: user_template_dir
+  def self.setup_user_template_dir(user_template_directory=nil)
+     if user_template_directory.nil?
+       user_template_directory = default_user_template_dir
+     end
+     sync_user_template_dir(create_user_template_dir(user_template_directory))
+  end
+
+  def self.default_user_template_dir
+    File.expand_path(File.join(ENV['HOME'], '.puppet_retrospec_templates' ))
+  end
+
+  def self.gem_template_dir
+    File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
+  end
+
+  def self.safe_copy_file(src, dest)
+    if File.exists?(dest)
+      $stderr.puts "!! #{dest} already exists"
+    else
+      if not File.exists?(src)
+        safe_touch(src)
+      else
+        FileUtils.cp(src,dest)
+      end
+      puts " + #{dest}"
     end
   end
 
