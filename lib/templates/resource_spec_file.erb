@@ -5,20 +5,21 @@ require 'shared_contexts'
     <% types = value[:types]  %>
     <% types.each do |type| %>
     <% tname = type[:name] %>
-
 describe '<%= tname %>' do
-        #include_context :some_context
-        let(:facts) do
-            {}
-        end
-        let(:params) do
-            {}
-        end
-
-        it { should compile }
-        <% end %>
+    include_context :hiera
+    <% if type[:type_name] == 'define' %>
+    let(:title) { 'example_name' }
     <% end %>
-
+    let(:facts) do
+       {}
+    end
+    let(:params) do
+       {}
+    end
+    # add these two lines in a single test to enable puppet and hiera debug mode
+    # Puppet::Util::Log.level = :debug
+    # Puppet::Util::Log.newdestination(:console)
+    it { should compile }
+    <% end %>
+<% end %>
 end
-
-

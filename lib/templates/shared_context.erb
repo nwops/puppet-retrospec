@@ -1,4 +1,6 @@
-shared_context :some_context do
+require 'hiera_puppet'
+
+shared_context :hiera do
     # example only,
     let(:hiera_data) do
         {:some_key => "some_value" }
