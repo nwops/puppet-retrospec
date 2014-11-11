@@ -202,7 +202,7 @@ class Retrospec
     end
     template_path = File.join(template_dir, template)
     File.open(template_path) do |file|
-      renderer = ERB.new(file.read, 0, '>')
+      renderer = ERB.new(file.read, 0, '-')
       content = renderer.result binding
       Helpers.safe_create_file(File.expand_path(File.join(module_dir,path)), content)
     end

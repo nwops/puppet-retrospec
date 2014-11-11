@@ -1,15 +1,15 @@
 require 'spec_helper'
 require 'shared_contexts'
 
-<% @classes_and_defines.each do | value |  %>
-    <% types = value[:types]  %>
-    <% types.each do |type| %>
-    <% tname = type[:name] %>
+<% @classes_and_defines.each do | value |  -%>
+<% types = value[:types]  -%>
+<% types.each do |type| -%>
+<% tname = type[:name] -%>
 describe '<%= tname %>' do
     include_context :hiera
-    <% if type[:type_name] == 'define' %>
+<% if type[:type_name] == 'define' -%>
     let(:title) { 'example_name' }
-    <% end %>
+<% end -%>
     let(:facts) do
        {}
     end
@@ -20,6 +20,6 @@ describe '<%= tname %>' do
     # Puppet::Util::Log.level = :debug
     # Puppet::Util::Log.newdestination(:console)
     it { should compile }
-    <% end %>
-<% end %>
+<% end -%>
 end
+<% end -%>
