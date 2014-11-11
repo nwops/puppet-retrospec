@@ -29,6 +29,7 @@ class Retrospec
   def create_files
     safe_create_spec_helper
     safe_create_fixtures_file
+    safe_create_gemfile
     manifest_files.each do |file|
       safe_create_resource_spec_files(file)
     end
@@ -45,6 +46,10 @@ class Retrospec
   def self.run(path=nil, template_dir=ENV['RETROSPEC_TEMPLATES_PATH'])
     spec = Retrospec.new(path, template_dir)
     spec.create_files
+  end
+
+  def safe_create_gemfile(template='gemfile.erb')
+    safe_create_template_file('Gemfile', template)
   end
 
   # if user doesn't supply template directory we assume we should use the templates in this gem
