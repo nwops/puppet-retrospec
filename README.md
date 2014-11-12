@@ -1,4 +1,4 @@
-puppet-retrospec
+Puppet-Retrospec
 ================
 
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.  Aims to reduce some of the boilerplate coding with default test patterns.
@@ -11,7 +11,7 @@ with everything needed to get going with puppet unit testing.
 Build Status
 ============
 [![Build Status](https://travis-ci.org/logicminds/puppet-retrospec.png)](https://travis-ci.org/logicminds/puppet-retrospec)
-
+[![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 Install
 =============
 `gem install puppet-retrospec`  
