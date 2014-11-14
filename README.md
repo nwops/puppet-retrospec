@@ -7,6 +7,7 @@ Retrospec makes it dead simple to get started with puppet unit testing.  When yo
 and actually write some very basic rspec-puppet test code.  Thus this gem will retrofit your existing puppet module
 with everything needed to get going with puppet unit testing.
 
+The project was named retrospec because there are many times when you need to retrofit your module with spec tests.
 
 Build Status
 ============
@@ -129,19 +130,45 @@ your puppet module with unit tests.
 Overriding the templates
 =======================
 There may be a time when you want to override the default templates used to generate the rspec related files.
-To override these templates just set the following environment variables.  Once one of the variables is set
-the first run will copy over the templates from the gem location.  If you have already created the file, then
-puppet-retrospec will not overwrite the file.  You can set multiple template path if you use them for 
-different projects so just be sure the set the correctly template path.
+To override these templates just set **one** of the following environment variables.
+  
+```shell
+RETROSPEC_ENABLE_LOCAL_TEMPLATES=true
+RETROSPEC_TEMPLATES_PATH=~/my_templates
+
+```
+
+Once one of the variables is set the retrospec will copy over all the templates from the gem location to the default 
+or specified override templates path.
+If you have already created the a erb file in the templates location, then puppet-retrospec will not overwrite the file.
+You can set multiple template paths if you use them for different projects so just be sure the set the correctly
+template path environment variable when running retrospec.
 
 Setting the `RETROSPEC_ENABLE_LOCAL_TEMPLATES=true` Environment variable will tell retrospec to use the default user template location.
 
-The default override location for the templates is ~/.puppet_retrospec_templates
+The default location for the templates when using this variable is ~/.puppet_retrospec_templates
 
-If you wish to override the default template location you can use the following environment variable RETROSPEC_TEMPLATES_PATH.
+If you wish to override ~/.puppet_retrospec_templates location you can use the following environment variable 
+RETROSPEC_TEMPLATES_PATH.
 If you set this variable you are not required set RETROSPEC_ENABLE_LOCAL_TEMPLATES.
 
 `RETROSPEC_TEMPLATES_PATH=~/my_templates`
+
+Troubleshooting
+===============
+If you see the following, this error means that you need to add a fixture to the fixtures file.
+At this time I have no idea what your module requires.  So just add the module that this class belongs to 
+in the .fixtures file.
+
+See [fixtures doc](https://github.com/puppetlabs/puppetlabs_spec_helper#using-fixtures) for more information
+
+```shell
+8) tomcat::instance::source
+     Failure/Error: it { should compile }
+     Puppet::Error:
+       Could not find class staging for coreys-macbook-pro-2.local on node coreys-macbook-pro-2.local
+     # ./spec/defines/instance/source_spec.rb:34:in `block (2 levels) in <top (required)>'
+```
 
 Running Tests
 =============
