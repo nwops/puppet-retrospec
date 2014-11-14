@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "lib/puppet-retrospec.rb",
     "lib/templates/fixtures_file.erb",
     "lib/templates/gemfile.erb",
+    "lib/templates/rakefile.erb",
     "lib/templates/resource_spec_file.erb",
     "lib/templates/shared_context.erb",
     "lib/templates/spec_helper_file.erb",
