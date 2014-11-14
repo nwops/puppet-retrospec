@@ -2,37 +2,6 @@ require 'fileutils'
 
 class Helpers
 
-
-  def self.run(module_name=nil)
-    unless is_module_dir?
-      $stderr.puts "Does not appear to be a Puppet module.  Aborting"
-      return false
-    end
-
-    if module_name.nil?
-      module_name = get_module_name
-      if module_name.nil?
-        $stderr.puts "Unable to determine module name.  Aborting"
-        return false
-      end
-    end
-
-    [
-        'spec',
-        'spec/classes',
-        'spec/defines',
-        'spec/functions',
-        'spec/unit', 'spec/unit/facter', 'spec/unit/puppet', 'spec/unit/puppet/type', 'spec/unit/puppet/provider',
-        'spec/hosts',
-    ].each { |dir| safe_mkdir(dir) }
-
-
-    safe_create_spec_helper
-    safe_create_fixtures_file
-    safe_create_resource_spec_files
-    safe_make_shared_context
-  end
-
   def self.get_module_name
     module_name = nil
     Dir["manifests/*.pp"].entries.each do |manifest|
@@ -56,8 +25,8 @@ class Helpers
     module_name
   end
 
-  def self.is_module_dir?
-    Dir["*"].entries.include? "manifests"
+  def self.is_module_dir?(dir)
+    Dir[File.join(dir,"*")].entries.include? "manifests"
   end
 
   def self.safe_mkdir(dir)
@@ -98,10 +67,10 @@ class Helpers
   # creates and syncs the specifed user template diretory
   # returns: user_template_dir
   def self.setup_user_template_dir(user_template_directory=nil)
-     if user_template_directory.nil?
-       user_template_directory = default_user_template_dir
-     end
-     sync_user_template_dir(create_user_template_dir(user_template_directory))
+    if user_template_directory.nil?
+      user_template_directory = default_user_template_dir
+    end
+    sync_user_template_dir(create_user_template_dir(user_template_directory))
   end
 
   def self.default_user_template_dir
