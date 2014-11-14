@@ -122,6 +122,17 @@ require 'shared_contexts'
 
 ```
 
+About the test suite
+======================
+At this time the test suite that is automatically generated is extremely basic.  Essentially it just ensures that your
+code will compile correctly.  However, one of the major stumbling blocks is just constructing everything in the spec 
+directory which retrospec does for you automatically.  Its now up to you to further enhance your test suite with more
+tests and conditional logic.  For now you will probably want to read up on the following documentation:
+
+* [Puppet Rspec](http://rspec-puppet.com)
+* [Puppet spec helper](https://github.com/puppetlabs/puppetlabs_spec_helper/blob/master/README.markdown)
+
+
 How Does it do this
 =======================
 Basically Retrospec uses the puppet lexer and parser to scan your code in order to fill out some basic templates that will retrofit
