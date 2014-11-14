@@ -173,7 +173,7 @@ See [fixtures doc](https://github.com/puppetlabs/puppetlabs_spec_helper#using-fi
 Running Tests
 =============
 Puppet-retrospec tests its code against real modules downloaded directly from puppet forge. 
-We also do a little mocking as well but for the majority of the tests we download our 'fixtures'.
+We also do a little mocking as well but for the majority of the tests we download are 'fixtures'.
 
 To run a clean test suite and re-download you must run with environment variable set
 ```
