@@ -106,6 +106,13 @@ describe "puppet-retrospec" do
     expect(File.exists?(filepath)).to eq(true)
   end
 
+  it 'should create Rakefile file' do
+    tomcat = Retrospec.new(@path)
+    filepath = File.expand_path(File.join(@path, 'Rakefile'))
+    tomcat.safe_create_rakefile
+    expect(File.exists?(filepath)).to eq(true)
+  end
+
   it 'should create proper fixtures file' do
     filepath = File.expand_path(File.join(@path,'.fixtures.yml'))
     FileUtils.rm_f(filepath)  # ensure we have a clean state

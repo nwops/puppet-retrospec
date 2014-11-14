@@ -29,12 +29,17 @@ class Retrospec
     safe_create_spec_helper
     safe_create_fixtures_file
     safe_create_gemfile
+    safe_create_rakefile
     safe_make_shared_context
     types.each do |type|
       safe_create_resource_spec_files(type)
     end
     FileUtils.remove_entry_secure tmp_modules_dir  # ensure we remove the temporary directory
     true
+  end
+
+  def safe_create_rakefile(template='rakefile.erb')
+    safe_create_template_file('Rakefile', template)
   end
 
   def safe_make_shared_context(template='shared_context.erb')

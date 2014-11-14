@@ -15,6 +15,8 @@ def clean_up_spec_dir(dir)
   FileUtils.rm_rf(File.join(dir, 'spec'))
   FileUtils.rm_f(File.join(dir, 'Gemfile'))
   FileUtils.rm_f(File.join(dir, '.fixtures.yml'))
+  FileUtils.rm_f(File.join(dir, 'Rakefile'))
+
 end
 
 def install_module(module_name)

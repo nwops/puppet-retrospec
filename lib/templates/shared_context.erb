@@ -5,6 +5,12 @@ hiera_config_file = File.expand_path(File.join(File.dirname(__FILE__), '..','dat
 
 # hiera_file and hiera_data are mutally exclusive contexts.
 
+shared_context :hiera do
+    # example only,
+    let(:hiera_data) do
+        {:some_key => "some_value" }
+    end
+end
 
 shared_context :linux_hiera do
     # example only,
