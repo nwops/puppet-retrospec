@@ -3,13 +3,14 @@ require 'trollop'
 require 'puppet-retrospec'
 
 opts = Trollop::options do
-  opt :module_path, "destination directory to create spec tests in (Defaults to current directory) " ,
+  opt :module_path, "The path (relative or absolute) to the module directory (Defaults to current directory) " ,
       :type => :string, :required => false, :default => nil
   opt :template_dir, "Path to templates directory (only for overriding Retrospec templates)", :type => :string,
       :required => false, :default => nil
   opt :enable_user_templates, "Use Retrospec templates from #{File.expand_path('~/.puppet_retrospec_templates')}",
       :require => false, :type => :boolean
+  opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean
 end
-ENV['RETROSPEC_ENABLE_LOCAL_TEMPLATES'] = 'true' if opts[:enable_user_templates]
-ENV['RETROSPEC_TEMPLATES_PATH'] = opts[:template_dir] if not opts[:template_dir].nil?
-Retrospec.run(opts[:module_path])
+
+retro = Retrospec.new(opts[:module_path], opts)
+retro.create_files

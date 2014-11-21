@@ -34,10 +34,11 @@ end
 Run from the command line
 ```
 $ retrospec -h
-Options:
-          --module-path, -m <s>:   destination directory to create spec tests in (Defaults to current directory)
+  Options:
+          --module-path, -m <s>:   The path (relative or absolute) to the module directory (Defaults to current directory)
          --template-dir, -t <s>:   Path to templates directory (only for overriding Retrospec templates)
-    --enable-user-templates, -e:   Use Retrospec templates from /Users/cosman/.puppet_retrospec_templates
+    --enable-user-templates, -e:   Use Retrospec templates from ~/.puppet_retrospec_templates
+      --enable-beaker-tests, -n:   Enable the creation of beaker tests
                      --help, -h:   Show this message
                      
 retrospec -m ~/projects/puppet_modules/apache
@@ -141,29 +142,42 @@ your puppet module with unit tests.
 Overriding the templates
 =======================
 There may be a time when you want to override the default templates used to generate the rspec related files.
-To override these templates just set **one** of the following environment variables.
+To override these templates just set **one** of the following cli options.
   
 ```shell
-RETROSPEC_ENABLE_LOCAL_TEMPLATES=true
-RETROSPEC_TEMPLATES_PATH=~/my_templates
+      --template-dir, -t <s>:   Path to templates directory (only for overriding Retrospec templates)
+    --enable-user-templates, -e:   Use Retrospec templates from ~/.puppet_retrospec_templates
 
 ```
 
-Once one of the variables is set the retrospec will copy over all the templates from the gem location to the default 
+Once one of the options is set, retrospec will copy over all the templates from the gem location to the default
 or specified override templates path.
 If you have already created the a erb file in the templates location, then puppet-retrospec will not overwrite the file.
-You can set multiple template paths if you use them for different projects so just be sure the set the correctly
-template path environment variable when running retrospec.
+You can set multiple template paths if you use them for different projects so just be sure the set the correct
+template option when running retrospec.
 
-Setting the `RETROSPEC_ENABLE_LOCAL_TEMPLATES=true` Environment variable will tell retrospec to use the default user template location.
+Setting the `--enable-user-templates` option will tell retrospec to use the default user template location.
 
 The default location for the templates when using this variable is ~/.puppet_retrospec_templates
 
-If you wish to override ~/.puppet_retrospec_templates location you can use the following environment variable 
-RETROSPEC_TEMPLATES_PATH.
-If you set this variable you are not required set RETROSPEC_ENABLE_LOCAL_TEMPLATES.
+If you wish to override ~/.puppet_retrospec_templates location you can use the following option
+`--template-dir`
 
-`RETROSPEC_TEMPLATES_PATH=~/my_templates`
+If you set the `--template-dir` option you are not required to set the set `--enable-user-templates` option
+
+Example:
+`--template-dir=~/my_templates`
+
+Beaker Testing
+=================
+Beaker is Puppetlabs acceptance testing framework that you use to test puppet code on real machines.  Beaker is fairly new
+and is subject to frequent changes.  Testing patterns have not been established yet so consider beaker support in puppet-retrospec
+to be experimental.
+
+If you wish to enable the creation of beaker tests you can use the following cli option.  By default these
+acceptance tests are not created.  However at a later time they will be enabled by default.
+
+`--enable-beaker-tests`
 
 Troubleshooting
 ===============

@@ -56,10 +56,9 @@ class Helpers
   # creates and/or copies all templates in the gem to the user templates path
   # returns: user_template_dir
   def self.sync_user_template_dir(user_template_directory)
-    Dir.glob(File.join(gem_template_dir, "*.erb")).each do |src|
-      filename = File.basename(src)
-      dest = File.expand_path(File.join(user_template_directory, filename))
-      safe_copy_file(src, dest)
+    Dir.glob(File.join(gem_template_dir, '**', '*')).each do |src|
+      dest = src.gsub(gem_template_dir, user_template_directory)
+      safe_copy_file(src, dest) unless File.directory?(src)
     end
     user_template_directory
   end
@@ -82,12 +81,13 @@ class Helpers
   end
 
   def self.safe_copy_file(src, dest)
-    if File.exists?(dest)
+    if File.exists?(dest) and not File.zero?(dest)
       $stderr.puts "!! #{dest} already exists"
     else
       if not File.exists?(src)
         safe_touch(src)
       else
+        safe_mkdir(File.dirname(dest))
         FileUtils.cp(src,dest)
       end
       puts " + #{dest}"
@@ -108,7 +108,8 @@ class Helpers
   def self.safe_create_file(filename, content)
     if File.exists? filename
       old_content = File.read(filename)
-      if old_content != content
+      # if we did a better comparison of content we could be smarter about when we create files
+      if old_content != content or not File.zero?(filename)
         $stderr.puts "!! #{filename} already exists and differs from template"
       end
     else
