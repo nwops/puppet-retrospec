@@ -20,17 +20,6 @@ Install
 
 How to use
 =============
-Run from a rake task
-```
-require 'puppet-retrospec'
-
-desc "Scans the module directory and automatically creates basic spec tests"
-task :retrospec do
-  Retrospec.run
-end
-
-```
-
 Run from the command line
 ```
 $ retrospec -h
