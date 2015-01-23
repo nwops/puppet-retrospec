@@ -4,7 +4,7 @@ if puppetversion = ENV['PUPPET_GEM_VERSION']
   gem 'puppet', puppetversion, :require => false
 else
   gem 'puppet', :require => false
-  end
+end
 
 gem 'trollop'
 # Add dependencies to develop your gem here.
@@ -17,5 +17,8 @@ group :development do
   gem "jeweler"
   gem 'pry'
   gem "fakefs", :require => "fakefs/safe"
-
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
+  gem 'pry-coolline'
+ # gem 'pry-byebug'
 end

@@ -1,6 +1,7 @@
-require 'puppet-retrospec'
+require 'retrospec'
 require 'rspec'
 require 'puppet'
+require 'pry'
 
 def fixture_modules_path
   @fixture_module_path ||= File.expand_path(File.join(fixtures_path, 'modules'))

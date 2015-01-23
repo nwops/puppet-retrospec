@@ -80,6 +80,10 @@ class Helpers
     File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
   end
 
+
+
+
+
   def self.safe_copy_file(src, dest)
     if File.exists?(dest) and not File.zero?(dest)
       $stderr.puts "!! #{dest} already exists"

@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'puppet-retrospec'
-require 'helpers'
+require 'retrospec'
 require 'fakefs/safe'
+require 'retrospec/helpers'
 
 describe "puppet-retrospec" do
   after :all do
@@ -18,7 +18,7 @@ describe "puppet-retrospec" do
   end
 
   before :each do
-    clean_up_spec_dir(@path)
+    #clean_up_spec_dir(@path)
     @opts = {:module_path => @path, :enable_beaker_tests => false,
              :enable_user_templates => false, :template_dir => nil }
   end
@@ -45,6 +45,7 @@ describe "puppet-retrospec" do
   end
 
   it 'should not create acceptance test files' do
+    clean_up_spec_dir(@path)
     @opts[:enable_beaker_tests] = false
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     spec_path = File.expand_path(File.join(@path, 'spec'))
@@ -236,43 +237,5 @@ describe "puppet-retrospec" do
      expect(tomcat.generate_file_name('tomcat')).to eq('tomcat_spec.rb')
      expect(tomcat.generate_file_name('tomcat::config')).to eq('config_spec.rb')
   end
-
-  # it 'should contain a list of parameters in the test' do
-  #   tomcat = Retrospec.new(@opts[:module_path], @opts)
-  #   tomcat.create_files
-  #
-  # end
-  #
-  # it 'should retrieve a list of includes' do
-  #   # ie. {"includes-class"=>["class1", "class2", "class3", "class6"]}
-  #   includes = @retro.included_declarations('spec/fixtures/manifests/includes-class.pp')
-  #   includes['includes-class'].should eq(["class1", "class2", "class3", "class6"])
-  # end
-  #
-  # it 'should not include the require statements' do
-  #   # ie. {"includes-class"=>["class1", "class2", "class3", "class6"]}
-  #   includes = @retro.included_declarations('spec/fixtures/manifests/includes-class.pp')
-  #   includes['includes-class'].should_not eq(["class1", "class2", "class3", "class4", "class5", "class6"])
-  # end
-  #
-  #
-  # it 'should retrieve a list of define names' do
-  #   # ie. [{:filename=>"includes-class", :types=>[{:type_name=>"class", :name=>"includes-class"}]}]
-  #   my_retro = Retrospec.new('spec/fixtures/manifests/includes-defines.pp')
-  #   classes = my_retro.classes_and_defines('spec/fixtures/manifests/includes-defines.pp')
-  #   types = classes.first[:types]
-  #   types.first[:type_name].should eq('define')
-  #   types.first[:name].should eq("webinstance")
-  # end
-  #
-  #
-  # it 'included_declarations should not be nil' do
-  #   @retro.included_declarations(@retro.manifest_files.first).length.should >= 1
-  # end
-  #
-  #
-  # it 'modules_included should not be nil' do
-  #   @retro.modules_included.length.should eq(1)
-  # end
 
 end

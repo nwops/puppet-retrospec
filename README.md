@@ -71,53 +71,77 @@ $ retrospec
  
 ```
 
-Looking at the file we can see that it did a lot of work for us.
-Below is the classes/tomcat_spec.rb file  
+Looking at the file we can see that it did a lot of work for us.  Retrospec generate two tests automatically.
+However the variable resolution isn't perfect so you will need to manually resolve all variables.
+Below is the defines/instance_spec.rb file
    
 ```ruby
 require 'spec_helper'
 require 'shared_contexts'
-   describe 'tomcat' do
-       # by default the hiera integration is commented out
-       # but basically to mock hiera you first need to add a key/value pair
-       # to the specific context in the spec/shared_contexts.rb file
-       # Note: you can only use a single hiera context per describe/context block
-       # rspec-puppet does not allow you to swap out hiera data on a per test block
-       #include_context :hiera
-       # below is the facts hash that gives you the ability to mock
-       # facts on a per describe/context block.  If you use a fact in your
-       # manifest you should mock the facts below.
-       let(:facts) do
-          {}
-       end
-       # below is a list of the resource parameters that you can override
-       # by default all non-required parameters are commented out
-       # while all required parameters will require you to add a value
-       let(:params) do
-         {
-          #:catalina_home => $::tomcat::params::catalina_home,
-          #:user => $::tomcat::params::user,
-          #:group => $::tomcat::params::group,
-          #:install_from_source => true,
-          #:purge_connectors => false,
-          #:manage_user => true,
-          #:manage_group => true,
-         }
-       end
-       # add these two lines in a single test block to enable puppet and hiera debug mode
-       # Puppet::Util::Log.level = :debug
-       # Puppet::Util::Log.newdestination(:console)
-       it { should compile }
-   end
+
+describe 'tomcat' do
+  # by default the hiera integration uses hirea data from the shared_contexts.rb file
+  # but basically to mock hiera you first need to add a key/value pair
+  # to the specific context in the spec/shared_contexts.rb file
+  # Note: you can only use a single hiera context per describe/context block
+  # rspec-puppet does not allow you to swap out hiera data on a per test block
+  include_context :hiera
+
+
+  # below is the facts hash that gives you the ability to mock
+  # facts on a per describe/context block.  If you use a fact in your
+  # manifest you should mock the facts below.
+  let(:facts) do
+    {}
+  end
+  # below is a list of the resource parameters that you can override.
+  # By default all non-required parameters are commented out,
+  # while all required parameters will require you to add a value
+  let(:params) do
+    {
+      #:catalina_home => "$::tomcat::params::catalina_home",
+      #:user => $::tomcat::params::user,
+      #:group => $::tomcat::params::group,
+      #:install_from_source => true,
+      #:purge_connectors => false,
+      #:manage_user => true,
+      #:manage_group => true,
+    }
+  end
+  # add these two lines in a single test block to enable puppet and hiera debug mode
+  # Puppet::Util::Log.level = :debug
+  # Puppet::Util::Log.newdestination(:console)
+  it do
+    should contain_file('$::tomcat::params::catalina_home').
+             with({"ensure"=>"directory",
+                   "owner"=>"$::tomcat::params::user",
+                   "group"=>"$::tomcat::params::group"})
+  end
+  it do
+    should contain_user('$::tomcat::params::user').
+             with({"ensure"=>"present",
+                   "gid"=>"$::tomcat::params::group"})
+  end
+  it do
+    should contain_group('$::tomcat::params::group').
+             with({"ensure"=>"present"})
+  end
+end
 
 ```
 
 About the test suite
 ======================
-At this time the test suite that is automatically generated is extremely basic.  Essentially it just ensures that your
-code will compile correctly.  However, one of the major stumbling blocks is just constructing everything in the spec 
+At this time the test suite that is automatically generated is very basic.  Essentially it just creates a test for every
+resource not in a code block with the exception of conditional code blocks.  While this might be all you need, the more
+complex your code is the less retrospec will generate until further improvements to the generator are made.
+However, one of the major stumbling blocks is just constructing everything in the spec
 directory which retrospec does for you automatically.  Its now up to you to further enhance your test suite with more
-tests and conditional logic.  For now you will probably want to read up on the following documentation:
+tests and conditional logic using describe blocks and such.  You will notice that some variables are not resolved.
+Currently this is a limitation that I hope to overcome, but until now its up to you to manually resolve those variables
+prefixed with a '$'.   ie. ($::tomcat::params::user)
+
+For now you will probably want to read up on the following documentation:
 
 * [Puppet Rspec](http://rspec-puppet.com)
 * [Puppet spec helper](https://github.com/puppetlabs/puppetlabs_spec_helper/blob/master/README.markdown)
@@ -198,6 +222,18 @@ Otherwise to save time we skip the removal of test puppet modules therefore we d
 ```
 bundle exec rake spec
 ```
+
+Understanding Variable Resolution
+=============
+I do my best to try and resolve all the variables.  Because the code does not rely on catalog compilation we have to
+build our own scope through non trival methods.  Some variables will get resolved while others will not.  As this code
+progresses we might find a better way at resolving variables.  For now, some variable will require manual interpolation.
+
+Resolution workflow.
+
+1. load code in parser and find all parameters. Store these parameter values.
+2. Find all vardef objects, resolve them if possible and store the values
+3. Anything contained in a block of code is currently ignored, until later refinement.
 
 Todo
 ============

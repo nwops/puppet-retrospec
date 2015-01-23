@@ -1,14 +1,14 @@
 require 'erb'
 require 'puppet'
-require 'helpers'
+require 'retrospec/helpers'
 require 'fileutils'
+require 'retrospec/resource'
+require 'retrospec/conditional'
+require 'retrospec/variable_store'
 
 class Retrospec
-  attr_reader :included_declarations
   attr_reader :module_path
   attr_reader :tmp_module_path
-  attr_accessor :default_modules
-  attr_accessor :facts_used
   attr_accessor :module_name
   attr_reader :template_dir
 
@@ -27,15 +27,11 @@ class Retrospec
     end
     @enable_beaker_tests = opts[:enable_beaker_tests]
     @module_path = validate_module_dir(module_path)
-    tmp_module_path
+    tmp_module_path # this is required to finish initialization
   end
 
   def enable_beaker_tests?
     @enable_beaker_tests == true
-  end
-
-  def default_modules
-    @default_modules ||= ['stdlib']
   end
 
   def create_files
@@ -143,48 +139,14 @@ class Retrospec
     @modules_dir
   end
 
-  def modules_included
-    @modules_included ||= default_modules + referenced_modules
-  end
-
-  def referenced_modules
-    []
-  end
-
-
-
-  # finds all the included resources so we can test and depend on in the fixtures file
-  # def included_declarations(file)
-  #   @included_declarations = {}
-  #   includes = []
-  #   p = Puppet::Parser::Lexer.new
-  #   p.string = File.read(file)
-  #   tokens = p.fullscan
-  #   k = 0
-  #   typename = nil
-  #   tokens.each do | token|
-  #     next if not token.last.is_a?(Hash)
-  #     if typename.nil? and [:CLASS, :DEFINE].include? token.first
-  #       j = tokens.index { |token| [:NAME].include? token.first }
-  #       typename = tokens[j].last[:value]
-  #     end
-  #     if token.last.fetch(:value, nil) == 'include'
-  #       key = token.last[:value]
-  #       value = tokens[k + 1].last[:value]
-  #       includes << value
-  #     end
-  #     k = k + 1
-  #   end
-  #   @included_declarations[typename] = includes
-  #   @included_declarations
-  # end
-
-
-
   # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
   def safe_create_resource_spec_files(type,template='resource_spec_file.erb')
     @parameters = type.arguments
     @type = type
+    @resources = Resource.all(type)
+    # pass the type to the variable store and it will discover all the variables and try to resolve them.
+    VariableStore.populate(type)
+    @resources += Conditional.all(type)
     file_path = generate_file_path(type, false)
     safe_create_template_file(file_path, template)
     file_path

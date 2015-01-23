@@ -14,7 +14,7 @@ group :development do
   gem "travis"
   gem "travis-lint"
   <%- if enable_beaker_tests? -%>
-  gem "beaker", :git => 'https://github.com/logicminds/beaker.git', :branch => 'sshd_restart'
+  gem "beaker", :git => 'https://github.com/puppetlabs/beaker.git'
   gem "beaker-rspec", :git => 'https://github.com/puppetlabs/beaker-rspec.git'
   gem "vagrant-wrapper"
   <%- end -%>
