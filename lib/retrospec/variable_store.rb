@@ -36,6 +36,12 @@ class VariableStore
       # try and resolve if necessary
       if [Puppet::Parser::AST::Variable,Puppet::Parser::AST::VarDef].include?(value.class)
         value = resolve(value)
+      else
+        if captures = value.scan(/(\$\w+)/).flatten
+          # produces an array of variables that have not been resolved yet
+          #  ["$concat1", "$concat"] = "$concat1/test3183/$concat"
+          captures.each { |c| value.gsub(c, resolve(c))}
+        end
       end
     rescue
       return key
@@ -75,8 +81,9 @@ class VariableStore
     res = variable_resolution(variable)
   end
 
-  # gets all the variables and passes them through the resolve function to populate the variable store
+  # gets all the variables and parameters and passes them through the resolve function to populate the variable store
   def self.populate(type)
+    type.arguments.each {|k,v| add(k,v,true)}
     TypeCode.new(type).variables.each {|v| add(v.name, resolve(v.value))}
   end
 end

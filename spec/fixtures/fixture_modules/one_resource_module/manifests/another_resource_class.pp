@@ -2,9 +2,10 @@ class one_resource::another_resource(
   $var1 = 'value1',
   $var2 = 'value2',
   $file_name = '/tmp/test3',
-  $config_base_path = '/etc/hammer'
+  $config_base_path = '/etc/hammer',
+  $config_set     = $one_resource::params::var1,
 
-){
+) inherits one_resource::params {
   $some_var = "oohhhh"
   $concat_var = "${file_name}/test3183/${some_var}"
   $cli_modules = "${config_base_path}/cli.modules.d"

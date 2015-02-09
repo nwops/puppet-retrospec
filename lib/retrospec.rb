@@ -5,12 +5,14 @@ require 'fileutils'
 require 'retrospec/resource'
 require 'retrospec/conditional'
 require 'retrospec/variable_store'
-require 'retrospec/module_utilities'
+require 'retrospec/puppet_module'
+require 'retrospec/spec_object'
 
 class Retrospec
-  include PuppetModule::Utilities
 
   attr_reader :template_dir
+  attr_reader :module_path
+  attr_reader :spec_object
 
   # module path is the relative or absolute path to the module that should retro fitted
   # opts hash contains additional flags and options that can be user to control the creation of the tests
@@ -18,7 +20,6 @@ class Retrospec
   # opts[:enable_beaker_tests]
   # opts[:template_dir]
   def initialize(supplied_module_path=nil,opts={})
-    set_module_path(supplied_module_path)
     # user supplied a template path or user wants to use local templates
     if opts[:template_dir] or opts[:enable_user_templates]
       @template_dir = Helpers.setup_user_template_dir(opts[:template_dir])
@@ -26,12 +27,13 @@ class Retrospec
       # if user doesn't supply template directory we assume we should use the templates in this gem
       @template_dir = Helpers.gem_template_dir
     end
-    @enable_beaker_tests = opts[:enable_beaker_tests]
-    create_tmp_module_path(module_path) # this is required to finish initialization
-  end
-
-  def enable_beaker_tests?
-    @enable_beaker_tests == true
+    begin
+      Utilities::PuppetModule.instance.module_path = supplied_module_path
+      Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
+      @module_path = Utilities::PuppetModule.module_path
+      @spec_object = Utilities::SpecObject.new(Utilities::PuppetModule.instance)
+      spec_object.enable_beaker_tests = opts[:enable_beaker_tests]
+    end
   end
 
   def create_files
@@ -40,15 +42,18 @@ class Retrospec
     safe_create_gemfile
     safe_create_rakefile
     safe_make_shared_context
-    safe_create_acceptance_spec_helper if enable_beaker_tests?
-    safe_create_node_sets if enable_beaker_tests?
-    types.each do |type|
-      safe_create_resource_spec_files(type)
-      if enable_beaker_tests?
-        safe_create_acceptance_tests(type)
-      end
+    safe_create_acceptance_spec_helper if spec_object.enable_beaker_tests?
+    safe_create_node_sets if spec_object.enable_beaker_tests?
+    # a Type is nothing more than a defined type or puppet class
+    # we could have named this manifest but there could be multiple types
+    # in a manifest.
+    spec_object.types.each do |type|
+       safe_create_resource_spec_files(type)
+       if spec_object.enable_beaker_tests?
+         safe_create_acceptance_tests(type)
+       end
     end
-    FileUtils.remove_entry_secure tmp_modules_dir  # ensure we remove the temporary directory
+    Utilities::PuppetModule.clean_tmp_modules_dir
     true
   end
 
@@ -93,7 +98,7 @@ class Retrospec
     template_path = File.join(template_dir, template)
     File.open(template_path) do |file|
       renderer = ERB.new(file.read, 0, '-')
-      content = renderer.result binding
+      content = renderer.result spec_object.get_binding
       dest_path = File.expand_path(File.join(module_path,path))
       Helpers.safe_create_file(dest_path, content)
     end
@@ -101,12 +106,13 @@ class Retrospec
 
   # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
   def safe_create_resource_spec_files(type,template='resource_spec_file.erb')
-    @parameters = type.arguments
-    @type = type
-    @resources = Resource.all(type)
+    spec_object.parameters = type.arguments
+    spec_object.type = type
+    spec_object.resources = Resource.all(type)
     # pass the type to the variable store and it will discover all the variables and try to resolve them.
     VariableStore.populate(type)
-    @resources += Conditional.all(type)
+    # this does not get deep nested conditional blocks
+    spec_object.resources += Conditional.all(type)
     file_path = generate_file_path(type, false)
     safe_create_template_file(file_path, template)
     file_path

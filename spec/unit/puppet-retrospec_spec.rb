@@ -10,7 +10,7 @@ describe "puppet-retrospec" do
   end
 
   before :all do
-    # enabling the removal of real modules slows down tests, but from time to time we may need to
+    #enabling the removal of real modules slows down tests, but from time to time we may need to
     FileUtils.rm_rf(fixture_modules_path) if ENV['RETROSPEC_CLEAN_UP_TEST_MODULES'] =~ /true/
     install_module('puppetlabs-tomcat')
     @path = File.join(fixture_modules_path, 'tomcat')
@@ -25,8 +25,15 @@ describe "puppet-retrospec" do
 
   it 'should run without errors using new' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
+    expect(tomcat).to be_instance_of(Retrospec)
+  end
+
+  it 'should create files without error' do
+    tomcat = Retrospec.new(@opts[:module_path], @opts)
     expect(tomcat.create_files).to eq(true)
     expect(File.exists?(File.join(@path, 'Gemfile'))).to eq(true)
+    expect(File.exists?(File.join(@path, 'Rakefile'))).to eq(true)
+    expect(File.exists?(File.join(@path, 'spec', 'shared_contexts.rb'))).to eq(true)
     expect(File.exists?(File.join(@path, '.fixtures.yml'))).to eq(true)
     expect(File.exists?(File.join(@path, 'spec','classes','tomcat_spec.rb'))).to eq(true)
   end
@@ -116,7 +123,7 @@ describe "puppet-retrospec" do
   it 'should create proper spec helper file' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper.rb'))
-    path = tomcat.create_tmp_module_path(@opts[:module_path])
+    path = tomcat.module_path
     tomcat.safe_create_spec_helper
     expect(File.exists?(filepath)).to eq(true)
   end
@@ -124,7 +131,7 @@ describe "puppet-retrospec" do
   it 'should create proper shared context file' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'shared_contexts.rb'))
-    path = tomcat.create_tmp_module_path(@opts[:module_path])
+    path = tomcat.module_path
     tomcat.safe_make_shared_context
     expect(File.exists?(filepath)).to eq(true)
   end
@@ -170,20 +177,6 @@ describe "puppet-retrospec" do
     my_path = File.expand_path(File.join('spec', 'fixtures', 'fixture_modules', 'zero_resource_module'))
     my_retro = Retrospec.new(my_path)
     Helpers.should_not_receive(:safe_create_file).with(anything,'resource_spec_file.erb')
-  end
-
-  it 'should create a temp modules dir' do
-    tomcat = Retrospec.new(@opts[:module_path], @opts)
-    path = tomcat.tmp_modules_dir
-    path.should =~ /modules/
-  end
-
-  it 'should create a link in the temp modules directory' do
-    tomcat = Retrospec.new(@opts[:module_path], @opts)
-    path = tomcat.tmp_modules_dir
-    tmp_path = tomcat.create_tmp_module_path(@opts[:module_path])
-    expect(File.exists?(tmp_path)).to eq(true)
-    expect(tmp_path).to eq(File.join(path, tomcat.module_name))
   end
 
   it 'should create a file from a template' do
