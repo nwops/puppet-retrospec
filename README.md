@@ -24,11 +24,11 @@ Run from the command line
 ```
 $ retrospec -h
   Options:
-          --module-path, -m <s>:   The path (relative or absolute) to the module directory (Defaults to current directory)
-         --template-dir, -t <s>:   Path to templates directory (only for overriding Retrospec templates)
-    --enable-user-templates, -e:   Use Retrospec templates from ~/.puppet_retrospec_templates
-      --enable-beaker-tests, -n:   Enable the creation of beaker tests
-                     --help, -h:   Show this message
+          --module-path, -m <s>: The path (relative or absolute) to the module directory
+         --template-dir, -t <s>: Path to templates directory (only for overriding Retrospec templates)
+    --enable-user-templates, -e: Use Retrospec templates from ~/.puppet_retrospec_templates
+      --enable-beaker-tests, -n: Enable the creation of beaker tests
+                     --help, -h: Show this message
                      
 retrospec -m ~/projects/puppet_modules/apache
 ```
@@ -71,8 +71,9 @@ $ retrospec
  
 ```
 
-Looking at the file we can see that it did a lot of work for us.  Retrospec generate two tests automatically.
-However the variable resolution isn't perfect so you will need to manually resolve all variables.
+Looking at the file we can see that it did a lot of work for us.  Retrospec generate three tests automatically.
+However the variable resolution isn't perfect so you will need to manually resolve all variables.  This doesn't produce
+100% coverage but all you did was press enter to produce all this anyways.
 Below is the defines/instance_spec.rb file
    
 ```ruby
@@ -85,7 +86,7 @@ describe 'tomcat' do
   # to the specific context in the spec/shared_contexts.rb file
   # Note: you can only use a single hiera context per describe/context block
   # rspec-puppet does not allow you to swap out hiera data on a per test block
-  include_context :hiera
+  #include_context :hiera
 
 
   # below is the facts hash that gives you the ability to mock
@@ -139,7 +140,17 @@ However, one of the major stumbling blocks is just constructing everything in th
 directory which retrospec does for you automatically.  Its now up to you to further enhance your test suite with more
 tests and conditional logic using describe blocks and such.  You will notice that some variables are not resolved.
 Currently this is a limitation that I hope to overcome, but until now its up to you to manually resolve those variables
-prefixed with a '$'.   ie. ($::tomcat::params::user)
+prefixed with a '$'.
+
+Example:
+
+```ruby
+should contain_file('$::tomcat::params::catalina_home').
+             with({"ensure"=>"directory",
+                   "owner"=>"$::tomcat::params::user",
+                   "group"=>"$::tomcat::params::group"})
+
+```
 
 For now you will probably want to read up on the following documentation:
 
@@ -150,7 +161,7 @@ For now you will probably want to read up on the following documentation:
 How Does it do this
 =======================
 Basically Retrospec uses the puppet lexer and parser to scan your code in order to fill out some basic templates that will retrofit
-your puppet module with unit tests.
+your puppet module with unit tests.  Currently I rely on the old AST parser to generate all this
 
 Overriding the templates
 =======================
@@ -165,7 +176,7 @@ To override these templates just set **one** of the following cli options.
 
 Once one of the options is set, retrospec will copy over all the templates from the gem location to the default
 or specified override templates path.
-If you have already created the a erb file in the templates location, then puppet-retrospec will not overwrite the file.
+If you have already created the erb file in the templates location, then puppet-retrospec will not overwrite the file.
 You can set multiple template paths if you use them for different projects so just be sure the set the correct
 template option when running retrospec.
 
@@ -239,7 +250,8 @@ Todo
 ============
 - Add support to fill out used facts in the unit tests automatically
 - Add describe blocks around conditions in test code that change the catalog compilation
-- Auto add dependicies to fixtures file
+- Auto add dependencies to fixtures file
+- Show a diff of the test file when retrospec is run multiple times and the test file is already created.
 
 Support
 ============

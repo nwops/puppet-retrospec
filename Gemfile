@@ -1,10 +1,6 @@
 source "http://rubygems.org"
 
-if puppetversion = ENV['PUPPET_GEM_VERSION']
-  gem 'puppet', puppetversion, :require => false
-else
-  gem 'puppet', :require => false
-end
+gem 'puppet', '= 3.7.3'
 
 gem 'trollop'
 # Add dependencies to develop your gem here.

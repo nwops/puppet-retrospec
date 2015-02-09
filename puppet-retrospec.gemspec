@@ -75,14 +75,14 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/logicminds/puppet-retrospec"
   s.licenses = ["MIT"]
-  s.rubygems_version = "2.4.5"
+  s.rubygems_version = "2.4.4"
   s.summary = "Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns."
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<puppet>, [">= 0"])
+      s.add_runtime_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.14"])
       s.add_development_dependency(%q<yard>, ["~> 0.7"])
@@ -95,7 +95,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<pry-stack_explorer>, [">= 0"])
       s.add_development_dependency(%q<pry-coolline>, [">= 0"])
     else
-      s.add_dependency(%q<puppet>, [">= 0"])
+      s.add_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_dependency(%q<trollop>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.14"])
       s.add_dependency(%q<yard>, ["~> 0.7"])
@@ -109,7 +109,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<pry-coolline>, [">= 0"])
     end
   else
-    s.add_dependency(%q<puppet>, [">= 0"])
+    s.add_dependency(%q<puppet>, ["= 3.7.3"])
     s.add_dependency(%q<trollop>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.14"])
     s.add_dependency(%q<yard>, ["~> 0.7"])

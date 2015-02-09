@@ -7,7 +7,7 @@ describe '<%= @type.name -%>' do
   # to the specific context in the spec/shared_contexts.rb file
   # Note: you can only use a single hiera context per describe/context block
   # rspec-puppet does not allow you to swap out hiera data on a per test block
-  include_context :hiera
+  #include_context :hiera
 
   <%- if @type.type == :definition -%>
   let(:title) { 'example_name' }
@@ -39,7 +39,7 @@ describe '<%= @type.name -%>' do
   <%- @resources.each do |res| -%>
   it do
     should contain_<%= res.type.gsub('::', '__')%>('<%= res.title %>').
-             with(<%= res.parameters.to_s.gsub(',', ",\n                  ") %>)
+             with(<%= res.parameters.to_s.gsub(/\",/, "\",\n                  ") %>)
   end
   <%- end -%>
 end

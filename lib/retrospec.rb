@@ -122,10 +122,11 @@ class Retrospec
 
   # returns the name of the module  ie. mysql::config  => mysql
   def module_name
-    if @module_name.nil?
-      @module_name = types.first.name.split('::').first if types.length > 0
+    begin
+      @module_name ||= types.first.name.split('::').first
+    rescue
+      @module_name = module_dir_name
     end
-    @module_name
   end
 
   # creates a tmp module directory so puppet can work correctly
