@@ -75,7 +75,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/logicminds/puppet-retrospec"
   s.licenses = ["MIT"]
-  s.rubygems_version = "2.4.4"
+  s.rubygems_version = "2.4.5"
   s.summary = "Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns."
 
   if s.respond_to? :specification_version then
