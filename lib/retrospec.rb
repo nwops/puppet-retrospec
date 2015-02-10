@@ -5,11 +5,12 @@ require 'fileutils'
 require 'retrospec/resource'
 require 'retrospec/conditional'
 require 'retrospec/variable_store'
+require 'retrospec/module_utilities'
 
 class Retrospec
+  include PuppetModule::Utilities
+
   attr_reader :module_path
-  attr_reader :tmp_module_path
-  attr_accessor :module_name
   attr_reader :template_dir
 
   # module path is the relative or absolute path to the module that should retro fitted
@@ -27,7 +28,7 @@ class Retrospec
     end
     @enable_beaker_tests = opts[:enable_beaker_tests]
     @module_path = validate_module_dir(module_path)
-    tmp_module_path # this is required to finish initialization
+    create_tmp_module_path(module_path) # this is required to finish initialization
   end
 
   def enable_beaker_tests?
@@ -99,47 +100,6 @@ class Retrospec
     end
   end
 
-  def types
-    @types ||= search_module || []
-  end
-
-  # puts a symlink in that module directory that points back to the user supplied module path
-  def tmp_module_path
-    if @tmp_module_path.nil?
-      # create a link where source is the current repo and dest is /tmp/modules/module_name
-      path = File.join(tmp_modules_dir, module_dir_name)
-      FileUtils.ln_s(module_path, path)
-      @tmp_module_path = path
-    end
-    @tmp_module_path
-  end
-
-  # the directory name of the module
-  # usually this is the same as the module name but it can be namespaced sometimes
-  def module_dir_name
-    @module_dir_name ||= File.basename(module_path)
-  end
-
-  # returns the name of the module  ie. mysql::config  => mysql
-  def module_name
-    begin
-      @module_name ||= types.first.name.split('::').first
-    rescue
-      @module_name = module_dir_name
-    end
-  end
-
-  # creates a tmp module directory so puppet can work correctly
-  def tmp_modules_dir
-    if @modules_dir.nil?
-      dir = Dir.mktmpdir
-      tmp_modules_path = File.expand_path(File.join(dir, 'modules'))
-      FileUtils.mkdir_p(tmp_modules_path)
-      @modules_dir = tmp_modules_path
-    end
-    @modules_dir
-  end
-
   # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
   def safe_create_resource_spec_files(type,template='resource_spec_file.erb')
     @parameters = type.arguments
@@ -159,11 +119,6 @@ class Retrospec
     file_path = generate_file_path(type, true)
     safe_create_template_file(file_path, template)
     file_path
-  end
-
-  # creates a puppet environment given a module path and environment name
-  def puppet_environment
-    @puppet_environment ||= Puppet::Node::Environment.create('production', [tmp_modules_dir])
   end
 
   # generates a file path for spec tests based on the resource name.  An added option
@@ -213,32 +168,6 @@ class Retrospec
   end
 
   private
-
-  # creates a puppet resource request to be used indirectly
-  def request(key, method)
-    instance = Puppet::Indirector::Indirection.instance(:resource_type)
-    indirection_name = 'test'
-    @request = Puppet::Indirector::Request.new(indirection_name, method, key, instance)
-    @request.environment = puppet_environment
-    @request
-  end
-
-  # creates an instance of the resource type parser
-  def resource_type_parser
-    @resource_type_parser ||= Puppet::Indirector::ResourceType::Parser.new
-  end
-
-  # returns the resource type ofject given a resource name ie. tomcat::connector
-  def find_resource(resource_name)
-    request = request(resource_name, 'find')
-    resource_type_parser.find(request)
-  end
-
-  # returns the resource types found in the module
-  def search_module(pattern='*')
-    request = request(pattern, 'search')
-    resource_type_parser.search(request)
-  end
 
   # processes a directory and expands to its full path, assumes './'
   # returns the validated dir

@@ -116,7 +116,7 @@ describe "puppet-retrospec" do
   it 'should create proper spec helper file' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper.rb'))
-    path = tomcat.tmp_module_path
+    path = tomcat.create_tmp_module_path(@opts[:module_path])
     tomcat.safe_create_spec_helper
     expect(File.exists?(filepath)).to eq(true)
   end
@@ -124,7 +124,7 @@ describe "puppet-retrospec" do
   it 'should create proper shared context file' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'shared_contexts.rb'))
-    path = tomcat.tmp_module_path
+    path = tomcat.create_tmp_module_path(@opts[:module_path])
     tomcat.safe_make_shared_context
     expect(File.exists?(filepath)).to eq(true)
   end
@@ -181,9 +181,9 @@ describe "puppet-retrospec" do
   it 'should create a link in the temp modules directory' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     path = tomcat.tmp_modules_dir
-    tomcat.tmp_module_path
-    File.exists?(tomcat.tmp_module_path).should eq(true)
-    tomcat.tmp_module_path.should eq(File.join(path, tomcat.module_name))
+    tmp_path = tomcat.create_tmp_module_path(@opts[:module_path])
+    expect(File.exists?(tmp_path)).to eq(true)
+    expect(tmp_path).to eq(File.join(path, tomcat.module_name))
   end
 
   it 'should create a file from a template' do
