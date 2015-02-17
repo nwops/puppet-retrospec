@@ -10,7 +10,6 @@ require 'retrospec/module_utilities'
 class Retrospec
   include PuppetModule::Utilities
 
-  attr_reader :module_path
   attr_reader :template_dir
 
   # module path is the relative or absolute path to the module that should retro fitted
@@ -18,7 +17,8 @@ class Retrospec
   # opts[:enable_user_templates]
   # opts[:enable_beaker_tests]
   # opts[:template_dir]
-  def initialize(module_path=nil,opts={})
+  def initialize(supplied_module_path=nil,opts={})
+    set_module_path(supplied_module_path)
     # user supplied a template path or user wants to use local templates
     if opts[:template_dir] or opts[:enable_user_templates]
       @template_dir = Helpers.setup_user_template_dir(opts[:template_dir])
@@ -27,7 +27,6 @@ class Retrospec
       @template_dir = Helpers.gem_template_dir
     end
     @enable_beaker_tests = opts[:enable_beaker_tests]
-    @module_path = validate_module_dir(module_path)
     create_tmp_module_path(module_path) # this is required to finish initialization
   end
 
@@ -169,23 +168,5 @@ class Retrospec
 
   private
 
-  # processes a directory and expands to its full path, assumes './'
-  # returns the validated dir
-  def validate_module_dir(dir)
-    # first check to see if manifests directory even exists when path is nil
-    if dir.nil?
-      dir = '.'
-    elsif dir.instance_of?(Array)
-      raise "Retrospec - an array of moudule paths is not supported at this time"
-    end
-    dir = File.expand_path(dir)
-    manifest_dir = File.join(dir,'manifests')
-    if ! File.exist?(manifest_dir)
-      raise "No manifest directory in #{manifest_dir}, cannot validate this is a module"
-    else
-      files = Dir.glob("#{manifest_dir}/**/*.pp")
-      warn 'No puppet manifest files found at #' if files.length < 1
-    end
-    dir
-  end
+
 end

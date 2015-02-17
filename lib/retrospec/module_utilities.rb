@@ -1,6 +1,34 @@
 module PuppetModule
     module Utilities
 
+      def module_path
+        @module_path
+      end
+
+      def set_module_path(path)
+        @module_path = validate_module_dir(path)
+      end
+
+      # processes a directory and expands to its full path, assumes './'
+      # returns the validated dir
+      def validate_module_dir(dir)
+        # first check to see if manifests directory even exists when path is nil
+        if dir.nil?
+          dir = '.'
+        elsif dir.instance_of?(Array)
+          raise "Retrospec - an array of module paths is not supported at this time"
+        end
+        dir = File.expand_path(dir)
+        manifest_dir = File.join(dir,'manifests')
+        if ! File.exist?(manifest_dir)
+          raise "No manifest directory in #{manifest_dir}, cannot validate this is a module"
+        else
+          files = Dir.glob("#{manifest_dir}/**/*.pp")
+          warn "No puppet manifest files found at #{manifest_dir}" if files.length < 1
+        end
+        dir
+      end
+
       # puts a symlink in that module directory that points back to the user supplied module path
       def create_tmp_module_path(module_path)
         path = File.join(tmp_modules_dir, module_dir_name)
@@ -18,6 +46,7 @@ module PuppetModule
       # the directory name of the module
       # usually this is the same as the module name but it can be namespaced sometimes
       def module_dir_name
+        raise if module_path.nil?
         @module_dir_name ||= File.basename(module_path)
       end
 

@@ -18,7 +18,7 @@ describe "puppet-retrospec" do
   end
 
   before :each do
-    #clean_up_spec_dir(@path)
+    clean_up_spec_dir(@path)
     @opts = {:module_path => @path, :enable_beaker_tests => false,
              :enable_user_templates => false, :template_dir => nil }
   end
