@@ -38,8 +38,8 @@ describe "conditional" do
       m.module_path =my_path
       m.create_tmp_module_path(my_path)
       test_type = m.types.find {|x| x.name == 'one_resource::another_resource'}
-      r = Conditional.all(test_type)
       VariableStore.populate(test_type)
+      r = Conditional.all(test_type)
       expect(r.length).to eq(1)
       expect(r[0].parameters).to eq({"ensure"=>"present"})
       expect(r[0].title).to eq("/tmp/test3/3")

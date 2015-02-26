@@ -47,6 +47,8 @@ describe "resource" do
       expect(r[1].type).to eq("file")
     end
 
+
+
     it 'should return resources' do
       test_type = @m.types.find {|x| x.name == 'one_resource::another_resource'}
       expect(Resource.all(test_type.code).length).to eq(2)

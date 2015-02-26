@@ -1,13 +1,15 @@
 require 'retrospec/puppet_module'
 require 'retrospec/variable_store'
+require 'retrospec/exceptions'
 
 class TypeCode
-  attr_reader :type, :variables, :scope_name, :parent
+  attr_reader :type, :variables, :scope_name, :parent, :name
 
   #TODO figure out how to store vardef statements that are contained inside conditional blocks
   def initialize(type)
-    raise 'UndefinedTypeError' unless type
-    @scope_name = type.name
+    raise TypeNotFoundException unless type
+    @scope_name = type.namespace
+    @name = type.name
     @type = type
     @parent = type.parent
   end

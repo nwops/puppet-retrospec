@@ -15,6 +15,10 @@ module Utilities
       instance.module_name
     end
 
+    def module_path
+      instance.module_path
+    end
+
     def get_binding
       binding
     end

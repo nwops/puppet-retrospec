@@ -1,7 +1,7 @@
 class one_resource::params(
-  $param1_var = 'param1_value'
+  $param1_var1 = 'param1_value'
 ){
-  $var1 = 'value1'
+  $var1 = 'params_class_value1'
   $var2 = 'value2'
 
   case $::osfamily{

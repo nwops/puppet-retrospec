@@ -61,12 +61,14 @@ module Utilities
       if dir.nil?
         dir = '.'
       elsif dir.instance_of?(Array)
-        raise "Retrospec - an array of module paths is not supported at this time"
+        puts "Retrospec - an array of module paths is not supported at this time"
+        exit 1
       end
       dir = File.expand_path(dir)
       manifest_dir = File.join(dir,'manifests')
       if ! File.exist?(manifest_dir)
-        raise "No manifest directory in #{manifest_dir}, cannot validate this is a module"
+        puts "No manifest directory in #{manifest_dir}, cannot validate this is a module"
+        exit 1
       else
         files = Dir.glob("#{manifest_dir}/**/*.pp")
         warn "No puppet manifest files found at #{manifest_dir}" if files.length < 1

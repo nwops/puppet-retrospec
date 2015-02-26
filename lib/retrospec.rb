@@ -7,6 +7,8 @@ require 'retrospec/conditional'
 require 'retrospec/variable_store'
 require 'retrospec/puppet_module'
 require 'retrospec/spec_object'
+require 'retrospec/exceptions'
+require 'retrospec/version'
 
 class Retrospec
 
@@ -109,8 +111,9 @@ class Retrospec
     spec_object.parameters = type.arguments
     spec_object.type = type
     spec_object.resources = Resource.all(type)
-    # pass the type to the variable store and it will discover all the variables and try to resolve them.
     VariableStore.populate(type)
+
+    # pass the type to the variable store and it will discover all the variables and try to resolve them.
     # this does not get deep nested conditional blocks
     spec_object.resources += Conditional.all(type)
     file_path = generate_file_path(type, false)

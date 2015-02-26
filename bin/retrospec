@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 require 'trollop'
 require 'retrospec'
-require 'retrospec/version'
 
 opts = Trollop::options do
   opt :module_path, "The path (relative or absolute) to the module directory (Defaults to current directory) " ,
@@ -11,10 +10,8 @@ opts = Trollop::options do
   opt :enable_user_templates, "Use Retrospec templates from #{File.expand_path('~/.puppet_retrospec_templates')}",
       :require => false, :type => :boolean
   opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean
-  opt :version, "The Version of the Gem", :required => false, :type => :boolean
 end
-if opts[:version]
-  puts "Puppet Retrospec Version: #{Puppet_Retrospec::VERSION}"
-end
+include Puppet_Retrospec
+
 retro = Retrospec.new(opts[:module_path], opts)
 retro.create_files

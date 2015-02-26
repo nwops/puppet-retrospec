@@ -61,14 +61,6 @@ describe "variable_store" do
     expect(VariableStore.resolve(vardef3)).to eq("/etc/hammer/cli.modules.d")
   end
 
-  it 'should load a params class that is inherited' do
-    test_type = @module.types.find {|x| x.name == 'one_resource::inherits_params'}
-  end
-
-  xit 'should resolve a fact' do
-    test_type = @module.types.find {|x| x.name == 'one_resource::inherits_params'}
-  end
-
   describe '#add' do
     it 'should store the value correctly' do
       test_type = @module.types.find {|x| x.name == 'one_resource::another_resource'}
@@ -85,6 +77,61 @@ describe "variable_store" do
     it 'should store vardef as is' do
       test_type = @module.types.find {|x| x.name == 'one_resource::another_resource'}
       VariableStore.populate(test_type)
+    end
+  end
+
+  describe 'populate' do
+    let(:instance) {Utilities::PuppetModule.send :new}
+
+    before :each do
+
+    end
+    it 'should load an resolve vars from the parent type' do
+      m = instance
+      m.module_path = @opts[:module_path]
+      m.create_tmp_module_path(@opts[:module_path])
+      test_type = m.types.find {|x| x.name == 'one_resource::another_resource'}
+      VariableStore.populate(test_type)
+      vars = {"$var1"=>"value1",
+       "$var2"=>"value2",
+       "$file_name"=>"/tmp/test3",
+       "$config_base_path"=>"/etc/hammer",
+       "$config_set"=>"param1_value",
+       "$concat_var"=>"/tmp/test3/test3183/oohhhh",
+       "$one_resource::params::param1_var1"=>"param1_value",
+       "$one_resource::params::var1"=>"params_class_value1",
+       "$one_resource::params::var2"=>"value2",
+       "$some_var"=>"oohhhh",
+       "$cli_modules"=>"/etc/hammer/cli.modules.d",
+       "$inherited_variable"=>"params_class_value1",
+      }
+      vars.each do |k,v|
+        expect(VariableStore.instance.store.keys.include?(k)).to be true
+        expect(VariableStore.instance.store[k]).to eq(v)
+      end
+    end
+
+    xit 'should resolve a fact' do
+      #test_type = @module.types.find {|x| x.name == 'one_resource::inherits_params'}
+    end
+
+    it 'should resolve a parent parameter' do
+      m = instance
+      m.module_path = @opts[:module_path]
+      m.create_tmp_module_path(@opts[:module_path])
+      test_type = m.types.find {|x| x.name == 'one_resource::another_resource'}
+      VariableStore.populate(test_type)
+      expect(VariableStore.instance.store['$config_set']).to eq('param1_value')
+
+    end
+
+    it 'should resolve a parent variable' do
+      m = instance
+      m.module_path = @opts[:module_path]
+      m.create_tmp_module_path(@opts[:module_path])
+      test_type = m.types.find {|x| x.name == 'one_resource::another_resource'}
+      VariableStore.populate(test_type)
+      expect(VariableStore.instance.store['$inherited_variable']).to eq('params_class_value1')
     end
   end
 end

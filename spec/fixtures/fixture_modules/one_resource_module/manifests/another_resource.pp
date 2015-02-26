@@ -3,13 +3,13 @@ class one_resource::another_resource(
   $var2 = 'value2',
   $file_name = '/tmp/test3',
   $config_base_path = '/etc/hammer',
-  $config_set     = $one_resource::params::var1,
+  $config_set     = $one_resource::params::param1_var1,
 
 ) inherits one_resource::params {
   $some_var = "oohhhh"
   $concat_var = "${file_name}/test3183/${some_var}"
   $cli_modules = "${config_base_path}/cli.modules.d"
-
+  $inherited_variable = $one_resource::params::var1
   file{'/tmp/test2':
     ensure => present,
   }

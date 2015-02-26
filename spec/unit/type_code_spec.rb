@@ -38,7 +38,7 @@ describe "type_code" do
       m.module_path = @opts[:module_path]
       m.create_tmp_module_path(@opts[:module_path])
       test_type = m.types.find {|x| x.name == 'one_resource::another_resource'}
-      expect(TypeCode.new(test_type).variables.size).to eq(3)
+      expect(TypeCode.new(test_type).variables.size).to eq(4)
     end
   end
 
