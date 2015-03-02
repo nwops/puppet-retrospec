@@ -110,9 +110,8 @@ class Retrospec
   def safe_create_resource_spec_files(type,template='resource_spec_file.erb')
     spec_object.parameters = type.arguments
     spec_object.type = type
-    spec_object.resources = Resource.all(type)
     VariableStore.populate(type)
-
+    spec_object.resources = Resource.all(type)
     # pass the type to the variable store and it will discover all the variables and try to resolve them.
     # this does not get deep nested conditional blocks
     spec_object.resources += Conditional.all(type)

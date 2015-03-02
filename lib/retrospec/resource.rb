@@ -5,6 +5,7 @@ class Resource
   attr_reader :type, :title, :parameters, :scope_name
 
   def initialize(type_name,instance)
+    # we don't store the resource parameters in the variablestore because they are never referenced
     @parameters = Hash[instance.parameters.map { |k| [k.param, VariableStore.resolve(k.value).gsub("\"", '')]}]
     @type = type_name
     @title = VariableStore.resolve(instance.title).gsub("\"", '')
@@ -13,9 +14,7 @@ class Resource
   # Gets all resources in the type that are not in a code block
   def self.all(statements)
     if statements.respond_to?(:code)
-      # store the class params
-      statements.arguments.each {|k,v| VariableStore.add(k,v)}
-      # if we accidently pass a type in without specifing the code
+      # if we accidentally pass a type in without specifying the code
       statements = statements.code unless statements.nil?
     end
     a = []

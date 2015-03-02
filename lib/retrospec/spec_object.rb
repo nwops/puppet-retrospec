@@ -1,7 +1,7 @@
 module Utilities
   class SpecObject
     attr_reader :instance
-    attr_accessor :enable_beaker_tests, :parameters, :types, :resources, :type
+    attr_accessor :enable_beaker_tests, :parameters, :types, :resources, :type, :variables
 
     def initialize(mod_instance)
       @instance = mod_instance
@@ -25,6 +25,10 @@ module Utilities
 
     def enable_beaker_tests?
       @enable_beaker_tests == true
+    end
+
+    def variables
+      VariableStore.instance.store
     end
 
   end

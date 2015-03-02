@@ -37,6 +37,7 @@ describe "variable_store" do
     test_type = @module.types.find {|x| x.name == 'one_resource::another_resource'}
     r = Resource.all(test_type).first
     var1 = ObjectSpace.each_object(Puppet::Parser::AST::Variable).find {|x| x.to_s == '$file_name' }
+    VariableStore.add(var1,'/tmp/test3')
     expect(VariableStore.resolve(var1)).to eq("/tmp/test3")
   end
 
