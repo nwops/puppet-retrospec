@@ -44,6 +44,7 @@ class Retrospec
     safe_create_gemfile
     safe_create_rakefile
     safe_make_shared_context
+    safe_create_ci_file
     safe_create_acceptance_spec_helper if spec_object.enable_beaker_tests?
     safe_create_node_sets if spec_object.enable_beaker_tests?
     # a Type is nothing more than a defined type or puppet class
@@ -65,6 +66,10 @@ class Retrospec
       dest = File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', File.basename(node_set_file) ))
       Helpers.safe_copy_file(node_set_file,dest)
     end
+  end
+
+  def safe_create_ci_file(template='travis.yml.erb')
+     safe_create_template_file('.travis.yml.erb', template)
   end
 
   def safe_create_acceptance_spec_helper(template='spec_helper_acceptance.rb.erb')
