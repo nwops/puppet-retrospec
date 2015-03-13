@@ -158,11 +158,13 @@ class Retrospec
     file_name = generate_file_name(type.name)
     tokens = type.name.split('::')
     # if there are only two tokens ie. tomcat::params we dont need to create a subdirectory
-    if tokens.count > 1
+    if tokens.count > 2
       # this is a deep level resource ie. tomcat::config::server::connector
       # however we don't need the tomcat directory so we can just remove it
       # this should leave us with config/server/connector_spec.rb
       tokens.delete_at(0)
+      # remove the last token since its the class name
+      tokens.pop
       # so lets make a directory structure out of it
       dir_name = File.join(tokens)  # config/server
       dir_name = File.join(type_dir_name,dir_name, file_name) # spec/classes/tomcat/config/server

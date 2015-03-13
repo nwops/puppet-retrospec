@@ -194,14 +194,14 @@ describe "puppet-retrospec" do
         allow(type).to receive(:type).and_return(:hostclass)
         allow(type).to receive(:name).and_return('tomcat::config::server::connector')
         tomcat = Retrospec.new(@opts[:module_path], @opts)
-        expect(tomcat.generate_file_path(type, true)).to eq("spec/acceptance/classes/config/server/connector/connector_spec.rb")
+        expect(tomcat.generate_file_path(type, true)).to eq("spec/acceptance/classes/config/server/connector_spec.rb")
       end
       it 'should generate a normal test path correctly' do
         type = double("type")
         allow(type).to receive(:type).and_return(:hostclass)
         allow(type).to receive(:name).and_return('tomcat::config::server::connector')
         tomcat = Retrospec.new(@opts[:module_path], @opts)
-        expect(tomcat.generate_file_path(type, false)).to eq("spec/classes/config/server/connector/connector_spec.rb")
+        expect(tomcat.generate_file_path(type, false)).to eq("spec/classes/config/server/connector_spec.rb")
       end
     end
 
@@ -211,7 +211,7 @@ describe "puppet-retrospec" do
         allow(type).to receive(:type).and_return(:definition)
         allow(type).to receive(:name).and_return('tomcat::config::server::connector')
         tomcat = Retrospec.new(@opts[:module_path], @opts)
-        expect(tomcat.generate_file_path(type, true)).to eq("spec/acceptance/defines/config/server/connector/connector_spec.rb")
+        expect(tomcat.generate_file_path(type, true)).to eq("spec/acceptance/defines/config/server/connector_spec.rb")
       end
 
       it 'should generate a normal test path correctly' do
@@ -219,7 +219,7 @@ describe "puppet-retrospec" do
         allow(type).to receive(:type).and_return(:definition)
         allow(type).to receive(:name).and_return('tomcat::config::server::connector')
         tomcat = Retrospec.new(@opts[:module_path], @opts)
-        expect(tomcat.generate_file_path(type, false)).to eq("spec/defines/config/server/connector/connector_spec.rb")
+        expect(tomcat.generate_file_path(type, false)).to eq("spec/defines/config/server/connector_spec.rb")
       end
     end
   end
