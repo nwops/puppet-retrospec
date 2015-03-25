@@ -72,7 +72,7 @@ $ retrospec
 ```
 
 Looking at the file we can see that it did a lot of work for us.  Retrospec generate three tests automatically.
-However the variable resolution isn't perfect so you will need to manually resolve all variables.  This doesn't produce
+However the variable resolution isn't perfect so you will need to manually resolve some variables.  This doesn't produce
 100% coverage but all you did was press enter to produce all this anyways.
 Below is the defines/instance_spec.rb file
    
@@ -161,7 +161,7 @@ For now you will probably want to read up on the following documentation:
 How Does it do this
 =======================
 Basically Retrospec uses the puppet lexer and parser to scan your code in order to fill out some basic templates that will retrofit
-your puppet module with unit tests.  Currently I rely on the old AST parser to generate all this
+your puppet module with unit tests.  Currently I rely on the old AST parser to generate all this.  This is why
 
 Overriding the templates
 =======================

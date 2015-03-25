@@ -10,7 +10,7 @@ describe '<%= @type.name -%>' do
   #include_context :hiera
 
   <%- if @type.type == :definition -%>
-  let(:title) { 'sample_name' }
+  let(:title) { 'XXreplace_meXX' }
   <%- end -%>
 
   # below is the facts hash that gives you the ability to mock
@@ -38,7 +38,7 @@ describe '<%= @type.name -%>' do
   # Puppet::Util::Log.newdestination(:console)
   <%- @resources.each do |res| -%>
   it do
-    should contain_<%= res.type.gsub('::', '__')%>('<%= res.title %>').
+    is_expected.to contain_<%= res.type.gsub('::', '__')%>('<%= res.title %>').
              with(<%= res.parameters.to_s.gsub(/\",/, "\",\n                  ") %>)
   end
   <%- end -%>

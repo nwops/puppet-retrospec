@@ -7,23 +7,23 @@ group :test do
   gem "puppetlabs_spec_helper"
   gem 'rspec-puppet-utils', :git => 'https://github.com/Accuity/rspec-puppet-utils.git'
   gem 'hiera-puppet-helper', :git => 'https://github.com/bobtfish/hiera-puppet-helper.git'
-
+<%- if enable_beaker_tests? -%>
+  gem "beaker", :git => 'https://github.com/puppetlabs/beaker.git'
+  gem "beaker-rspec", :git => 'https://github.com/puppetlabs/beaker-rspec.git'
+  gem "vagrant-wrapper"
+  gem 'serverspec'
+<%- end -%>
+  # there seems to be a bug with puppet-blacksmith and metadata-json-lint
+  # removing metadata for now
+  gem "metadata-json-lint"
+  gem 'puppet-syntax'
+  gem 'puppet-lint'
 end
 
 group :development do
   gem "travis"
   gem "travis-lint"
-  <%- if enable_beaker_tests? -%>
-  gem "beaker", :git => 'https://github.com/puppetlabs/beaker.git'
-  gem "beaker-rspec", :git => 'https://github.com/puppetlabs/beaker-rspec.git'
-  gem "vagrant-wrapper"
-  <%- end -%>
   gem "puppet-blacksmith"
   gem "guard-rake"
-  # there seems to be a bug with puppet-blacksmith and metadata-json-lint
-  # removing metadata for now
-  #gem "metadata-json-lint"
-  gem 'puppet-syntax'
-  gem 'serverspec'
 end
 
