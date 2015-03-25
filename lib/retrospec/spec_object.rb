@@ -1,7 +1,8 @@
+
 module Utilities
   class SpecObject
     attr_reader :instance
-    attr_accessor :enable_beaker_tests, :parameters, :types, :resources, :type, :variables
+    attr_accessor :enable_beaker_tests, :parameters, :types, :resources, :type
 
     def initialize(mod_instance)
       @instance = mod_instance
@@ -27,8 +28,9 @@ module Utilities
       @enable_beaker_tests == true
     end
 
-    def variables
-      VariableStore.instance.store
+    # allows the user to use the variable store to resolve the variable if it exists
+    def variable_value(key)
+      VariableStore.resolve(key)
     end
 
   end

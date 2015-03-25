@@ -28,7 +28,7 @@ describe '<%= @type.name -%>' do
         <%- if v.nil? -%>
       <%= ":#{k} => 'place_value_here'," %>
         <%- else -%>
-      <%= "#:#{k} => #{v}," %>
+      <%= "#:#{k} => #{variable_value(v)}," %>
         <%- end -%>
     <%- end -%>
     }
