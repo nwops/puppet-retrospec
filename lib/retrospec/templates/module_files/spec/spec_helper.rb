@@ -6,5 +6,5 @@ require 'rspec-puppet-utils'
 
 RSpec.configure do |c|
     c.formatter = 'documentation'
-    config.mock_with :rspec
+    c.mock_with :rspec
 end

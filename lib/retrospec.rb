@@ -39,14 +39,7 @@ class Retrospec
   end
 
   def create_files
-    safe_create_spec_helper
-    safe_create_fixtures_file
-    safe_create_gemfile
-    safe_create_rakefile
-    safe_make_shared_context
-    safe_create_ci_file
-    safe_create_acceptance_spec_helper if spec_object.enable_beaker_tests?
-    safe_create_node_sets if spec_object.enable_beaker_tests?
+    safe_create_module_files
     # a Type is nothing more than a defined type or puppet class
     # we could have named this manifest but there could be multiple types
     # in a manifest.
@@ -60,59 +53,42 @@ class Retrospec
     true
   end
 
-  def safe_create_node_sets
-    # copy all of the nodesets from the templates path nodesets directory
-    Dir.glob("#{template_dir}/nodesets/*.yml").each do |node_set_file|
-      dest = File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', File.basename(node_set_file) ))
-      Helpers.safe_copy_file(node_set_file,dest)
+  # creates any file that is contained in the templates/modules_files directory structure
+  # loops through the directory looking for erb files, all other files are ignored.
+  # strips the erb extension and renders the template to the current module path
+  # filenames must named how they would appear in the normal module path.  The directory
+  # structure where the file is contained
+  def safe_create_module_files
+    templates = Dir.glob(File.join(template_dir,'module_files', '**', '{*,.*}')).find_all {|t| File.file?(t)}
+    templates.each do |template|
+      # need to remove the erb extension and rework the destination path
+      if template =~ /nodesets|spec_helper_acceptance/ and !spec_object.enable_beaker_tests?
+        next
+      else
+        dest = template.gsub(File.join(template_dir,'module_files'), module_path).gsub('.erb', '')
+        safe_create_template_file(dest, template)
+      end
     end
   end
 
-  def safe_create_ci_file(template='travis.yml.erb')
-     safe_create_template_file('.travis.yml.erb', template)
-  end
-
-  def safe_create_acceptance_spec_helper(template='spec_helper_acceptance.rb.erb')
-     safe_create_template_file(File.join('spec', 'spec_helper_acceptance.rb'), template)
-  end
-
-  def safe_create_rakefile(template='rakefile.erb')
-    safe_create_template_file('Rakefile', template)
-  end
-
-  def safe_make_shared_context(template='shared_context.erb')
-    safe_create_template_file(File.join('spec','shared_contexts.rb'), template)
-  end
-
-  def safe_create_fixtures_file(template='fixtures_file.erb')
-    safe_create_template_file('.fixtures.yml', template)
-  end
-
-  def safe_create_spec_helper(template='spec_helper_file.erb')
-    safe_create_template_file(File.join('spec','spec_helper.rb'), template)
-  end
-
-  def safe_create_gemfile(template='gemfile.erb')
-    safe_create_template_file('Gemfile', template)
-  end
-
+  # path is the full path of the file to create
+  # template is the full path to the template file
   def safe_create_template_file(path, template)
     # check to ensure parent directory exists
-    file_dir_path = File.expand_path(File.join(module_path,File.dirname(path)))
+    file_dir_path = File.expand_path(File.dirname(path))
     if ! File.exists?(file_dir_path)
       Helpers.safe_mkdir(file_dir_path)
     end
-    template_path = File.join(template_dir, template)
-    File.open(template_path) do |file|
+    File.open(template) do |file|
       renderer = ERB.new(file.read, 0, '-')
       content = renderer.result spec_object.get_binding
-      dest_path = File.expand_path(File.join(module_path,path))
+      dest_path = File.expand_path(path)
       Helpers.safe_create_file(dest_path, content)
     end
   end
 
   # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
-  def safe_create_resource_spec_files(type,template='resource_spec_file.erb')
+  def safe_create_resource_spec_files(type,template=File.join(template_dir,'resource_spec_file.erb'))
     spec_object.parameters = type.arguments
     spec_object.type = type
     VariableStore.populate(type)
@@ -120,15 +96,15 @@ class Retrospec
     # pass the type to the variable store and it will discover all the variables and try to resolve them.
     # this does not get deep nested conditional blocks
     spec_object.resources += Conditional.all(type)
-    file_path = generate_file_path(type, false)
+    file_path = File.join(module_path,generate_file_path(type, false))
     safe_create_template_file(file_path, template)
     file_path
   end
 
-  def safe_create_acceptance_tests(type,template='acceptance_spec_test.erb')
+  def safe_create_acceptance_tests(type,template=File.join(template_dir,'acceptance_spec_test.erb'))
     @parameters = type.arguments
     @type = type
-    file_path = generate_file_path(type, true)
+    file_path = File.join(module_path,generate_file_path(type, true))
     safe_create_template_file(file_path, template)
     file_path
   end

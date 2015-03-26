@@ -182,7 +182,7 @@ template option when running retrospec.
 
 Setting the `--enable-user-templates` option will tell retrospec to use the default user template location.
 
-The default location for the templates when using this variable is ~/.puppet_retrospec_templates
+The default user location for the templates when using this variable is ~/.puppet_retrospec_templates
 
 If you wish to override ~/.puppet_retrospec_templates location you can use the following option
 `--template-dir`
@@ -191,6 +191,36 @@ If you set the `--template-dir` option you are not required to set the set `--en
 
 Example:
 `--template-dir=~/my_templates`
+
+Adding New Templates
+======================
+Should you ever need to add new templates or normal files of any kind retrospec will automatically render and copy the template file
+to the module path if you place a file inside the templates/module_files directory.  The cool thing about this feature
+is that retrospec will recursively create the same directory structure you make inside the module_files directory inside your
+module.  Files do not need to end in .erb will but still be rendered as a erb template. This follows the convention over
+configuration pattern so no directory name or filename is required when running retrospec.  Just put the template in the directory where you want it
+and name it how you want it to appear in the module and retrospec will take care of the rest.  Please note that any file
+ending in .erb will have this extension automatically removed.
+
+Example:
+
+```shell
+templates/
+├── acceptance_spec_test.erb
+├── module_files
+│   ├── Gemfile
+│   ├── Rakefile
+│   └── spec
+│       ├── acceptance
+│       │   └── nodesets
+│       │       ├── centos-59-x64.yml
+│       │       ├── centos-64-x64-pe.yml
+│       │       └── ubuntu-server-1404-x64.yml
+│       ├── shared_contexts.rb
+│       ├── spec_helper.rb
+│       └── spec_helper_acceptance.rb
+└── resource_spec_file.erb
+```
 
 Beaker Testing
 =================
@@ -202,6 +232,9 @@ If you wish to enable the creation of beaker tests you can use the following cli
 acceptance tests are not created.  However at a later time they will be enabled by default.
 
 `--enable-beaker-tests`
+
+I am no expert in Beaker so if you see an issue with the templates, acceptance_spec_helper or other workflow, please issue
+a PR.
 
 Troubleshooting
 ===============

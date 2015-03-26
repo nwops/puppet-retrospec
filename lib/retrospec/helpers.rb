@@ -80,10 +80,6 @@ class Helpers
     File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
   end
 
-
-
-
-
   def self.safe_copy_file(src, dest)
     if File.exists?(dest) and not File.zero?(dest)
       $stderr.puts "!! #{dest} already exists"
@@ -109,18 +105,19 @@ class Helpers
     end
   end
 
-  def self.safe_create_file(filename, content)
-    if File.exists? filename
-      old_content = File.read(filename)
+  def self.safe_create_file(filepath, content)
+    if File.exists? filepath
+      old_content = File.read(filepath)
       # if we did a better comparison of content we could be smarter about when we create files
-      if old_content != content or not File.zero?(filename)
-        $stderr.puts "!! #{filename} already exists and differs from template"
+      if old_content != content or not File.zero?(filepath)
+        $stderr.puts "!! #{filepath} already exists and differs from template"
       end
     else
-      File.open(filename, 'w') do |f|
+      safe_mkdir(File.dirname(filepath)) unless File.exists? File.dirname(filepath)
+      File.open(filepath, 'w') do |f|
         f.puts content
       end
-      puts " + #{filename}"
+      puts " + #{filepath}"
     end
   end
 end
