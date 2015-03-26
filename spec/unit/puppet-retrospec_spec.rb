@@ -79,7 +79,7 @@ describe "puppet-retrospec" do
       FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files','Rakefile'))
       FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec', 'acceptance','nodesets', 'default.yml'))
       FileUtils.mkdir_p('/modules/tomcat/manifests')
-      FileUtils.touch('/modules/tomcat/manifests/init.pp')
+      #FileUtils.open('/modules/tomcat/manifests/init.pp', 'w') {|f| f.write("class tomcat(){}")}
       @opts[:module_path] = '/modules/tomcat'
       Retrospec.new(@opts[:module_path], @opts)
       expect(File.exists?(user_directory)).to eq(true)
@@ -107,7 +107,7 @@ describe "puppet-retrospec" do
       FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files','Rakefile'))
       FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec', 'acceptance','nodesets', 'default.yml'))
       FileUtils.mkdir_p('/modules/tomcat/manifests')
-      FileUtils.touch('/modules/tomcat/manifests/init.pp')
+      #FileUtils.open('/modules/tomcat/manifests/init.pp', 'w') {|f| f.write("class tomcat(){}")}
       @opts[:module_path] = '/modules/tomcat'
       r = Retrospec.new(@opts[:module_path], @opts)
       user_directory = r.template_dir

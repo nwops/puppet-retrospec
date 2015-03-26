@@ -1,5 +1,5 @@
 require 'singleton'
-
+require 'puppet/face'
 module Utilities
   class PuppetModule
     attr_writer :module_path
@@ -72,6 +72,15 @@ module Utilities
       else
         files = Dir.glob("#{manifest_dir}/**/*.pp")
         warn "No puppet manifest files found at #{manifest_dir}" if files.length < 1
+        # validate the manifest files, because if one files doesn't work it affects everything
+        files.each do |file|
+          begin
+            Puppet::Face[:parser, '0.0.1'].validate(file)
+          rescue SystemExit => e
+            puts "Manifest file: #{file} has parser errors, please fix and re-check using\n puppet parser validate #{file}"
+            exit 1
+          end
+        end
       end
       dir
     end
@@ -160,4 +169,3 @@ module Utilities
     end
   end
 end
-
