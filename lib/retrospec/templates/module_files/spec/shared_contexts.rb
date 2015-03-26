@@ -5,7 +5,7 @@ require 'hiera-puppet-helper'
 # I only assume its data, but it could be anything
 hiera_config_file = File.expand_path(File.join(File.dirname(__FILE__), '..','data', 'hiera.yaml'))
 
-# hiera_file and hiera_data are mutally exclusive contexts.
+# hiera_config and hiera_data are mutually exclusive contexts.
 
 shared_context :hiera do
     # example only,
@@ -29,6 +29,7 @@ shared_context :windows_hiera do
     end
 end
 
+# you cannot use this in addition to any of the hiera_data contexts above
 shared_context :real_hiera_data do
     let(:hiera_config) do
        hirea_config_file

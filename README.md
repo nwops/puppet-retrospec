@@ -3,11 +3,31 @@ Puppet-Retrospec
 
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.  Aims to reduce some of the boilerplate coding with default test patterns.
 
-Retrospec makes it dead simple to get started with puppet unit testing.  When you run retrospec will scan you puppet manifests
+Retrospec makes it dead simple to get started with puppet unit testing.  When you run retrospec, retrospec will scan you puppet manifests
 and actually write some very basic rspec-puppet test code.  Thus this gem will retrofit your existing puppet module
 with everything needed to get going with puppet unit testing.
 
 The project was named retrospec because there are many times when you need to retrofit your module with spec tests.
+
+Table of Contents
+=================
+
+  * [Build Status](#build-status)
+  * [Install](#install)
+  * [How to use](#how-to-use)
+  * [Example](#example)
+  * [About the test suite](#about-the-test-suite)
+  * [How Does it do this](#how-does-it-do-this)
+  * [Overriding the templates](#overriding-the-templates)
+  * [Adding New Templates](#adding-new-templates)
+  * [Beaker Testing](#beaker-testing)
+  * [Troubleshooting](#troubleshooting)
+  * [Running Tests](#running-tests)
+  * [Understanding Variable Resolution](#understanding-variable-resolution)
+  * [Todo](#todo)
+  * [Support](#support)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 Build Status
 ============
@@ -37,51 +57,101 @@ Example
 ======================
 
 Below you can see that it creates files for every resource in the tomcat module in addition to other files
-that you need for unit testing puppet code.
+that you need for unit testing puppet code. Rspec-puppet best practices says to put definitions in a defines folder
+and classes in a classes folder since it infers what kind of resource it is based on this convention.  Retrospec sets up
+this scaffolding for you.
 
 ```shell
-$ ls
-CHANGELOG.md	CONTRIBUTING.md	LICENSE		README.md	Rakefile	checksums.json	examples	manifests	metadata.json
 $ pwd
-/Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat
+/Users/cosman/github/puppetlabs-apache
 $ retrospec
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/spec_helper.rb
-!! /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/.fixtures.yml already exists and differs from template
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/Gemfile
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/shared_contexts.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/classes/
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/classes/tomcat_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/classes/params_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server/
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server/connector_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server/engine_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server/host_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server/service_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server/valve_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/config/server_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/instance/
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/instance/package_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/instance/source_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/instance_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/service_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/setenv/
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/setenv/entry_spec.rb
- + /Users/cosman/bodeco/puppet-retrospec/spec/fixtures/modules/tomcat/spec/defines/war_spec.rb
+ + /Users/cosman/github/puppetlabs-apache/Gemfile
+  + /Users/cosman/github/puppetlabs-apache/Rakefile
+  + /Users/cosman/github/puppetlabs-apache/spec/
+  + /Users/cosman/github/puppetlabs-apache/spec/shared_contexts.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/spec_helper.rb
+  + /Users/cosman/github/puppetlabs-apache/.fixtures.yml
+  + /Users/cosman/github/puppetlabs-apache/.gitignore
+  + /Users/cosman/github/puppetlabs-apache/.travis.yml
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/default_mods_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/dev_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/apache_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/alias_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/auth_basic_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/auth_kerb_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/autoindex_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/cache_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/cgi_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/cgid_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dav_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dav_fs_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dav_svn_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/deflate_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dev_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dir_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/disk_cache_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/fcgid_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/headers_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/info_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/itk_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/ldap_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/mime_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/mime_magic_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/mpm_event_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/negotiation_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/passenger_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/perl_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/php_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/prefork_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_balancer_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_html_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_http_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/python_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/reqtimeout_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/rewrite_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/setenvif_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/ssl_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/status_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/suphp_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/userdir_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/vhost_alias_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/worker_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/wsgi_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/xsendfile_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/params_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/php_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/proxy_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/python_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/service_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/classes/ssl_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/balancer_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/balancermember_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/default_mods/
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/default_mods/load_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/listen_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/mod_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/namevirtualhost_spec.rb
+  + /Users/cosman/github/puppetlabs-apache/spec/defines/vhost_spec.rb
  
 ```
 
-Looking at the file we can see that it did a lot of work for us.  Retrospec generate three tests automatically.
+Looking at the file we can see that it did a lot of work for us.  Retrospec generate many tests automatically.
 However the variable resolution isn't perfect so you will need to manually resolve some variables.  This doesn't produce
-100% coverage but all you did was press enter to produce all this anyways.
-Below is the defines/instance_spec.rb file
+100% coverage but all you did was pressed enter to produce all this anyways.
+Below is the classes/apache_spec.rb file.  Notice that while Retrospec created all these files, you still need to do more work.
+Retrospec is only here to setup your module for testing, which might save you several hours each time you create a module.
+
    
 ```ruby
 require 'spec_helper'
 require 'shared_contexts'
 
-describe 'tomcat' do
-  # by default the hiera integration uses hirea data from the shared_contexts.rb file
+describe 'apache' do
+  # by default the hiera integration uses hiera data from the shared_contexts.rb file
   # but basically to mock hiera you first need to add a key/value pair
   # to the specific context in the spec/shared_contexts.rb file
   # Note: you can only use a single hiera context per describe/context block
@@ -100,32 +170,148 @@ describe 'tomcat' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
-      #:catalina_home => "$::tomcat::params::catalina_home",
-      #:user => $::tomcat::params::user,
-      #:group => $::tomcat::params::group,
-      #:install_from_source => true,
-      #:purge_connectors => false,
-      #:manage_user => true,
-      #:manage_group => true,
+      #:default_mods => true,
+      #:default_vhost => true,
+      #:default_ssl_vhost => false,
+      #:default_ssl_cert => $apache::params::default_ssl_cert,
+      #:default_ssl_key => $apache::params::default_ssl_key,
+      #:default_ssl_chain => undef,
+      #:default_ssl_ca => undef,
+      #:default_ssl_crl_path => undef,
+      #:default_ssl_crl => undef,
+      #:service_enable => true,
+      #:purge_configs => true,
+      #:purge_vdir => false,
+      #:serveradmin => "root@localhost",
+      #:sendfile => false,
+      #:error_documents => false,
+      #:httpd_dir => $apache::params::httpd_dir,
+      #:confd_dir => $apache::params::confd_dir,
+      #:vhost_dir => $apache::params::vhost_dir,
+      #:vhost_enable_dir => $apache::params::vhost_enable_dir,
+      #:mod_dir => $apache::params::mod_dir,
+      #:mod_enable_dir => $apache::params::mod_enable_dir,
+      #:mpm_module => $apache::params::mpm_module,
+      #:conf_template => $apache::params::conf_template,
+      #:servername => $apache::params::servername,
+      #:user => $apache::params::user,
+      #:group => $apache::params::group,
+      #:keepalive => $apache::params::keepalive,
+      #:keepalive_timeout => $apache::params::keepalive_timeout,
+      #:logroot => $apache::params::logroot,
+      #:ports_file => $apache::params::ports_file,
+      #:server_tokens => "OS",
+      #:server_signature => "On",
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
   it do
-    should contain_file('$::tomcat::params::catalina_home').
-             with({"ensure"=>"directory",
-                   "owner"=>"$::tomcat::params::user",
-                   "group"=>"$::tomcat::params::group"})
+    is_expected.to contain_package('httpd').
+             with({"ensure"=>"installed",
+                   "name"=>"$apache::params::apache_name",
+                   "notify"=>"Class[Apache::Service]"})
   end
   it do
-    should contain_user('$::tomcat::params::user').
+    is_expected.to contain_group('$apache::params::group').
              with({"ensure"=>"present",
-                   "gid"=>"$::tomcat::params::group"})
+                   "require"=>"Package[httpd]"})
   end
   it do
-    should contain_group('$::tomcat::params::group').
-             with({"ensure"=>"present"})
+    is_expected.to contain_user('$apache::params::user').
+             with({"ensure"=>"present",
+                   "gid"=>"$apache::params::group",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_class('apache::service').
+             with({"service_enable"=>"true"})
+  end
+  it do
+    is_expected.to contain_exec('mkdir $apache::params::confd_dir').
+             with({"creates"=>"$apache::params::confd_dir",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_file('$apache::params::confd_dir').
+             with({"ensure"=>"directory",
+                   "recurse"=>"true",
+                   "purge"=>"$purge_confd",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_concat('$apache::params::ports_file').
+             with({"owner"=>"root",
+                   "group"=>"root",
+                   "mode"=>"0644",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_concat__fragment('Apache ports header').
+             with({"target"=>"$apache::params::ports_file",
+                   "content"=>"template(apache/ports_header.erb)"})
+  end
+  it do
+    is_expected.to contain_exec('mkdir $apache::params::mod_dir').
+             with({"creates"=>"$apache::params::mod_dir",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_file('$apache::params::mod_dir').
+             with({"ensure"=>"directory",
+                   "recurse"=>"true",
+                   "purge"=>"true",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_exec('mkdir $apache::params::mod_enable_dir').
+             with({"creates"=>"$apache::params::mod_enable_dir",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_file('$apache::params::mod_enable_dir').
+             with({"ensure"=>"directory",
+                   "recurse"=>"true",
+                   "purge"=>"true",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_exec('mkdir $apache::params::vhost_dir').
+             with({"creates"=>"$apache::params::vhost_dir",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_file('$apache::params::vhost_dir').
+             with({"ensure"=>"directory",
+                   "recurse"=>"true",
+                   "purge"=>"true",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_exec('mkdir $vhost_load_dir').
+             with({"creates"=>"$vhost_load_dir",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_file('$apache::params::vhost_enable_dir').
+             with({"ensure"=>"directory",
+                   "recurse"=>"true",
+                   "purge"=>"true",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
+  end
+  it do
+    is_expected.to contain_file('$apache::params::conf_dir/$apache::params::conf_file').
+             with({"ensure"=>"file",
+                   "content"=>"template($conf_template)",
+                   "notify"=>"Class[Apache::Service]",
+                   "require"=>"Package[httpd]"})
   end
 end
 
@@ -253,6 +439,18 @@ See [fixtures doc](https://github.com/puppetlabs/puppetlabs_spec_helper#using-fi
      # ./spec/defines/instance/source_spec.rb:34:in `block (2 levels) in <top (required)>'
 ```
 
+If you see something like the following, this means your current module is using a much older version of Rspec.  Retrospec
+using Rspec 3 syntax so you need to update your rspec version.  If you have tests that using older rspec syntax, take a look
+at [transpec](https://github.com/yujinakayama/transpec)
+
+```shell
+   103) apache::vhost
+        Failure/Error: is_expected.to contain_file('').
+        NameError:
+          undefined local variable or method `is_expected' for #<RSpec::Core::ExampleGroup::Nested_59:0x007ff9eaab75e8>
+        # ./spec/defines/vhost_spec.rb:103:in `block (2 levels) in <top (required)>'
+
+```
 Running Tests
 =============
 Puppet-retrospec tests its code against real modules downloaded directly from puppet forge. 
