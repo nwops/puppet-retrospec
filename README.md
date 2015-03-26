@@ -197,10 +197,11 @@ Adding New Templates
 Should you ever need to add new templates or normal files of any kind retrospec will automatically render and copy the template file
 to the module path if you place a file inside the templates/module_files directory.  The cool thing about this feature
 is that retrospec will recursively create the same directory structure you make inside the module_files directory inside your
-module.  Files do not need to end in .erb will but still be rendered as a erb template. This follows the convention over
-configuration pattern so no directory name or filename is required when running retrospec.  Just put the template in the directory where you want it
-and name it how you want it to appear in the module and retrospec will take care of the rest.  Please note that any file
-ending in .erb will have this extension automatically removed.
+module.  Files do not need to end in .erb will still be rendered as a erb template.
+
+This follows the convention over configuration pattern so no directory name or filename is required when running retrospec.
+Just put the template file in the directory where you want it (under module_files) and name it exactly how you want it to appear in the module and retrospec
+will take care of the rest.  Please note that any file ending in .erb will have this extension automatically removed.
 
 Example:
 
