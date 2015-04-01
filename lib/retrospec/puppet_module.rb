@@ -61,23 +61,23 @@ module Utilities
       if dir.nil?
         dir = '.'
       elsif dir.instance_of?(Array)
-        puts "Retrospec - an array of module paths is not supported at this time"
+        puts "Retrospec - an array of module paths is not supported at this time".fatal
         exit 1
       end
       dir = File.expand_path(dir)
       manifest_dir = File.join(dir,'manifests')
       if ! File.exist?(manifest_dir)
-        puts "No manifest directory in #{manifest_dir}, cannot validate this is a module"
+        puts "No manifest directory in #{manifest_dir}, cannot validate this is a module".fatal
         exit 1
       else
         files = Dir.glob("#{manifest_dir}/**/*.pp")
-        warn "No puppet manifest files found at #{manifest_dir}" if files.length < 1
+        warn "No puppet manifest files found at #{manifest_dir}".warning if files.length < 1
         # validate the manifest files, because if one files doesn't work it affects everything
         files.each do |file|
           begin
             Puppet::Face[:parser, '0.0.1'].validate(file)
           rescue SystemExit => e
-            puts "Manifest file: #{file} has parser errors, please fix and re-check using\n puppet parser validate #{file}"
+            puts "Manifest file: #{file} has parser errors, please fix and re-check using\n puppet parser validate #{file}".fatal
             exit 1
           end
         end

@@ -32,11 +32,11 @@ class Helpers
   def self.safe_mkdir(dir)
     if File.exists? dir
       unless File.directory? dir
-        $stderr.puts "!! #{dir} already exists and is not a directory"
+        $stderr.puts "!! #{dir} already exists and is not a directory".fatal
       end
     else
       FileUtils.mkdir_p dir
-      puts " + #{dir}/"
+      puts " + #{dir}/".info
     end
   end
 
@@ -82,7 +82,7 @@ class Helpers
 
   def self.safe_copy_file(src, dest)
     if File.exists?(dest) and not File.zero?(dest)
-      $stderr.puts "!! #{dest} already exists"
+      $stderr.puts "!! #{dest} already exists".warning
     else
       if not File.exists?(src)
         safe_touch(src)
@@ -90,18 +90,18 @@ class Helpers
         safe_mkdir(File.dirname(dest))
         FileUtils.cp(src,dest)
       end
-      puts " + #{dest}"
+      puts " + #{dest}".info
     end
   end
 
   def self.safe_touch(file)
     if File.exists? file
       unless File.file? file
-        $stderr.puts "!! #{file} already exists and is not a regular file"
+        $stderr.puts "!! #{file} already exists and is not a regular file".fatal
       end
     else
       FileUtils.touch file
-      puts " + #{file}"
+      puts " + #{file}".info
     end
   end
 
@@ -110,14 +110,14 @@ class Helpers
       old_content = File.read(filepath)
       # if we did a better comparison of content we could be smarter about when we create files
       if old_content != content or not File.zero?(filepath)
-        $stderr.puts "!! #{filepath} already exists and differs from template"
+        $stderr.puts "!! #{filepath} already exists and differs from template".warning
       end
     else
       safe_mkdir(File.dirname(filepath)) unless File.exists? File.dirname(filepath)
       File.open(filepath, 'w') do |f|
         f.puts content
       end
-      puts " + #{filepath}"
+      puts " + #{filepath}".info
     end
   end
 end
