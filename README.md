@@ -25,6 +25,7 @@ Table of Contents
   * [Running Tests](#running-tests)
   * [Understanding Variable Resolution](#understanding-variable-resolution)
   * [Todo](#todo)
+  * [Future Parser Support](#future-parser-support)
   * [Support](#support)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
@@ -477,6 +478,25 @@ Resolution workflow.
 1. load code in parser and find all parameters. Store these parameter values.
 2. Find all vardef objects, resolve them if possible and store the values
 3. Anything contained in a block of code is currently ignored, until later refinement.
+
+Future Parser Support
+==============
+Currently Retrospec uses the old/current AST parser for code parsing.  If your code contains future parser syntax
+the current parser will fail to render some resource definitions but will still render the spec file template without parameters
+and resource tests that are contained in your manifest.
+Since Puppet 4 introduces many new things and breaks many other things  I am not sure
+which side of the grass is greener at this time.  What I do know is that most people are using Puppet 3 and it may take
+time to move to Puppet 4.  I would suspect Retrospec would be more valuable for those moving to Puppet 4
+who don't have unit tests that currently have Puppet 3 codebases.  For those with a clean slate and start directly in
+Puppet 4, Retrospec will still be able to produce the templates but some of the test cases will be missing if the old AST
+parser cannot read future code syntax.  If your puppet 4 codebase is compatible with puppet 3 syntax there should not be an issue.
+
+In order to allow future parser validation please run retrospec with the following option.
+
+ ```shell
+    retrospec --enable-future-parser
+
+ ```
 
 Todo
 ============

@@ -22,6 +22,7 @@ class Retrospec
   # opts[:enable_beaker_tests]
   # opts[:template_dir]
   def initialize(supplied_module_path=nil,opts={})
+    Utilities::PuppetModule.instance.future_parser = opts[:enable_future_parser]
     # user supplied a template path or user wants to use local templates
     if opts[:template_dir] or opts[:enable_user_templates]
       @template_dir = Helpers.setup_user_template_dir(opts[:template_dir])

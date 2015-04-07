@@ -28,6 +28,13 @@ describe "puppet-retrospec" do
     expect(tomcat).to be_instance_of(Retrospec)
   end
 
+  it 'should set the parser to future' do
+    opts = {:module_path => @path, :enable_beaker_tests => false,
+            :enable_user_templates => false, :template_dir => nil, :enable_future_parser => true }
+    tomcat = Retrospec.new(opts[:module_path], opts)
+    expect(tomcat.spec_object.instance.future_parser).to eq(true)
+  end
+
   it 'should create files without error' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     tomcat.create_files

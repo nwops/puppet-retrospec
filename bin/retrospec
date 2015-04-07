@@ -10,6 +10,7 @@ opts = Trollop::options do
   opt :enable_user_templates, "Use Retrospec templates from #{File.expand_path('~/.puppet_retrospec_templates')}",
       :require => false, :type => :boolean
   opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean
+  opt :enable_future_parser, "Enables the future parser only during validation", :require => false, :type => :boolean
 end
 include Puppet_Retrospec
 
