@@ -56,7 +56,7 @@ class Helpers
   # creates and/or copies all templates in the gem to the user templates path
   # returns: user_template_dir
   def self.sync_user_template_dir(user_template_directory)
-    Dir.glob(File.join(gem_template_dir, '**', '*')).each do |src|
+    Dir.glob(File.join(gem_template_dir, '**', '{*,.*}')).each do |src|
       dest = src.gsub(gem_template_dir, user_template_directory)
       safe_copy_file(src, dest) unless File.directory?(src)
     end
