@@ -13,6 +13,7 @@ Table of Contents
 =================
 
   * [Build Status](#build-status)
+  * [Dependency](#dependency)
   * [Install](#install)
   * [How to use](#how-to-use)
   * [Example](#example)
@@ -34,6 +35,13 @@ Build Status
 ============
 [![Build Status](https://travis-ci.org/logicminds/puppet-retrospec.png)](https://travis-ci.org/logicminds/puppet-retrospec)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
+
+Dependency
+============
+Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into the library so there should
+not be conflicts with your existing puppet gem.  We also require facter and hiera as a result of some indirect puppet dependencies. If there are issues around
+loading facter or hiera then we may need to also vendor the facter and hiera gems as well.
+  
 Install
 =============
 `gem install puppet-retrospec`  

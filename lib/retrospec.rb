@@ -1,3 +1,4 @@
+$:.unshift(File.expand_path(File.join([File.dirname(__FILE__),"../", "vendor", "gems", "puppet-3.7.3", "lib"])))
 require 'erb'
 require 'puppet'
 require 'retrospec/helpers'
