@@ -1,8 +1,15 @@
 #!/usr/bin/env ruby
+
 require 'trollop'
 require 'retrospec'
 
 opts = Trollop::options do
+  version "0.7.2 (c) Corey Osman"
+  banner <<-EOS
+Generates puppet rspec test code based on the classes and defines inside the manifests directory.
+
+
+  EOS
   opt :module_path, "The path (relative or absolute) to the module directory (Defaults to current directory) " ,
       :type => :string, :required => false, :default => nil
   opt :template_dir, "Path to templates directory (only for overriding Retrospec templates)", :type => :string,
