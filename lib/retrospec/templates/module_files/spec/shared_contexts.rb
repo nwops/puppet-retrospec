@@ -1,5 +1,3 @@
-require 'hiera-puppet-helper'
-
 # optional, this should be the path to where the hiera data config file is in this repo
 # You must update this if your actual hiera data lives inside your module.
 # I only assume its data, but it could be anything
