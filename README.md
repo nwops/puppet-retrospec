@@ -369,13 +369,14 @@ To override these templates just set **one** of the following cli options.
 
 ```
 
-Once one of the options is set, retrospec will copy over all the templates from the gem location to the default
-or specified override templates path.
+Once one of the options is set, retrospec will copy over all the templates from the default gem location to the default
+or specified templates path.  
 If you have already created the erb file in the templates location, then puppet-retrospec will not overwrite the file.
 You can set multiple template paths if you use them for different projects so just be sure the set the correct
 template option when running retrospec.
 
-Setting the `--enable-user-templates` option will tell retrospec to use the default user template location.
+Setting the `--enable-user-templates` option will tell retrospec to use the default user template location and will
+copy over all the default templates that came with the gem.
 
 The default user location for the templates when using this variable is ~/.puppet_retrospec_templates
 
@@ -387,35 +388,74 @@ If you set the `--template-dir` option you are not required to set the set `--en
 Example:
 `--template-dir=~/my_templates`
 
+As I said above some of us need different templates for different projects and so I have outlined a simple scenario below:
+Lets say I have three clients that each need site specific files in the module and the default templates just 
+don't give me everything I want.  Thus I will need to override the templates for each client.
+
+```shell
+    retrospec --template-dir ~/retrspec_client1
+    retrospec --template-dir ~/retrspec_client2
+    retrospec --template-dir ~/retrspec_client3
+    touch ~/retrspec_client1/module_files/special_file_for_client1.yml
+    touch ~/retrspec_client2/module_files/special_file_for_client2.yml
+    touch ~/retrspec_client3/module_files/special_file_for_client3.yml
+
+    mkdir -p ~/{client1,client2, client3}
+    cd ~/client1 && puppet module generate lmc-module1
+    cd ~/client2 && puppet module generate lmc-module1
+    cd ~/client3 && puppet module generate lmc-module1
+
+    cd ~/client1/module1 && retrospec --template-dir ~/retrspec_client1
+    cd ~/client2/module1 && retrospec --template-dir ~/retrspec_client2
+    cd ~/client3/module1 && retrospec --template-dir ~/retrspec_client3
+```
+Now when you run retrospec just pass in the template path for the specified client and the files will be created as you 
+specified in each clients template directory.
+
 Adding New Templates
 ======================
 Should you ever need to add new templates or normal files of any kind retrospec will automatically render and copy the template file
-to the module path if you place a file inside the templates/module_files directory.  The cool thing about this feature
-is that retrospec will recursively create the same directory structure you make inside the module_files directory inside your
+to the module path if you place a file inside the `template_path/module_files` directory.  The cool thing about this feature
+is that retrospec will recursively create the same directory structure you make inside the `module_files` directory inside your
 module.  Files do not need to end in .erb will still be rendered as a erb template.
 
-This follows the convention over configuration pattern so no directory name or filename is required when running retrospec.
+This follow the convention over configuration pattern so no directory name or filename is required when running retrospec.
 Just put the template file in the directory where you want it (under module_files) and name it exactly how you want it to appear in the module and retrospec
 will take care of the rest.  Please note that any file ending in .erb will have this extension automatically removed.
 
 Example:
+So lets say you want to add a .gitlab-ci.yaml file to all of your modules in your modules directory.  
 
 ```shell
-templates/
-├── acceptance_spec_test.erb
-├── module_files
-│   ├── Gemfile
-│   ├── Rakefile
-│   └── spec
-│       ├── acceptance
-│       │   └── nodesets
-│       │       ├── centos-59-x64.yml
-│       │       ├── centos-64-x64-pe.yml
-│       │       └── ubuntu-server-1404-x64.yml
-│       ├── shared_contexts.rb
-│       ├── spec_helper.rb
-│       └── spec_helper_acceptance.rb
-└── resource_spec_file.erb
+   touch ~/.puppet_retrospec_templates/module_files/.gitlab-ci.yaml
+   
+   tree ~/.puppet_retrospec_templates -a
+   ./.puppet_retrospec_templates
+   ├── acceptance_spec_test.erb
+   ├── module_files
+   │   ├── .fixtures.yml
+   │   ├── .gitignore.erb
+   │   ├── .gitlab-ci.yaml
+   │   ├── .travis.yml
+   │   ├── Gemfile
+   │   ├── README.markdown
+   │   ├── Rakefile
+   │   ├── Vagrantfile
+   │   └── spec
+   │       ├── acceptance
+   │       │   └── nodesets
+   │       │       └── ubuntu-server-1404-x64.yml
+   │       ├── shared_contexts.rb
+   │       ├── spec_helper.rb
+   │       └── spec_helper_acceptance.rb
+   └── resource_spec_file.erb
+
+    for dir in ../modules/*; do
+       name=`basename $dir`
+       retrospec -m $dir -e
+       + /Users/user1/modules/module1/.gitlab-ci.yaml
+    done
+
 ```
 
 Beaker Testing
