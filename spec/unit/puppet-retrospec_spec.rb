@@ -145,8 +145,26 @@ describe "puppet-retrospec" do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'shared_contexts.rb'))
     tomcat.safe_create_module_files
-    path = tomcat.module_path
     expect(File.exists?(filepath)).to eq(true)
+  end
+
+  it 'should produce hiera data' do
+    tomcat = Retrospec.new(@opts[:module_path], @opts)
+    filepath = File.expand_path(File.join(@path, 'spec', 'shared_contexts.rb'))
+    tomcat.safe_create_module_files
+    path = tomcat.module_path
+    require 'pry'
+    expect(tomcat.spec_object.all_hiera_data).to eq({"tomcat::catalina_home"=>nil,
+                                                 "tomcat::user"=>nil,
+                                                 "tomcat::group"=>nil,
+                                                 "tomcat::install_from_source"=>nil,
+                                                 "tomcat::purge_connectors"=>nil,
+                                                 "tomcat::purge_realms"=>nil,
+                                                 "tomcat::manage_user"=>nil,
+                                                 "tomcat::manage_group"=>nil}
+                                             )
+
+    expect(File.read(filepath)).to include('#"tomcat::catalina_home" => \'\',')
   end
 
   it 'should create acceptance spec helper file' do

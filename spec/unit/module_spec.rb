@@ -49,7 +49,7 @@ describe 'Utilities::Module' do
 
   it 'should find types' do
     expect(@module.types).to be_instance_of(Array)
-    expect(@module.types.map {|t| t.name}.length).to eq(14)
+    expect(@module.types.map {|t| t.name}.length).to eq(18)
   end
 
 end

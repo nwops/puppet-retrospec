@@ -41,11 +41,12 @@ class Retrospec
   end
 
   def create_files
+    types = spec_object.types
     safe_create_module_files
     # a Type is nothing more than a defined type or puppet class
     # we could have named this manifest but there could be multiple types
     # in a manifest.
-    spec_object.types.each do |type|
+    types.each do |type|
        safe_create_resource_spec_files(type)
        if spec_object.enable_beaker_tests?
          safe_create_acceptance_tests(type)
