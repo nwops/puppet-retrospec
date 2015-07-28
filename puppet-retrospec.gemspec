@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-06-03"
+  s.date = "2015-07-28"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.executables = ["retrospec"]
@@ -40,7 +40,9 @@ Gem::Specification.new do |s|
     "lib/retrospec/templates/module_files/.gitignore.erb",
     "lib/retrospec/templates/module_files/.travis.yml",
     "lib/retrospec/templates/module_files/Gemfile",
+    "lib/retrospec/templates/module_files/README.markdown",
     "lib/retrospec/templates/module_files/Rakefile",
+    "lib/retrospec/templates/module_files/Vagrantfile",
     "lib/retrospec/templates/module_files/spec/acceptance/nodesets/centos-59-x64.yml",
     "lib/retrospec/templates/module_files/spec/acceptance/nodesets/centos-64-x64-pe.yml",
     "lib/retrospec/templates/module_files/spec/acceptance/nodesets/centos-64-x64.yml",
