@@ -1,6 +1,6 @@
 ## TBD
  * enable broader support for future parser
-
+ * remove hiera and facter dependencies
 ## 0.7.3
  * added hiera data helper to fill in all the auto bindable class params in shared_contexts
  * updated hiera data gem to newer fork that works with puppet 3.5+

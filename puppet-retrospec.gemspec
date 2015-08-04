@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-07-28"
+  s.date = "2015-08-04"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.executables = ["retrospec"]
@@ -82,11 +82,8 @@ Gem::Specification.new do |s|
     "spec/unit/resource_spec.rb",
     "spec/unit/type_code_spec.rb",
     "spec/unit/variable_store_spec.rb",
-    "vendor/gems/puppet-3.7.3/COMMITTERS.md",
-    "vendor/gems/puppet-3.7.3/CONTRIBUTING.md",
     "vendor/gems/puppet-3.7.3/Gemfile",
     "vendor/gems/puppet-3.7.3/LICENSE",
-    "vendor/gems/puppet-3.7.3/README.md",
     "vendor/gems/puppet-3.7.3/Rakefile",
     "vendor/gems/puppet-3.7.3/bin/extlookup2hiera",
     "vendor/gems/puppet-3.7.3/bin/puppet",
@@ -1341,13 +1338,8 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<facter>, ["< 3", "> 1.6"])
-      s.add_runtime_dependency(%q<hiera>, ["~> 1.0"])
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.14"])
-      s.add_development_dependency(%q<puppet>, ["= 3.7.3"])
-      s.add_development_dependency(%q<facter>, ["< 3", "> 1.6"])
-      s.add_development_dependency(%q<hiera>, ["~> 1.0"])
       s.add_development_dependency(%q<yard>, ["~> 0.7"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0"])
@@ -1358,13 +1350,8 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<pry-stack_explorer>, [">= 0"])
       s.add_development_dependency(%q<pry-coolline>, [">= 0"])
     else
-      s.add_dependency(%q<facter>, ["< 3", "> 1.6"])
-      s.add_dependency(%q<hiera>, ["~> 1.0"])
       s.add_dependency(%q<trollop>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.14"])
-      s.add_dependency(%q<puppet>, ["= 3.7.3"])
-      s.add_dependency(%q<facter>, ["< 3", "> 1.6"])
-      s.add_dependency(%q<hiera>, ["~> 1.0"])
       s.add_dependency(%q<yard>, ["~> 0.7"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_dependency(%q<bundler>, ["~> 1.0"])
@@ -1376,13 +1363,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<pry-coolline>, [">= 0"])
     end
   else
-    s.add_dependency(%q<facter>, ["< 3", "> 1.6"])
-    s.add_dependency(%q<hiera>, ["~> 1.0"])
     s.add_dependency(%q<trollop>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.14"])
-    s.add_dependency(%q<puppet>, ["= 3.7.3"])
-    s.add_dependency(%q<facter>, ["< 3", "> 1.6"])
-    s.add_dependency(%q<hiera>, ["~> 1.0"])
     s.add_dependency(%q<yard>, ["~> 0.7"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
     s.add_dependency(%q<bundler>, ["~> 1.0"])
