@@ -84,7 +84,9 @@ module Utilities
           end
         end
         # switch back to current parser, since we rely on the AST parser
-        Puppet[:parser] = 'current' if future_parser
+        # unless the user enabled the future parser.
+        # Note: some functionality does not currently work with future_parser
+        Puppet[:parser] = 'current' unless future_parser
       end
       dir
     end
