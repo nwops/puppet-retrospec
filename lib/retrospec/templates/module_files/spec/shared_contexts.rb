@@ -5,7 +5,7 @@ hiera_config_file = File.expand_path(File.join(File.dirname(__FILE__), 'fixtures
 
 # hiera_config and hiera_data are mutually exclusive contexts.
 
-shared_content :global_hiera_data do
+shared_context :global_hiera_data do
   let(:hiera_data) do
      {
      <% @all_hiera_data.sort.each do |key, value| -%>
