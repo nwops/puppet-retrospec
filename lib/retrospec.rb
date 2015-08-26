@@ -10,6 +10,7 @@ require 'retrospec/puppet_module'
 require 'retrospec/spec_object'
 require 'retrospec/exceptions'
 require 'retrospec/version'
+require 'find'
 
 class Retrospec
 
@@ -57,19 +58,23 @@ class Retrospec
   end
 
   # creates any file that is contained in the templates/modules_files directory structure
-  # loops through the directory looking for erb files, all other files are ignored.
+  # loops through the directory looking for erb files or other files.
   # strips the erb extension and renders the template to the current module path
   # filenames must named how they would appear in the normal module path.  The directory
   # structure where the file is contained
   def safe_create_module_files
-    templates = Dir.glob(File.join(template_dir,'module_files', '**', '{*,.*}')).find_all {|t| File.file?(t)}
+    templates = Find.find(File.join(template_dir,'module_files')).find_all {|f| !File.directory?(f)}.sort
     templates.each do |template|
       # need to remove the erb extension and rework the destination path
       if template =~ /nodesets|spec_helper_acceptance/ and !spec_object.enable_beaker_tests?
         next
       else
         dest = template.gsub(File.join(template_dir,'module_files'), module_path).gsub('.erb', '')
-        safe_create_template_file(dest, template)
+        if File.symlink?(template)
+          Helpers.safe_create_symlink(template, dest)
+        else
+          safe_create_template_file(dest, template)
+        end
       end
     end
   end
