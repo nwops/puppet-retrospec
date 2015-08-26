@@ -41,6 +41,37 @@ class Retrospec
     end
   end
 
+  # runs a user defined hook called pre-hook
+  def run_pre_hook
+    hook_file = File.join(template_dir,'pre-hook')
+    if File.exists?(hook_file)
+      output = `#{hook_file} #{module_path}`
+      if $?.success?
+        puts "Successfully ran hook: #{hook_file}".info
+        puts output.info
+      else
+        puts "Error running hook: #{hook_file}".fatal
+        puts output.fatal
+      end
+    end
+ end
+
+  # runs a user defined hook called post-hook
+  def run_post_hook
+    hook_file = File.join(template_dir,'post-hook')
+    if File.exists?(hook_file)
+      output = `#{hook_file} #{module_path}`
+      if $?.success?
+        puts "Successfully ran hook: #{hook_file}".info
+        puts output.info
+      else
+        puts "Error running hook: #{hook_file}".fatal
+        puts output.fatal
+      end
+    end
+  end
+
+  # this is the method that performs all the magic and creates all the files
   def create_files
     types = spec_object.types
     safe_create_module_files

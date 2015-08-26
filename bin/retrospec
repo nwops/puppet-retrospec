@@ -22,4 +22,6 @@ end
 include Puppet_Retrospec
 
 retro = Retrospec.new(opts[:module_path], opts)
+retro.run_pre_hook
 retro.create_files
+retro.run_post_hook

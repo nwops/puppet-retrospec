@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+
+echo "Hello from the pre hook"
