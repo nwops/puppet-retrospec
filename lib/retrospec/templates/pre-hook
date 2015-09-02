@@ -1,4 +1,31 @@
-#!/usr/bin/env bash
+#!/usr/bin/env ruby
+require 'fileutils'
+
+module_path = ARGV[0]
+# define the paths
+repo_path = File.join(ENV['HOME'],'.retrospec', 'repos')
+templates_path = File.dirname(__FILE__)
+# ensure the directories are created
+FileUtils.mkdir_p(repo_path)
 
 
-echo "Hello from the pre hook"
+def clone_url(git_url, dest, branch='master')
+  if File.exists?(File.join(dest, '.git'))
+    `cd #{dest} && git stash && git pull`
+  else
+    `git clone -b #{branch} #{git_url} #{dest}`
+  end
+  dest
+end
+
+# lets all make sure we have the pre-commit hook repository, templates and link established
+hook_repo_path = clone_url('https://github.com/drwahl/puppet-git-hooks.git', File.join(repo_path, 'puppet-git-hooks'))
+# this will create a symlink to the pre-commit hook in the repo we just downloaded inside the templates folder
+source_symlink_path = File.join(hook_repo_path, 'pre-commit')
+dest_symlink_path = File.join(templates_path,'module_files', '.git', 'hooks', 'pre-commit')
+unless File.exists?(dest_symlink_path)
+  FileUtils.mkdir_p(File.join(templates_path,'module_files', '.git', 'hooks'))
+  FileUtils.ln_s(source_symlink_path, dest_symlink_path)
+end
+
+exit 0
