@@ -1,11 +1,13 @@
 Puppet-Retrospec
 ================
 
-Generates puppet rspec test code based on the classes and defines inside the manifests directory.  Aims to reduce some of the boilerplate coding with default test patterns.
+Generates puppet rspec test code based on the classes and defines inside the manifests directory.  
+Aims to reduce most of the boilerplate coding with default test patterns and module setup.
 
-Retrospec makes it dead simple to get started with puppet unit testing.  When you run retrospec, retrospec will scan you puppet manifests
-and actually write some very basic rspec-puppet test code.  Thus this gem will retrofit your existing puppet module
-with everything needed to get going with puppet unit testing.
+Retrospec makes it dead simple to get started with puppet module development and puppet unit testing.  
+When you run retrospec, retrospec will scan you puppet manifests and actually write some very basic rspec-puppet test code.
+Thus this gem will retrofit your existing puppet module with everything needed to get going with puppet unit testing.  
+Additionally, retrospec will outfit your module with any file you can think of.  Say goodbye to repetitive module setup.
 
 The project was named retrospec because there are many times when you need to retrofit your module with spec tests.
 
@@ -29,7 +31,7 @@ Table of Contents
   * [Future Parser Support](#future-parser-support)
   * [Support](#support)
 
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 Build Status
 ============
@@ -38,9 +40,8 @@ Build Status
 
 Dependency
 ============
-Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into the library so there should
-not be conflicts with your existing puppet gem.  We also require facter and hiera as a result of some indirect puppet dependencies. If there are issues around
-loading facter or hiera then we may need to also vendor the facter and hiera gems as well.
+Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into
+the library so there should not be conflicts with your existing puppet gem.
   
 Install
 =============
@@ -52,12 +53,16 @@ How to use
 Run from the command line
 ```
 $ retrospec -h
-  Options:
-          --module-path, -m <s>: The path (relative or absolute) to the module directory
-         --template-dir, -t <s>: Path to templates directory (only for overriding Retrospec templates)
-    --enable-user-templates, -e: Use Retrospec templates from ~/.puppet_retrospec_templates
-      --enable-beaker-tests, -n: Enable the creation of beaker tests
-                     --help, -h: Show this message
+Generates puppet rspec test code based on the classes and defines inside the manifests directory.
+   -m, --module-path=<s>         The path (relative or absolute) to the module directory (Defaults to current directory) 
+   -t, --template-dir=<s>        Path to templates directory (only for overriding Retrospec templates) (default: /Users/user1/.retrospec_templates)
+   -s, --scm-url=<s>             SCM url for retrospec templates
+   -b, --branch=<s>              Branch you want to use for the retrospec template repo
+   -e, --enable-beaker-tests     Enable the creation of beaker tests
+   -n, --enable-future-parser    Enables the future parser only during validation
+   -v, --version                 Print version and exit
+   -h, --help                    Show this message
+
                      
 retrospec -m ~/projects/puppet_modules/apache
 ```
@@ -68,7 +73,8 @@ Example
 Below you can see that it creates files for every resource in the tomcat module in addition to other files
 that you need for unit testing puppet code. Rspec-puppet best practices says to put definitions in a defines folder
 and classes in a classes folder since it infers what kind of resource it is based on this convention.  Retrospec sets up
-this scaffolding for you.
+this scaffolding for you.  Don't like the files that came with your module?  Simply delete the files and re-generate them
+with retrospec.
 
 ```shell
 $ pwd
@@ -85,21 +91,6 @@ $ retrospec
   + /Users/cosman/github/puppetlabs-apache/spec/classes/
   + /Users/cosman/github/puppetlabs-apache/spec/classes/default_mods_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/dev_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/apache_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/alias_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/auth_basic_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/auth_kerb_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/autoindex_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/cache_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/cgi_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/cgid_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dav_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dav_fs_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dav_svn_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/deflate_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dev_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/dir_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/disk_cache_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/fcgid_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/headers_spec.rb
@@ -107,30 +98,6 @@ $ retrospec
   + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/itk_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/ldap_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/mime_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/mime_magic_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/mpm_event_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/negotiation_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/passenger_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/perl_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/php_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/prefork_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_balancer_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_html_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/proxy_http_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/python_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/reqtimeout_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/rewrite_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/setenvif_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/ssl_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/status_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/suphp_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/userdir_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/vhost_alias_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/worker_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/wsgi_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/mod/xsendfile_spec.rb
-  + /Users/cosman/github/puppetlabs-apache/spec/classes/params_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/php_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/proxy_spec.rb
   + /Users/cosman/github/puppetlabs-apache/spec/classes/python_spec.rb
@@ -148,11 +115,12 @@ $ retrospec
  
 ```
 
-Looking at the file we can see that it did a lot of work for us.  Retrospec generate many tests automatically.
+Looking at the file we can see that it did a lot of work for us.  Retrospec generated many tests automatically.
 However the variable resolution isn't perfect so you will need to manually resolve some variables.  This doesn't produce
 100% coverage but all you did was pressed enter to produce all this anyways.
 Below is the classes/apache_spec.rb file.  Notice that while Retrospec created all these files, you still need to do more work.
 Retrospec is only here to setup your module for testing, which might save you several hours each time you create a module.
+Below I'll go through the different parts of automation that you can use in your testing.
 
    
 ```ruby
@@ -356,34 +324,37 @@ For now you will probably want to read up on the following documentation:
 How Does it do this
 =======================
 Basically Retrospec uses the puppet lexer and parser to scan your code in order to fill out some basic templates that will retrofit
-your puppet module with unit tests.  Currently I rely on the old AST parser to generate all this.  This is why
+your puppet module with unit tests.  Currently I rely on the old AST parser to generate all this.  This is why puppet 3.7
+is vendored into the gem.
 
-Overriding the templates
+Overriding the Templates
 =======================
 There may be a time when you want to override the default templates used to generate the rspec related files.
-To override these templates just set **one** of the following cli options.
+By default retrospec will clone these [templates](https://github.com/nwops/retrospec-templates)
+and place inside the default or specified template directory.  Previously the templates were kept inside the gem
+and cloning was not required. However, after using retrospec for a few months it makes more sense to keep these templates
+versioned controlled in their own repo and update them before each retrospec use.  This also makes it easy for team
+contributions to be spread to other team members quickly.
   
 ```shell
-      --template-dir, -t <s>:   Path to templates directory (only for overriding Retrospec templates)
-    --enable-user-templates, -e:   Use Retrospec templates from ~/.puppet_retrospec_templates
+    -t, --template-dir=<s>  Path to templates directory (only for overriding Retrospec templates) (default: /Users/user1/.retrospec_templates)
+    -s, --scm-url=<s>       SCM url for retrospec templates
+    -b, --branch=<s>        Branch you want to use for the retrospec template repo
 
 ```
 
-Once one of the options is set, retrospec will copy over all the templates from the default gem location to the default
-or specified templates path.  
-If you have already created the erb file in the templates location, then puppet-retrospec will not overwrite the file.
-You can set multiple template paths if you use them for different projects so just be sure the set the correct
-template option when running retrospec.
+### Environment variables to set template defaults
 
-Setting the `--enable-user-templates` option will tell retrospec to use the default user template location and will
-copy over all the default templates that came with the gem.
+RETROSPEC_SCM_URL  # set this to auto set your scm url to the templates
+RETROSPEC_SCM_BRANCH # set this to auto checkout a particular branch (only works upon initial checkout)
 
-The default user location for the templates when using this variable is ~/.puppet_retrospec_templates
+After running retrospec, retrospec will clone the templates from the default template url or from whatever you set to the templates path.  
+If you have already created the erb file in the templates location, then retrospec will not overwrite the file as there will
+be a SCM conflict.
+You can use multiple template paths if you use them for different projects so just be sure the set the correct
+template option when running retrospec.  `retrospec -t`
 
-If you wish to override ~/.puppet_retrospec_templates location you can use the following option
-`--template-dir`
-
-If you set the `--template-dir` option you are not required to set the set `--enable-user-templates` option
+The default user location for the templates when not using `retrospec -t` variable is ~/.retrospec_templates
 
 Example:
 `--template-dir=~/my_templates`
@@ -417,9 +388,10 @@ Adding New Templates
 Should you ever need to add new templates or normal files of any kind retrospec will automatically render and copy the template file
 to the module path if you place a file inside the `template_path/module_files` directory.  The cool thing about this feature
 is that retrospec will recursively create the same directory structure you make inside the `module_files` directory inside your
-module.  Files do not need to end in .erb will still be rendered as a erb template.
+module.  Files do not need to end in .erb will still be rendered as a erb template.  Symlinks will be preserved and not 
+dereferenced. 
 
-This follow the convention over configuration pattern so no directory name or filename is required when running retrospec.
+This follows the convention over configuration pattern so no directory name or filename is required when running retrospec.
 Just put the template file in the directory where you want it (under module_files) and name it exactly how you want it to appear in the module and retrospec
 will take care of the rest.  Please note that any file ending in .erb will have this extension automatically removed.
 
@@ -427,10 +399,10 @@ Example:
 So lets say you want to add a .gitlab-ci.yaml file to all of your modules in your modules directory.  
 
 ```shell
-   touch ~/.puppet_retrospec_templates/module_files/.gitlab-ci.yaml
+   touch ~/.retrospec_templates/module_files/.gitlab-ci.yaml
    
-   tree ~/.puppet_retrospec_templates -a
-   ./.puppet_retrospec_templates
+   tree ~/.retrospec_templates -a
+   ./.retrospec_templates
    ├── acceptance_spec_test.erb
    ├── module_files
    │   ├── .fixtures.yml
@@ -489,7 +461,7 @@ See [fixtures doc](https://github.com/puppetlabs/puppetlabs_spec_helper#using-fi
 ```
 
 If you see something like the following, this means your current module is using a much older version of Rspec.  Retrospec
-using Rspec 3 syntax so you need to update your rspec version.  If you have tests that using older rspec syntax, take a look
+uses Rspec 3 syntax so you need to update your rspec version.  If you have tests that using older rspec syntax, take a look
 at [transpec](https://github.com/yujinakayama/transpec)
 
 ```shell
@@ -500,7 +472,12 @@ at [transpec](https://github.com/yujinakayama/transpec)
         # ./spec/defines/vhost_spec.rb:103:in `block (2 levels) in <top (required)>'
 
 ```
-Running Tests
+
+If your tests will not run after running retrospec. Your spec_helper, Rakefile and Gemfile may not be compatible 
+with the pre-defined templates.  Just delete these files and re-run retrospec to recreate them.  Add back any modifications
+you might have had.
+
+Running Retrospec Tests
 =============
 Puppet-retrospec tests its code against real modules downloaded directly from puppet forge. 
 We also do a little mocking as well but for the majority of the tests we download are 'fixtures'.
@@ -531,7 +508,7 @@ Future Parser Support
 ==============
 Currently Retrospec uses the old/current AST parser for code parsing.  If your code contains future parser syntax
 the current parser will fail to render some resource definitions but will still render the spec file template without parameters
-and resource tests that are contained in your manifest.
+and resource tests that are contained in your manifest. Retrospec is still extremely useful with Puppet 4.
 Since Puppet 4 introduces many new things and breaks many other things  I am not sure
 which side of the grass is greener at this time.  What I do know is that most people are using Puppet 3 and it may take
 time to move to Puppet 4.  I would suspect Retrospec would be more valuable for those moving to Puppet 4
@@ -553,6 +530,11 @@ Todo
 - Auto add dependencies to fixtures file
 - Show a diff of the test file when retrospec is run multiple times and the test file is already created.
 
-Support
+Ruby Support
 ============
 Currently this library only supports ruby >= 1.9.3.  It might work on 1.8.7 but I won't support if it fails.
+
+Paid Support
+============
+Want to see new features developed much faster?  Contact me about a support contract so I can develop this tool during
+the day instead of after work.  contact: sales@logicminds.biz

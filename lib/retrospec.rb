@@ -26,12 +26,7 @@ class Retrospec
   def initialize(supplied_module_path=nil,opts={})
     Utilities::PuppetModule.instance.future_parser = opts[:enable_future_parser]
     # user supplied a template path or user wants to use local templates
-    if opts[:template_dir] or opts[:enable_user_templates]
-      @template_dir = Helpers.setup_user_template_dir(opts[:template_dir])
-    else
-      # if user doesn't supply template directory we assume we should use the templates in this gem
-      @template_dir = Helpers.gem_template_dir
-    end
+    @template_dir = Helpers.setup_user_template_dir(opts[:template_dir], opts[:scm_url], opts[:branch])
     begin
       Utilities::PuppetModule.instance.module_path = supplied_module_path
       Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization

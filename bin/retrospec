@@ -13,9 +13,11 @@ Generates puppet rspec test code based on the classes and defines inside the man
   opt :module_path, "The path (relative or absolute) to the module directory (Defaults to current directory) " ,
       :type => :string, :required => false, :default => nil
   opt :template_dir, "Path to templates directory (only for overriding Retrospec templates)", :type => :string,
-      :required => false, :default => nil
-  opt :enable_user_templates, "Use Retrospec templates from #{File.expand_path('~/.puppet_retrospec_templates')}",
-      :require => false, :type => :boolean
+      :required => false, :default => File.expand_path('~/.retrospec_templates')
+  opt :scm_url, "SCM url for retrospec templates", :type => :string, :required => false,
+      :default => ENV['RETROSPEC_SCM_URL']
+  opt :branch, "Branch you want to use for the retrospec template repo", :type => :string, :required => false,
+      :default => ENV['RETROSPEC_SCM_BRANCH']
   opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean
   opt :enable_future_parser, "Enables the future parser only during validation", :require => false, :type => :boolean
 end

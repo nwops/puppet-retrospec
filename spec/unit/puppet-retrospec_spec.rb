@@ -14,13 +14,12 @@ describe "puppet-retrospec" do
     FileUtils.rm_rf(fixture_modules_path) if ENV['RETROSPEC_CLEAN_UP_TEST_MODULES'] =~ /true/
     install_module('puppetlabs-tomcat')
     @path = File.join(fixture_modules_path, 'tomcat')
-
   end
 
   before :each do
     clean_up_spec_dir(@path)
     @opts = {:module_path => @path, :enable_beaker_tests => false,
-             :enable_user_templates => false, :template_dir => nil }
+             :enable_user_templates => false, :template_dir => '/tmp/.retrospec_templates' }
   end
 
   it 'should run without errors using new' do
@@ -73,66 +72,6 @@ describe "puppet-retrospec" do
     expect(File.exists?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(false)
   end
 
-  it 'should create a local templates directory when flag is on' do
-    @opts[:enable_user_templates] = true
-    FakeFS do
-      user_directory = Helpers.default_user_template_dir
-      FileUtils.mkdir_p(File.join(Helpers.gem_template_dir, 'module_files', 'spec', 'acceptance','nodesets'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', '.fixtures.yml'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'resource_spec_file.erb'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec','shared_contexts.rb'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec','spec_helper.rb'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files','Gemfile'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files','Rakefile'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec', 'acceptance','nodesets', 'default.yml'))
-      FileUtils.mkdir_p('/modules/tomcat/manifests')
-      #FileUtils.open('/modules/tomcat/manifests/init.pp', 'w') {|f| f.write("class tomcat(){}")}
-      @opts[:module_path] = '/modules/tomcat'
-      Retrospec.new(@opts[:module_path], @opts)
-      expect(File.exists?(user_directory)).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files', '.fixtures.yml'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','Gemfile'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'resource_spec_file.erb'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','shared_contexts.rb'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','spec_helper.rb'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','acceptance','nodesets'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','acceptance','nodesets','default.yml'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','Rakefile'))).to eq(true)
-
-    end
-  end
-
-  it 'should create the user supplied templates directory when variable is set' do
-    @opts[:template_dir] = '/tmp/my_templates'
-    FakeFS do
-      FileUtils.mkdir_p(File.join(Helpers.gem_template_dir, 'module_files', 'spec', 'acceptance','nodesets'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', '.fixtures.yml'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'resource_spec_file.erb'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec','shared_contexts.rb'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec','spec_helper.rb'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files','Gemfile'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files','Rakefile'))
-      FileUtils.touch(File.join(Helpers.gem_template_dir, 'module_files', 'spec', 'acceptance','nodesets', 'default.yml'))
-      FileUtils.mkdir_p('/modules/tomcat/manifests')
-      #FileUtils.open('/modules/tomcat/manifests/init.pp', 'w') {|f| f.write("class tomcat(){}")}
-      @opts[:module_path] = '/modules/tomcat'
-      r = Retrospec.new(@opts[:module_path], @opts)
-      user_directory = r.template_dir
-      expect(user_directory).to eq('/tmp/my_templates')
-      expect(File.exists?(user_directory)).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files', '.fixtures.yml'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','Gemfile'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'resource_spec_file.erb'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','shared_contexts.rb'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','spec_helper.rb'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','acceptance','nodesets'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','spec','acceptance','nodesets','default.yml'))).to eq(true)
-      expect(File.exists?(File.join(user_directory, 'module_files','Rakefile'))).to eq(true)
-
-    end
-
-  end
-
   it 'should create proper spec helper file' do
     tomcat = Retrospec.new(@opts[:module_path], @opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper.rb'))
@@ -169,7 +108,7 @@ describe "puppet-retrospec" do
 
   it 'should create acceptance spec helper file' do
     opts = {:module_path => @path, :enable_beaker_tests => true,
-             :enable_user_templates => false, :template_dir => nil }
+             :template_dir => '/tmp/my_templates' }
     tomcat = Retrospec.new(@opts[:module_path], opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper_acceptance.rb'))
     tomcat.safe_create_module_files
@@ -178,7 +117,7 @@ describe "puppet-retrospec" do
 
   it 'should not create acceptance spec helper file' do
     opts = {:module_path => @path, :enable_beaker_tests => false,
-            :enable_user_templates => false, :template_dir => nil }
+             :template_dir => '/tmp/my_templates' }
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper_acceptance.rb'))
     tomcat = Retrospec.new(@opts[:module_path], opts)
     tomcat.safe_create_module_files
@@ -187,7 +126,7 @@ describe "puppet-retrospec" do
 
   it 'should create 15 nodesets' do
     opts = {:module_path => @path, :enable_beaker_tests => true,
-            :enable_user_templates => false, :template_dir => nil }
+            :template_dir =>  '/tmp/my_templates' }
     tomcat = Retrospec.new(@opts[:module_path], opts)
     filepath = File.expand_path(File.join(@path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
     tomcat.safe_create_module_files
