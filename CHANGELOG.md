@@ -1,6 +1,11 @@
-## TBD
+## 0.8.0
  * enable broader support for future parser
  * remove hiera and facter dependencies
+ * added support for running pre and post hooks gh-27
+ * added support for running a hook to clone external templates
+ * externalized the templates into their own repo gh-26
+ * handle symlinks in the templates directory correctly gh-28
+ 
 ## 0.7.3
  * added hiera data helper to fill in all the auto bindable class params in shared_contexts
  * updated hiera data gem to newer fork that works with puppet 3.5+

@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "puppet-retrospec"
-  s.version = "0.7.3"
+  s.version = "0.8.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-08-04"
+  s.date = "2015-09-04"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.executables = ["retrospec"]
@@ -36,7 +36,6 @@ Gem::Specification.new do |s|
     "lib/retrospec/resource.rb",
     "lib/retrospec/spec_object.rb",
     "lib/retrospec/templates/clone-hook",
-    "lib/retrospec/templates/resource_spec_file.erb",
     "lib/retrospec/type_code.rb",
     "lib/retrospec/variable_store.rb",
     "lib/retrospec/version.rb",
