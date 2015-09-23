@@ -157,6 +157,8 @@ class Retrospec
         type_dir_name = classes_dir
       when :definition
         type_dir_name = defines_dir
+      when :node
+        type_dir_name = hosts_dir
       else
         raise "#{type.type} retrospec does not support this resource type yet"
     end
