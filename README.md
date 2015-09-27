@@ -15,9 +15,11 @@ Table of Contents
 =================
 
   * [Build Status](#build-status)
+  * [News](#news)
   * [Dependency](#dependency)
   * [Install](#install)
   * [How to use](#how-to-use)
+  * [Config file](#config_file)
   * [Example](#example)
   * [About the test suite](#about-the-test-suite)
   * [How Does it do this](#how-does-it-do-this)
@@ -38,6 +40,34 @@ Build Status
 [![Build Status](https://travis-ci.org/logicminds/puppet-retrospec.png)](https://travis-ci.org/logicminds/puppet-retrospec)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
+## News
+This gem has been converted to a retrospec plugin.  This means that this gem no longer contains a binary and instead
+depends on the retrospec framework.  The new way of using this gem is : `retrospec puppet`
+
+Because I found this gem to be so useful I figured I could make it automate other types of projects and generalized its 
+use case.  So now any project you create can have its development workflow automated with retrospec.
+
+More info: https://github.com/nwops/retrospec.git
+
+As a result you may have a conflict with the retrospec binary when installing this plugin, please allow the new retrospec
+binary to replace the old one.
+
+```shell
+[puppet@puppetdev module]$ gem install puppet-retrospec
+Fetching: retrospec-0.3.0.gem (100%)
+retrospec's executable "retrospec" conflicts with puppet-retrospec
+Overwrite the executable? [yN]  y
+Successfully installed retrospec-0.3.0
+Fetching: puppet-retrospec-0.9.0.gem (100%)
+Successfully installed puppet-retrospec-0.9.0
+Parsing documentation for retrospec-0.3.0
+Installing ri documentation for retrospec-0.3.0
+Parsing documentation for puppet-retrospec-0.9.0
+Installing ri documentation for puppet-retrospec-0.9.0
+2 gems installed
+
+```
+
 Dependency
 ============
 Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into
@@ -47,28 +77,44 @@ Install
 =============
 `gem install puppet-retrospec`  
 
+This will also install the retrospec framework that is required to use the plugin.
 
 How to use
 =============
 Run from the command line
 ```
-$ retrospec -h
+retrospec puppet -h
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.
-   -m, --module-path=<s>         The path (relative or absolute) to the module directory (Defaults to current directory) 
-   -t, --template-dir=<s>        Path to templates directory (only for overriding Retrospec templates) (default: /Users/user1/.retrospec_templates)
-   -s, --scm-url=<s>             SCM url for retrospec templates
-   -b, --branch=<s>              Branch you want to use for the retrospec template repo
-   -e, --enable-beaker-tests     Enable the creation of beaker tests
-   -n, --enable-future-parser    Enables the future parser only during validation
-   -v, --version                 Print version and exit
-   -h, --help                    Show this message
+  -t, --template-dir=<s>        Path to templates directory (only for overriding Retrospec templates) (default: /home/puppet/.retrospec/repos/retrospec-puppet-templates)
+  -s, --scm-url=<s>             SCM url for retrospec templates (default: https://github.com/nwops/retrospec-templates)
+  -b, --branch=<s>              Branch you want to use for the retrospec template repo (default: master)
+  -e, --enable-beaker-tests     Enable the creation of beaker tests
+  -n, --enable-future-parser    Enables the future parser only during validation
+  -v, --version                 Print version and exit
+  -h, --help                    Show this message
+
 
                      
-retrospec -m ~/projects/puppet_modules/apache
+retrospec -m ~/projects/puppet_modules/apache puppet --enable-future-parser
+
 ```
 
+## Config file
+Previously before release 0.9.0 there was no way to set a config file so you were stuck with always 
+having to pass in the same cli options. With the 0.9.0 release we now rely on the retrospec framework which
+gives us access to config file options for free. Below is a list of options that you can set
+in the config file.  (/Users/username/.retrospec/config.yaml)  `retrospec -h`
+
+```yaml
 plugins::puppet::templates::url: https://github.com/nwops/retrospec-templates
 plugins::puppet::templates::ref: master
+plugins::puppet::enable_beaker_tests: true
+plugins::puppet::enable_future_parser: true
+plugins::puppet::template_dir: /Users/username/.retrospec/repos/retrospec-puppet-templates
+```
+
+Note: your not require to set any of these as they can be specified on the cli and also default to 
+sane values.
 
 Example
 ======================
@@ -82,7 +128,7 @@ with retrospec.
 ```shell
 $ pwd
 /Users/cosman/github/puppetlabs-apache
-$ retrospec
+$ retrospec puppet
  + /Users/cosman/github/puppetlabs-apache/Gemfile
   + /Users/cosman/github/puppetlabs-apache/Rakefile
   + /Users/cosman/github/puppetlabs-apache/spec/
@@ -340,7 +386,7 @@ versioned controlled in their own repo and update them before each retrospec use
 contributions to be spread to other team members quickly.
   
 ```shell
-    -t, --template-dir=<s>  Path to templates directory (only for overriding Retrospec templates) (default: /Users/user1/.retrospec_templates)
+    -t, --template-dir=<s>  Path to templates directory (only for overriding Retrospec templates) (default: /Users/user1/.retrospec/repos/retrospec-puppet-templates)
     -s, --scm-url=<s>       SCM url for retrospec templates
     -b, --branch=<s>        Branch you want to use for the retrospec template repo
 
@@ -348,8 +394,8 @@ contributions to be spread to other team members quickly.
 
 ### Environment variables to set template defaults
 
-RETROSPEC_SCM_URL  # set this to auto set your scm url to the templates
-RETROSPEC_SCM_BRANCH # set this to auto checkout a particular branch (only works upon initial checkout)
+RETROSPEC_PUPPET_SCM_URL  # set this to auto set your scm url to the templates
+RETROSPEC_PUPPET_SCM_BRANCH # set this to auto checkout a particular branch (only works upon initial checkout)
 
 After running retrospec, retrospec will clone the templates from the default template url or from whatever you set to the templates path.  
 If you have already created the erb file in the templates location, then retrospec will not overwrite the file as there will
