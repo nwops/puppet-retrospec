@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'retrospec/resource'
 
 describe "resource" do
   after :all do

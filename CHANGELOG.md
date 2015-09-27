@@ -1,3 +1,7 @@
+## 0.9.0
+ * convert to retrospec plugin
+ This is a big change in how you run puppet-retrospec please see the readme for changes.
+ 
 ## 0.8.1
  * gh-30 - add support for host resource types
 ## 0.8.0

@@ -67,6 +67,9 @@ Generates puppet rspec test code based on the classes and defines inside the man
 retrospec -m ~/projects/puppet_modules/apache
 ```
 
+plugins::puppet::templates::url: https://github.com/nwops/retrospec-templates
+plugins::puppet::templates::ref: master
+
 Example
 ======================
 

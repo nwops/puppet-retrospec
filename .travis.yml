@@ -15,6 +15,7 @@ env:
     - PUPPET_GEM_VERSION="~> 3.6"
     - PUPPET_GEM_VERSION="~> 3.7"
 
+
 matrix:
   exclude:
     - rvm: 1.9.3

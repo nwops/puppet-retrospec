@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'retrospec/type_code'
 
 describe "type_code" do
   after :all do

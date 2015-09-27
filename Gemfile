@@ -6,9 +6,10 @@ source "http://rubygems.org"
 #gem 'hiera', '~> 1.0'
 
 gem 'trollop'
+gem 'retrospec', "~> 0.3"
 # Include everything needed to run rake, tests, features, etc.
 group :development do
-  gem "rspec", "~> 2.14"
+  gem "rspec", "~> 3.2"
   gem 'puppet', '3.7.3',  :path => 'vendor/gems/puppet-3.7.3'
   #gem 'facter', '< 3', '> 1.6'
   #gem 'hiera', '~> 1.0'

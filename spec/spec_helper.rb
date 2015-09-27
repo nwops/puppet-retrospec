@@ -1,4 +1,4 @@
-require 'retrospec'
+require 'retrospec-puppet'
 require 'rspec'
 require 'puppet'
 require 'pry'

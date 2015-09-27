@@ -15,7 +15,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "puppet-retrospec"
-  gem.homepage = "http://github.com/logicminds/puppet-retrospec"
+  gem.homepage = "http://github.com/nwops/puppet-retrospec"
   gem.license = "MIT"
   gem.summary = %Q{Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns.}
   gem.description = %Q{Retrofits and generates valid puppet rspec test code to existing modules}

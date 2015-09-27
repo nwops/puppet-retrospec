@@ -1,27 +1,10 @@
-*.idea/
-*.gem
-*.rbc
-.bundle
-.config
-InstalledFiles
-lib/bundler/man
-pkg
-rdoc
-spec/reports
-test/tmp
-test/version_tmp
-tmp
-spec/fixtures/modules
-spec/fixtures/spec
-spec/shared_contexts.rb
-# YARD artifacts
-.yardoc
-_yardoc
-doc/
 # rcov generated
 coverage
 coverage.data
-Gemfile.lock
+
+# rdoc generated
+rdoc
+
 # yard generated
 doc
 .yardoc
@@ -29,7 +12,10 @@ doc
 # bundler
 .bundle
 
-# Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore:
+# jeweler generated
+pkg
+
+# Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #
 # * Create a file at ~/.gitignore
 # * Include files you want ignored
@@ -42,7 +28,7 @@ doc
 #
 # For MacOS:
 #
-.DS_Store
+#.DS_Store
 
 # For TextMate
 #*.tmproj
@@ -54,7 +40,7 @@ doc
 #.\#*
 
 # For vim:
-*.swp
+#*.swp
 
 # For redcar:
 #.redcar
