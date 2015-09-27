@@ -4,7 +4,7 @@ require 'trollop'
 require 'retrospec'
 
 opts = Trollop::options do
-  version "0.8.0 (c) Corey Osman"
+  version "0.8.1 (c) Corey Osman"
   banner <<-EOS
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.
 

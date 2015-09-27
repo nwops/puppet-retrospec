@@ -1,3 +1,5 @@
+## 0.8.1
+ * gh-30 - add support for host resource types
 ## 0.8.0
  * enable broader support for future parser
  * remove hiera and facter dependencies
