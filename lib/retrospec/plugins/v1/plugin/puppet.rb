@@ -124,26 +124,34 @@ Generates puppet rspec test code based on the classes and defines inside the man
         # filenames must named how they would appear in the normal module path.  The directory
         # structure where the file is contained
         def safe_create_module_files
-          templates = Find.find(File.join(template_dir,'module_files')).find_all {|f| !File.directory?(f)}.sort
+          templates = Find.find(File.join(template_dir,'module_files')).sort
           templates.each do |template|
             # need to remove the erb extension and rework the destination path
             if template =~ /nodesets|spec_helper_acceptance/ and !context.enable_beaker_tests?
               next
             else
-              dest = template.gsub(File.join(template_dir,'module_files'), module_path).gsub('.erb', '')
+              dest = template.gsub(File.join(template_dir,'module_files'), module_path)
               if File.symlink?(template)
                 safe_create_symlink(template, dest)
               elsif File.directory?(template)
                 safe_mkdir(dest)
               else
-                safe_create_template_file(dest, template, context)
+                # because some plugins contain erb files themselves any erb file will be copied only
+                # so we need to designate which files should be rendered with .retrospec.erb
+                if template =~ /\.retrospec\.erb/
+                  # render any file ending in .retrospec_erb as a template
+                  dest = dest.gsub(/\.retrospec\.erb/, '')
+                  safe_create_template_file(dest, template, context)
+                else
+                  safe_copy_file(template, dest)
+                end
               end
             end
           end
         end
 
         # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
-        def safe_create_resource_spec_files(type,template=File.join(template_dir,'resource_spec_file.erb'))
+        def safe_create_resource_spec_files(type,template=File.join(template_dir,'resource_spec_file.retrospec.erb'))
           context.parameters = type.arguments
           context.type = type
           VariableStore.populate(type)
@@ -156,7 +164,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           dest
         end
 
-        def safe_create_acceptance_tests(type,template=File.join(template_dir,'acceptance_spec_test.erb'))
+        def safe_create_acceptance_tests(type,template=File.join(template_dir,'acceptance_spec_test.retrospec.erb'))
           @parameters = type.arguments
           @type = type
           dest = File.join(module_path,generate_file_path(type, true))

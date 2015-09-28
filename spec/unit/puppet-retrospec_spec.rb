@@ -64,7 +64,7 @@ describe "puppet-retrospec" do
     spec_path = File.expand_path(File.join(@path, 'spec'))
     tomcat.create_files
     expect(File.exists?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(false)
-    expect(File.exists?(File.join(spec_path, 'acceptance'))).to eq(false)
+    expect(File.exists?(File.join(spec_path, 'acceptance'))).to eq(true)
     expect(File.exists?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(false)
     expect(File.exists?(File.join(spec_path, 'acceptance', 'nodesets'))).to eq(false)
     expect(File.exists?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(false)
@@ -162,13 +162,12 @@ describe "puppet-retrospec" do
   it 'should create a file from a template' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     file_path = File.join(@path,'.fixtures.yml')
-    template_file = File.join(tomcat.template_dir,'module_files','.fixtures.yml')
+    template_file = File.join(tomcat.template_dir,'module_files','.fixtures.yml.retrospec.erb')
     tomcat.safe_create_template_file(file_path, template_file, tomcat.context)
     expect(File.exists?(file_path)).to eq(true)
   end
 
   describe 'generate_file_path' do
-
     describe 'classes' do
       it 'should generate a acceptance test path correctly' do
         type = double("type")
