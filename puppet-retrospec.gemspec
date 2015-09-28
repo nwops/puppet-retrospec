@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "puppet-retrospec"
-  s.version = "0.9.0"
+  s.version = "0.9.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-09-27"
+  s.date = "2015-09-28"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.extra_rdoc_files = [
