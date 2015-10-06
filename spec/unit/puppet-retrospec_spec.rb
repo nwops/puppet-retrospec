@@ -16,7 +16,7 @@ describe "puppet-retrospec" do
 
   before :each do
     clean_up_spec_dir(@path)
-    @opts = {:module_path => @path, :enable_beaker_tests => false,
+    @opts = {:module_path => @path, :enable_beaker_tests => false, :name => 'name-test123',
              :enable_user_templates => false, :template_dir => '/tmp/.retrospec_templates' }
   end
 
@@ -30,6 +30,21 @@ describe "puppet-retrospec" do
             :enable_user_templates => false, :template_dir => nil, :enable_future_parser => true }
     tomcat = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
     expect(tomcat.context.instance.future_parser).to eq(true)
+  end
+  describe 'new module' do
+    after :each do
+      FileUtils.rm_rf('/tmp/new_module')
+    end
+    it 'should create a module when it does not exist' do
+      opts = {'plugins::puppet::author' => 'test_name', :module_path => '/tmp/new_module', :create => true,
+              :namespace => 'retrospec', :enable_beaker_tests => false,
+              :enable_user_templates => false, :name => 'moduletest', :template_dir => nil, :enable_future_parser => true }
+      new_module = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
+      new_module.run
+      expect(File.exists?(File.join(new_module.manifest_dir, 'init.pp'))).to eq(true)
+      expect(File.exists?(File.join(new_module.module_path, 'metadata.json'))).to eq(true)
+      expect(JSON.parse(File.read(File.join(new_module.module_path, 'metadata.json')))['author']).to eq('test_name')
+    end
   end
 
   it 'should create files without error' do
@@ -155,7 +170,7 @@ describe "puppet-retrospec" do
 
   it 'should not create any files when 0 resources exists' do
     my_path = File.expand_path(File.join('spec', 'fixtures', 'fixture_modules', 'zero_resource_module'))
-    my_retro = Retrospec::Plugins::V1::Puppet.new(my_path)
+    my_retro = Retrospec::Plugins::V1::Puppet.new(my_path, @opts)
     my_retro.should_not_receive(:safe_create_file).with(anything,'resource_spec_file.erb')
   end
 

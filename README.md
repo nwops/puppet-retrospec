@@ -83,15 +83,19 @@ How to use
 =============
 Run from the command line
 ```
-retrospec puppet -h
+[puppet@puppetdev ~]$ retrospec puppet -h
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.
   -t, --template-dir=<s>        Path to templates directory (only for overriding Retrospec templates) (default: /home/puppet/.retrospec/repos/retrospec-puppet-templates)
   -s, --scm-url=<s>             SCM url for retrospec templates (default: https://github.com/nwops/retrospec-templates)
+  -c, --create                  Create a new module without asking when the module directory does not exist
+  -n, --name=<s>                The name of the module you wish to create (default: puppet)
   -b, --branch=<s>              Branch you want to use for the retrospec template repo (default: master)
+  -a, --namespace=<s>           The namespace to use only when creating a new module (default: namespace)
   -e, --enable-beaker-tests     Enable the creation of beaker tests
-  -n, --enable-future-parser    Enables the future parser only during validation
+  -l, --enable-future-parser    Enables the future parser only during validation
   -v, --version                 Print version and exit
   -h, --help                    Show this message
+
 
 
                      
@@ -111,15 +115,17 @@ plugins::puppet::templates::ref: master
 plugins::puppet::enable_beaker_tests: true
 plugins::puppet::enable_future_parser: true
 plugins::puppet::template_dir: /Users/username/.retrospec/repos/retrospec-puppet-templates
+plugins::puppet::namespace: organization
+plugins::puppet::author: your_name
+plugins::puppet::auto_create: true
 ```
-
-Note: your not require to set any of these as they can be specified on the cli and also default to 
+Note: your not required to set any of these as they can be specified on the cli and also default to 
 sane values.
 
 Example
 ======================
 
-Below you can see that it creates files for every resource in the tomcat module in addition to other files
+Below you can see that it creates files for every resource in the apache module in addition to other files
 that you need for unit testing puppet code. Rspec-puppet best practices says to put definitions in a defines folder
 and classes in a classes folder since it infers what kind of resource it is based on this convention.  Retrospec sets up
 this scaffolding for you.  Don't like the files that came with your module?  Simply delete the files and re-generate them
@@ -413,9 +419,9 @@ Lets say I have three clients that each need site specific files in the module a
 don't give me everything I want.  Thus I will need to override the templates for each client.
 
 ```shell
-    retrospec --template-dir ~/retrspec_client1
-    retrospec --template-dir ~/retrspec_client2
-    retrospec --template-dir ~/retrspec_client3
+    retrospec puppet --template-dir ~/retrspec_client1
+    retrospec puppet --template-dir ~/retrspec_client2
+    retrospec puppet --template-dir ~/retrspec_client3
     touch ~/retrspec_client1/module_files/special_file_for_client1.yml
     touch ~/retrspec_client2/module_files/special_file_for_client2.yml
     touch ~/retrspec_client3/module_files/special_file_for_client3.yml
@@ -568,7 +574,7 @@ parser cannot read future code syntax.  If your puppet 4 codebase is compatible 
 In order to allow future parser validation please run retrospec with the following option.
 
  ```shell
-    retrospec --enable-future-parser
+    retrospec puppet --enable-future-parser
 
  ```
 

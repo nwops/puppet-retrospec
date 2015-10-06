@@ -26,9 +26,12 @@ module Retrospec
           Utilities::PuppetModule.instance.future_parser = config_data[:enable_future_parser]
           # user supplied a template path or user wants to use local templates
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])
+          # before we validate the module directory we should ensure the module exists by creating it
+          generate_module   # generate the module file if doesn't ready exist
           # validation also occurs when setting the module path
           Utilities::PuppetModule.instance.module_path = module_path
           Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
+          # setting the context is require to make other methods below work.  #TODO lazy create the context
           @context = ::Puppet::SpecObject.new(module_path, Utilities::PuppetModule.instance, config_data)
         end
 
@@ -42,6 +45,8 @@ module Retrospec
           scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || global_opts['plugins::puppet::templates::ref'] || 'master'
           future_parser = global_opts['plugins::puppet::enable_future_parser']
           beaker_tests  = global_opts['plugins::puppet::enable_beaker_tests']
+          namespace     = global_opts['plugins::puppet::namespace'] || 'namespace'
+          create        = global_opts['plugins::puppet::auto_create'] || false
           Trollop::options do
             version "#{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
@@ -52,8 +57,14 @@ Generates puppet rspec test code based on the classes and defines inside the man
                 :required => false, :default => template_dir
             opt :scm_url, "SCM url for retrospec templates", :type => :string, :required => false,
                 :default => scm_url
+            opt :create, "Create a new module without asking when the module directory does not exist", :type => :boolean,
+                :default => create, :required => false, :short => '-c'
+            opt :name, "The name of the module you wish to create", :type => :string, :require => :false, :short => '-n',
+                :default => File.basename(global_opts[:module_path])
             opt :branch, "Branch you want to use for the retrospec template repo", :type => :string, :required => false,
                 :default => scm_branch
+            opt :namespace, "The namespace to use only when creating a new module", :default => namespace, :required => false,
+                :type => :string
             opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean, :default => beaker_tests
             opt :enable_future_parser, "Enables the future parser only during validation", :default => future_parser, :require => false, :type => :boolean
           end
@@ -239,17 +250,63 @@ Generates puppet rspec test code based on the classes and defines inside the man
           '.pp'
         end
 
-        # # validates module directory fits the description of this plugin
-        # def self.validate_type(dir)
-        #   if ! File.exist?(manifest_dir)
-        #     message = "No manifest directory in #{manifest_dir}, cannot validate this is a module".fatal
-        #     raise TypeValidationException message
-        #   else
-        #     manifest_files ||= Dir.glob("#{manifest_dir}/**/*.pp")
-        #     warn "No puppet manifest files found at #{manifest_dir}".warning if manifest_files.length < 1
-        #   end
-        #   true
-        # end
+        def create_manifest_file(dest, content)
+          # replace the name in the target file with the module_name from this class
+          # I would have just used a template but the context does not exist yet
+          new_content = content.gsub('CLASS_NAME', config_data[:name])
+          safe_create_file(dest, new_content)
+        end
+
+        # generates the metadata file in the module directory
+        def generate_metadata_file(file)
+          require 'puppet/module_tool/metadata'
+          # by default the module tool metadata checks for a namespece
+          if ! config_data[:name].include?('-')
+            name = "#{config_data[:namespace]}-#{config_data[:name]}"
+          else
+            name = config_data[:name]
+          end
+          begin
+            metadata = ::Puppet::ModuleTool::Metadata.new.update(
+                'name' => name,
+                'version' => '0.1.0',
+                'author'  => (config_data['plugins::puppet::author'] || nil ),
+                'dependencies' => [
+                    { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 1.0.0' }
+                ]
+            )
+          rescue ArgumentError => e
+            puts e.message
+            exit -1
+          end
+          safe_create_file(file, metadata.to_json)
+        end
+
+        # if the module does not exist lets create it
+        # this will create the module directory, manifests directory and basic init.pp file
+        # if the manifest directory already exist but an init.pp file does not we do not creating
+        # anything since it is not mandatory
+        # I thought about using the the module face to perform this generation but it seems like its not
+        # supported at this time, and you can't specify the path to generate the module in
+        def generate_module
+          answer = nil
+          unless File.exist?(manifest_dir)
+            init_class = File.join(manifest_dir, 'init.pp')
+            unless config_data[:create]   # user wants to bypass question
+              puts "The module located at: #{module_path} does not exist, do you wish to create it? (y/n): "
+              answer = gets.chomp
+              unless answer =~ /y/i
+                exit 1
+              end
+            end
+            content = File.read(File.join(template_dir, 'manifest_file.pp'))
+            create_manifest_file(init_class, content)
+          end
+          metadata_file = File.join(module_path, 'metadata.json')
+          unless File.exists?(metadata_file)
+            generate_metadata_file(metadata_file)
+          end
+        end
       end
     end
   end
