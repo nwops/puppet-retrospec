@@ -3,19 +3,27 @@ require 'retrospec'
 
 describe "puppet" do
   let(:plugin) do
-    Retrospec::Plugins::V1::Puppet.new('/tmp/testplugin_dir', {:name => 'testplugin', :config1 => 'test', :create => true})
+    Retrospec::Plugins::V1::Puppet.new('/tmp/testplugin_dir', {:name => 'testplugin', :config1 => 'test'})
+  end
+
+  let(:global_opts) do
+    {:module_path => '/tmp/testplugin_dir'}
+  end
+
+  before :each do
+    FileUtils.rm_rf('/tmp/testplugin_dir')
   end
 
   it 'can show the version' do
     expect(Retrospec::Puppet::VERSION).to eq('0.9.1')
   end
 
-  it 'can get cli options' do
-    expect(Retrospec::Plugins::V1::Puppet.cli_options({:module_path => '/tmp/testplugin_dir'})[:enable_future_parser]).to be false
+  it 'can run cli and create new module' do
+    expect(Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {},{}, ['new_module'])).to eq(nil)
   end
 
-
-  it 'can get cli options' do
-    expect(Retrospec::Plugins::V1::Puppet.cli_options({:module_path => '/tmp/testplugin_dir', 'plugins::puppet::enable_future_parser' => true})[:enable_future_parser]).to be true
+  it 'can run cli' do
+    Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {},{}, ['new_module'])
+    expect(Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {},{}, [])).to eq(nil)
   end
 end

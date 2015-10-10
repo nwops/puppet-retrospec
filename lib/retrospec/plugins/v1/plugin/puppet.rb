@@ -1,5 +1,6 @@
 require 'retrospec/plugins/v1/module_helpers'
 require 'retrospec/plugins/v1'
+require 'retrospec/config'
 require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
@@ -26,8 +27,10 @@ module Retrospec
           Utilities::PuppetModule.instance.future_parser = config_data[:enable_future_parser]
           # user supplied a template path or user wants to use local templates
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])
+        end
+
+        def post_init
           # before we validate the module directory we should ensure the module exists by creating it
-          generate_module   # generate the module file if doesn't ready exist
           # validation also occurs when setting the module path
           Utilities::PuppetModule.instance.module_path = module_path
           Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
@@ -35,30 +38,50 @@ module Retrospec
           @context = ::Puppet::SpecObject.new(module_path, Utilities::PuppetModule.instance, config_data)
         end
 
-        # used to display subcommand options to the cli
+        # if the module does not exist lets create it
+        # this will create the module directory, manifests directory and basic init.pp file
+        # if the manifest directory already exist but an init.pp file does not we do not creating
+        # anything since it is not mandatory
+        # I thought about using the the module face to perform this generation but it seems like its not
+        # supported at this time, and you can't specify the path to generate the module in
+        def new_module
+          unless File.exist?(manifest_dir)
+            init_class = File.join(manifest_dir, 'init.pp')
+            content = File.read(File.join(template_dir, 'manifest_file.pp'))
+            create_manifest_file(init_class, content)
+          end
+        end
+
+        # used to display subcommand options to tglobal_confighe cli
         # the global options are passed in for your usage
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into the initialize code
-        def self.cli_options(global_opts)
-          template_dir = global_opts['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
-          scm_url = ENV['RETROSPEC_PUPPET_SCM_URL'] || global_opts['plugins::puppet::templates::url']
-          scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || global_opts['plugins::puppet::templates::ref'] || 'master'
-          future_parser = global_opts['plugins::puppet::enable_future_parser']
-          beaker_tests  = global_opts['plugins::puppet::enable_beaker_tests']
-          namespace     = global_opts['plugins::puppet::namespace'] || 'namespace'
-          create        = global_opts['plugins::puppet::auto_create'] || false
-          Trollop::options do
+        # this is the only entry point into the plugin
+        def self.run_cli(global_opts, global_config, plugin_config, args=ARGV)
+          template_dir = plugin_config['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
+          scm_url = ENV['RETROSPEC_PUPPET_SCM_URL'] || plugin_config['plugins::puppet::templates::url']
+          scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
+          future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
+          beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
+          namespace     = plugin_config['plugins::puppet::namespace'] || 'namespace'
+          # a list of subcommands for this plugin
+          sub_commands  = [:new_module]
+          if sub_commands.count > 0
+            sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
+          else
+            sub_command_help = ""
+          end
+          plugin_opts = Trollop::options do
             version "#{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
-Generates puppet rspec test code based on the classes and defines inside the manifests directory.
+Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
+#{sub_command_help}
 
             EOS
             opt :template_dir, "Path to templates directory (only for overriding Retrospec templates)", :type => :string,
                 :required => false, :default => template_dir
             opt :scm_url, "SCM url for retrospec templates", :type => :string, :required => false,
                 :default => scm_url
-            opt :create, "Create a new module without asking when the module directory does not exist", :type => :boolean,
-                :default => create, :required => false, :short => '-c'
             opt :name, "The name of the module you wish to create", :type => :string, :require => :false, :short => '-n',
                 :default => File.basename(global_opts[:module_path])
             opt :branch, "Branch you want to use for the retrospec template repo", :type => :string, :required => false,
@@ -67,6 +90,30 @@ Generates puppet rspec test code based on the classes and defines inside the man
                 :type => :string
             opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean, :default => beaker_tests
             opt :enable_future_parser, "Enables the future parser only during validation", :default => future_parser, :require => false, :type => :boolean
+            stop_on sub_commands
+          end
+          # the passed in options will always override the config file
+          plugin_data = plugin_opts.merge(global_config).merge(global_opts).merge(plugin_opts)
+          # define the default action to use the plugin here, the default is run
+          sub_command = (args.shift || :run).to_sym
+          # create an instance of this plugin
+          plugin = self.new(plugin_data[:module_path],plugin_data)
+          # check if the plugin supports the sub command
+          if plugin.respond_to?(sub_command)
+            case sub_command
+              when :new_module
+                plugin.send(sub_command)
+                plugin.post_init   # finish initialization
+              when :run
+                plugin.post_init   # finish initialization
+              else
+                plugin.post_init   # finish initialization
+                plugin.send(sub_command)
+            end
+            plugin.send(:run)
+          else
+            puts "The subcommand #{sub_command} is not supported or valid"
+            exit 1
           end
         end
 
@@ -116,6 +163,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
         def create_files
           types = context.types
           safe_create_module_files
+          generate_metadata_file
           # a Type is nothing more than a defined type or puppet class
           # we could have named this manifest but there could be multiple types
           # in a manifest.
@@ -258,53 +306,31 @@ Generates puppet rspec test code based on the classes and defines inside the man
         end
 
         # generates the metadata file in the module directory
-        def generate_metadata_file(file)
+        def generate_metadata_file
           require 'puppet/module_tool/metadata'
-          # by default the module tool metadata checks for a namespece
-          if ! config_data[:name].include?('-')
-            name = "#{config_data[:namespace]}-#{config_data[:name]}"
-          else
-            name = config_data[:name]
-          end
-          begin
-            metadata = ::Puppet::ModuleTool::Metadata.new.update(
-                'name' => name,
-                'version' => '0.1.0',
-                'author'  => (config_data['plugins::puppet::author'] || nil ),
-                'dependencies' => [
-                    { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 1.0.0' }
-                ]
-            )
-          rescue ArgumentError => e
-            puts e.message
-            exit -1
-          end
-          safe_create_file(file, metadata.to_json)
-        end
-
-        # if the module does not exist lets create it
-        # this will create the module directory, manifests directory and basic init.pp file
-        # if the manifest directory already exist but an init.pp file does not we do not creating
-        # anything since it is not mandatory
-        # I thought about using the the module face to perform this generation but it seems like its not
-        # supported at this time, and you can't specify the path to generate the module in
-        def generate_module
-          answer = nil
-          unless File.exist?(manifest_dir)
-            init_class = File.join(manifest_dir, 'init.pp')
-            unless config_data[:create]   # user wants to bypass question
-              puts "The module located at: #{module_path} does not exist, do you wish to create it? (y/n): "
-              answer = gets.chomp
-              unless answer =~ /y/i
-                exit 1
-              end
-            end
-            content = File.read(File.join(template_dir, 'manifest_file.pp'))
-            create_manifest_file(init_class, content)
-          end
+          # make sure the metadata file exists
           metadata_file = File.join(module_path, 'metadata.json')
           unless File.exists?(metadata_file)
-            generate_metadata_file(metadata_file)
+            # by default the module tool metadata checks for a namespece
+            if ! config_data[:name].include?('-')
+              name = "#{config_data[:namespace]}-#{config_data[:name]}"
+            else
+              name = config_data[:name]
+            end
+            begin
+              metadata = ::Puppet::ModuleTool::Metadata.new.update(
+                  'name' => name,
+                  'version' => '0.1.0',
+                  'author'  => (config_data['plugins::puppet::author'] || nil ),
+                  'dependencies' => [
+                      { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 1.0.0' }
+                  ]
+              )
+            rescue ArgumentError => e
+              puts e.message
+              exit -1
+            end
+            safe_create_file(metadata_file, metadata.to_json)
           end
         end
       end
