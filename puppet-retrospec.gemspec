@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "puppet-retrospec"
-  s.version = "0.9.1"
+  s.version = "0.10.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-09-28"
+  s.date = "2015-10-12"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.extra_rdoc_files = [
@@ -46,6 +46,7 @@ Gem::Specification.new do |s|
     "spec/fixtures/fixture_modules/one_resource_module/manifests/params.pp",
     "spec/fixtures/fixture_modules/zero_resource_module/manifests/empty_class.pp",
     "spec/fixtures/fixture_modules/zero_resource_module/manifests/not_a_resource_defination.pp",
+    "spec/fixtures/fixture_modules/zero_resource_module/metadata.json",
     "spec/fixtures/manifests/includes-class.pp",
     "spec/fixtures/manifests/includes-defines.pp",
     "spec/fixtures/modules/concat/CHANGELOG.md",
@@ -1821,7 +1822,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
-      s.add_runtime_dependency(%q<retrospec>, ["~> 0.3"])
+      s.add_runtime_dependency(%q<retrospec>, ["~> 0.4.0"])
       s.add_development_dependency(%q<rspec>, ["~> 3.2"])
       s.add_development_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_development_dependency(%q<yard>, ["~> 0.7"])
@@ -1830,12 +1831,9 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<pry>, [">= 0"])
       s.add_development_dependency(%q<fakefs>, [">= 0"])
-      s.add_development_dependency(%q<pry-rescue>, [">= 0"])
-      s.add_development_dependency(%q<pry-stack_explorer>, [">= 0"])
-      s.add_development_dependency(%q<pry-coolline>, [">= 0"])
     else
       s.add_dependency(%q<trollop>, [">= 0"])
-      s.add_dependency(%q<retrospec>, ["~> 0.3"])
+      s.add_dependency(%q<retrospec>, ["~> 0.4.0"])
       s.add_dependency(%q<rspec>, ["~> 3.2"])
       s.add_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_dependency(%q<yard>, ["~> 0.7"])
@@ -1844,13 +1842,10 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<pry>, [">= 0"])
       s.add_dependency(%q<fakefs>, [">= 0"])
-      s.add_dependency(%q<pry-rescue>, [">= 0"])
-      s.add_dependency(%q<pry-stack_explorer>, [">= 0"])
-      s.add_dependency(%q<pry-coolline>, [">= 0"])
     end
   else
     s.add_dependency(%q<trollop>, [">= 0"])
-    s.add_dependency(%q<retrospec>, ["~> 0.3"])
+    s.add_dependency(%q<retrospec>, ["~> 0.4.0"])
     s.add_dependency(%q<rspec>, ["~> 3.2"])
     s.add_dependency(%q<puppet>, ["= 3.7.3"])
     s.add_dependency(%q<yard>, ["~> 0.7"])
@@ -1859,9 +1854,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<pry>, [">= 0"])
     s.add_dependency(%q<fakefs>, [">= 0"])
-    s.add_dependency(%q<pry-rescue>, [">= 0"])
-    s.add_dependency(%q<pry-stack_explorer>, [">= 0"])
-    s.add_dependency(%q<pry-coolline>, [">= 0"])
   end
 end
 

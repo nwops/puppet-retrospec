@@ -1,3 +1,8 @@
+## 0.10.0
+ * refactor cli options to use retrospec 0.4.0 specifications
+ * gh-32 - add ability to create new module
+ * fix pinning of module to use 0.x.0 instead of 0.x
+ * pin to version 0.4.x
 ## 0.9.0
  * convert to retrospec plugin
  This is a big change in how you run puppet-retrospec please see the readme for changes.

@@ -48,6 +48,11 @@ module Retrospec
           unless File.exist?(manifest_dir)
             init_class = File.join(manifest_dir, 'init.pp')
             content = File.read(File.join(template_dir, 'manifest_file.pp'))
+            print "The module located at: #{module_path} does not exist, do you wish to create it? (y/n): "
+            answer = gets.chomp
+            unless answer =~ /y/i
+              exit 1
+            end
             create_manifest_file(init_class, content)
           end
         end

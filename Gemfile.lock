@@ -97,7 +97,7 @@ DEPENDENCIES
   pry
   puppet (= 3.7.3)!
   rdoc (~> 3.12)
-  retrospec (~> 0.4)
+  retrospec (~> 0.4.0)
   rspec (~> 3.2)
   trollop
   yard (~> 0.7)
