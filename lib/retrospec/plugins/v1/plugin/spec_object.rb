@@ -61,6 +61,10 @@ module Retrospec
         VariableStore.resolve(key)
       end
 
+      def fact_name
+        instance[:name]
+      end
+
     end
   end
 end

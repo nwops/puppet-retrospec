@@ -1,6 +1,7 @@
 require 'retrospec/plugins/v1/module_helpers'
 require 'retrospec/plugins/v1'
 require 'retrospec/config'
+require_relative 'generators/fact_generator'
 require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
@@ -44,7 +45,7 @@ module Retrospec
         # anything since it is not mandatory
         # I thought about using the the module face to perform this generation but it seems like its not
         # supported at this time, and you can't specify the path to generate the module in
-        def new_module
+        def new_module(module_path)
           unless File.exist?(manifest_dir)
             init_class = File.join(manifest_dir, 'init.pp')
             content = File.read(File.join(template_dir, 'manifest_file.pp'))
@@ -70,7 +71,7 @@ module Retrospec
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           namespace     = plugin_config['plugins::puppet::namespace'] || 'namespace'
           # a list of subcommands for this plugin
-          sub_commands  = [:new_module]
+          sub_commands  = ['new_module', 'new_fact', 'fact']
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
           else
@@ -107,19 +108,29 @@ Generates puppet rspec test code based on the classes and defines inside the man
           if plugin.respond_to?(sub_command)
             case sub_command
               when :new_module
-                plugin.send(sub_command)
+                plugin.send(sub_command, plugin_data[:module_path])
                 plugin.post_init   # finish initialization
               when :run
                 plugin.post_init   # finish initialization
+              when :new_fact
+                f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data)
+                plugin.post_init   # finish initialization
+                f.generate_fact_file
               else
                 plugin.post_init   # finish initialization
-                plugin.send(sub_command)
+                plugin.send(sub_command, plugin_data[:module_path], plugin_data)
             end
             plugin.send(:run)
           else
             puts "The subcommand #{sub_command} is not supported or valid"
             exit 1
           end
+        end
+
+        # generates the fact spec files
+        def fact(module_path, config)
+          f = Retrospec::Puppet::Generators::FactGenerator.new(module_path, config)
+          f.generate_fact_spec_files
         end
 
         # this is the main method the starts all the magic

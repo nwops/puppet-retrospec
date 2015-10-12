@@ -11,6 +11,10 @@ def fixtures_path
   @fixtures_path ||= File.expand_path(File.join(File.dirname(__FILE__), 'fixtures'))
 end
 
+def fixtures_facts_path
+  @fixtures_facts_path ||= File.expand_path(File.join(fixtures_path, 'facts'))
+end
+
 def clean_up_spec_dir(dir)
   #puts "removing directory #{dir}"
   FileUtils.rm_rf(File.join(dir, 'spec'))
