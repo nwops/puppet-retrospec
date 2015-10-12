@@ -35,7 +35,7 @@ module Retrospec
           Utilities::PuppetModule.instance.module_path = module_path
           Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
           # setting the context is require to make other methods below work.  #TODO lazy create the context
-          @context = ::Puppet::SpecObject.new(module_path, Utilities::PuppetModule.instance, config_data)
+          @context = ::Retrospec::Puppet::SpecObject.new(module_path, Utilities::PuppetModule.instance, config_data)
         end
 
         # if the module does not exist lets create it
