@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
+
 Puppet-Retrospec
 ================
 
