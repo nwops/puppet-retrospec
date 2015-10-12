@@ -65,6 +65,7 @@ describe "puppet-retrospec" do
               :namespace => 'retrospec', :enable_beaker_tests => false,
               :enable_user_templates => false, :name => 'moduletest', :template_dir => nil, :enable_future_parser => true }
       new_module = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
+      allow(new_module).to receive(:gets).and_return("y\n")
       new_module.new_module
       new_module.post_init
       new_module.run

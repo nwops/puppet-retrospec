@@ -68,38 +68,80 @@ Installing ri documentation for puppet-retrospec-0.9.0
 
 ```
 
-Dependency
-============
+## Dependency
 Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into
 the library so there should not be conflicts with your existing puppet gem.
   
-Install
-=============
+## Install
 `gem install puppet-retrospec`  
 
 This will also install the retrospec framework that is required to use the plugin.
 
-How to use
-=============
-Run from the command line
+## How to use
+
+Run from the command line: `retrospec puppet`
+
+If you need to point to a directory outside the current directory you can use the `--module_path` option.
 ```
-[puppet@puppetdev ~]$ retrospec puppet -h
+[puppet@puppetdev ~]$ retrospec -m /tmp/test3323 puppet -h
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.
-  -t, --template-dir=<s>        Path to templates directory (only for overriding Retrospec templates) (default: /home/puppet/.retrospec/repos/retrospec-puppet-templates)
-  -s, --scm-url=<s>             SCM url for retrospec templates (default: https://github.com/nwops/retrospec-templates)
-  -c, --create                  Create a new module without asking when the module directory does not exist
-  -n, --name=<s>                The name of the module you wish to create (default: puppet)
+
+Subcommands:
+new_module
+  -t, --template-dir=<s>        Path to templates directory (only for overriding Retrospec templates)
+                                (default: /Users/cosman/.retrospec/repos/retrospec-puppet-templates)
+  -s, --scm-url=<s>             SCM url for retrospec templates (default:
+                                https://github.com/nwops/retrospec-templates)
+  -n, --name=<s>                The name of the module you wish to create (default: test3323)
   -b, --branch=<s>              Branch you want to use for the retrospec template repo (default: master)
   -a, --namespace=<s>           The namespace to use only when creating a new module (default: namespace)
   -e, --enable-beaker-tests     Enable the creation of beaker tests
   -l, --enable-future-parser    Enables the future parser only during validation
   -v, --version                 Print version and exit
-  -h, --help                    Show this message
+  -h, --help                    Show this message  -h, --help                    Show this message
+```
 
 
-
+### Enabling the future parser
                      
-retrospec -m ~/projects/puppet_modules/apache puppet --enable-future-parser
+`retrospec -m ~/projects/puppet_modules/apache puppet --enable-future-parser`
+
+### Creating a new module
+
+Creating a new module can now be done with retrospec as of 0.10.0. To do so you just need to use the sub command
+`new_module`.  See `retrospec puppet -h` for more options and overridable configurations.
+
+
+```
+retrospec -m /tmp/new_module puppet new_module --namespace lmc --name apache2
+Successfully ran hook: /Users/cosman/.retrospec/repos/retrospec-puppet-templates/clone-hook
+Already up-to-date.
+
+The module located at: /tmp/new_module does not exist, do you wish to create it? (y/n): y
+ + /tmp/new_module/manifests/
+ + /tmp/new_module/manifests/init.pp
+Successfully ran hook: /Users/cosman/.retrospec/repos/retrospec-puppet-templates/pre-hook
+
+ + /tmp/new_module/.bundle/
+ + /tmp/new_module/.bundle/config
+ + /tmp/new_module/.fixtures.yml
+ + /tmp/new_module/.git/
+ + /tmp/new_module/.git/hooks/
+ + /tmp/new_module/.git/hooks/pre-commit
+ + /tmp/new_module/.gitignore
+ + /tmp/new_module/.puppet-lint.rc
+ + /tmp/new_module/.travis.yml
+ + /tmp/new_module/Gemfile
+ + /tmp/new_module/README.markdown
+ + /tmp/new_module/Rakefile
+ + /tmp/new_module/Vagrantfile
+ + /tmp/new_module/spec/
+ + /tmp/new_module/spec/acceptance/
+ + /tmp/new_module/spec/shared_contexts.rb
+ + /tmp/new_module/spec/spec_helper.rb
+ + /tmp/new_module/metadata.json
+ + /tmp/new_module/spec/classes/
+ + /tmp/new_module/spec/classes/apache2_spec.rb
 
 ```
 
@@ -117,7 +159,6 @@ plugins::puppet::enable_future_parser: true
 plugins::puppet::template_dir: /Users/username/.retrospec/repos/retrospec-puppet-templates
 plugins::puppet::namespace: organization
 plugins::puppet::author: your_name
-plugins::puppet::auto_create: true
 ```
 Note: your not required to set any of these as they can be specified on the cli and also default to 
 sane values.
