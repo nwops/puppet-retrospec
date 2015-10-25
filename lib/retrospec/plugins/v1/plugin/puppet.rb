@@ -2,6 +2,7 @@ require 'retrospec/plugins/v1/module_helpers'
 require 'retrospec/plugins/v1'
 require 'retrospec/config'
 require_relative 'generators/fact_generator'
+require_relative 'generators/module_generator'
 require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
@@ -45,17 +46,9 @@ module Retrospec
         # anything since it is not mandatory
         # I thought about using the the module face to perform this generation but it seems like its not
         # supported at this time, and you can't specify the path to generate the module in
-        def new_module(module_path)
-          unless File.exist?(manifest_dir)
-            init_class = File.join(manifest_dir, 'init.pp')
-            content = File.read(File.join(template_dir, 'manifest_file.pp'))
-            print "The module located at: #{module_path} does not exist, do you wish to create it? (y/n): "
-            answer = gets.chomp
-            unless answer =~ /y/i
-              exit 1
-            end
-            create_manifest_file(init_class, content)
-          end
+        def new_module(plugin_data)
+          f = Retrospec::Puppet::Generators::ModuleGenerator.run_cli(plugin_data)
+          f.run(manifest_dir)
         end
 
         # used to display subcommand options to tglobal_confighe cli
@@ -69,7 +62,6 @@ module Retrospec
           scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
-          namespace     = plugin_config['plugins::puppet::namespace'] || 'namespace'
           # a list of subcommands for this plugin
           sub_commands  = ['new_module', 'new_fact', 'fact']
           if sub_commands.count > 0
@@ -88,12 +80,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
                 :required => false, :default => template_dir
             opt :scm_url, "SCM url for retrospec templates", :type => :string, :required => false,
                 :default => scm_url
-            opt :name, "The name of the module you wish to create", :type => :string, :require => :false, :short => '-n',
-                :default => File.basename(global_opts[:module_path])
             opt :branch, "Branch you want to use for the retrospec template repo", :type => :string, :required => false,
                 :default => scm_branch
-            opt :namespace, "The namespace to use only when creating a new module", :default => namespace, :required => false,
-                :type => :string
             opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean, :default => beaker_tests
             opt :enable_future_parser, "Enables the future parser only during validation", :default => future_parser, :require => false, :type => :boolean
             stop_on sub_commands
@@ -108,7 +96,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           if plugin.respond_to?(sub_command)
             case sub_command
               when :new_module
-                plugin.send(sub_command, plugin_data[:module_path])
+                plugin.send(sub_command, plugin_data)
                 plugin.post_init   # finish initialization
               when :run
                 plugin.post_init   # finish initialization
@@ -179,7 +167,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
         def create_files
           types = context.types
           safe_create_module_files
-          generate_metadata_file
+          Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           # a Type is nothing more than a defined type or puppet class
           # we could have named this manifest but there could be multiple types
           # in a manifest.
@@ -314,41 +302,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
           '.pp'
         end
 
-        def create_manifest_file(dest, content)
-          # replace the name in the target file with the module_name from this class
-          # I would have just used a template but the context does not exist yet
-          new_content = content.gsub('CLASS_NAME', config_data[:name])
-          safe_create_file(dest, new_content)
-        end
-
-        # generates the metadata file in the module directory
-        def generate_metadata_file
-          require 'puppet/module_tool/metadata'
-          # make sure the metadata file exists
-          metadata_file = File.join(module_path, 'metadata.json')
-          unless File.exists?(metadata_file)
-            # by default the module tool metadata checks for a namespece
-            if ! config_data[:name].include?('-')
-              name = "#{config_data[:namespace]}-#{config_data[:name]}"
-            else
-              name = config_data[:name]
-            end
-            begin
-              metadata = ::Puppet::ModuleTool::Metadata.new.update(
-                  'name' => name,
-                  'version' => '0.1.0',
-                  'author'  => (config_data['plugins::puppet::author'] || nil ),
-                  'dependencies' => [
-                      { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 1.0.0' }
-                  ]
-              )
-            rescue ArgumentError => e
-              puts e.message
-              exit -1
-            end
-            safe_create_file(metadata_file, metadata.to_json)
-          end
-        end
       end
     end
   end

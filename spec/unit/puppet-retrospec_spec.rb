@@ -63,10 +63,13 @@ describe "puppet-retrospec" do
     it 'should create a module when it does not exist' do
       opts = {'plugins::puppet::author' => 'test_name', :module_path => '/tmp/new_module', :create => true,
               :namespace => 'retrospec', :enable_beaker_tests => false,
-              :enable_user_templates => false, :name => 'moduletest', :template_dir => nil, :enable_future_parser => true }
+              :enable_user_templates => false, :name => 'moduletest',
+              :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates')),
+                                                :enable_future_parser => true }
+      ENV['RETROSPEC_PUPPET_AUTO_GENERATE'] = 'true'
       new_module = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
       allow(new_module).to receive(:gets).and_return("y\n")
-      new_module.new_module
+      new_module.new_module(opts)
       new_module.post_init
       new_module.run
       expect(File.exists?(File.join(new_module.manifest_dir, 'init.pp'))).to eq(true)
