@@ -63,14 +63,14 @@ module Retrospec
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = ['new_module', 'new_fact', 'fact']
+          sub_commands  = ['new_module', 'new_fact']
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
           else
             sub_command_help = ""
           end
           plugin_opts = Trollop::options do
-            version "#{Retrospec::Puppet::VERSION} (c) Corey Osman"
+            version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
 #{sub_command_help}
@@ -101,9 +101,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
               when :run
                 plugin.post_init   # finish initialization
               when :new_fact
-                f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data)
-                plugin.post_init   # finish initialization
-                f.generate_fact_file
+                plugin.new_fact(plugin_data)
               else
                 plugin.post_init   # finish initialization
                 plugin.send(sub_command, plugin_data[:module_path], plugin_data)
@@ -113,6 +111,12 @@ Generates puppet rspec test code based on the classes and defines inside the man
             puts "The subcommand #{sub_command} is not supported or valid"
             exit 1
           end
+        end
+
+        def new_fact(plugin_data)
+          f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data)
+          post_init   # finish initialization
+          f.generate_fact_file
         end
 
         # generates the fact spec files
@@ -167,6 +171,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
         def create_files
           types = context.types
           safe_create_module_files
+          fact(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           # a Type is nothing more than a defined type or puppet class
           # we could have named this manifest but there could be multiple types
