@@ -75,6 +75,7 @@ You can now create modules and facts with retrospec. If you currently have facts
 will create some basic tests for you.
 
 `retrospec -m /tmp/test_module_123 puppet new_module -n lmc-test123`
+
 `retrospec -m /tmp/test_module_123 puppet new_fact datacenter`
 
 
