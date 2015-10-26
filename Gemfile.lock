@@ -11,6 +11,7 @@ GEM
   specs:
     CFPropertyList (2.2.8)
     addressable (2.3.8)
+    awesome_print (1.6.1)
     builder (3.2.2)
     coderay (1.1.0)
     descendants_tracker (0.0.4)
@@ -91,13 +92,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   bundler (~> 1.0)
   fakefs
   jeweler
   pry
   puppet (= 3.7.3)!
   rdoc (~> 3.12)
-  retrospec (~> 0.4.0)
+  retrospec (~> 0.4)
   rspec (~> 3.2)
   trollop
   yard (~> 0.7)

@@ -1,7 +1,8 @@
 source "http://rubygems.org"
 
 gem 'trollop'
-gem 'retrospec', "~> 0.4.0"
+gem 'retrospec', "~> 0.4"
+gem 'awesome_print'
 # Include everything needed to run rake, tests, features, etc.
 group :development do
   gem "rspec", "~> 3.2"
