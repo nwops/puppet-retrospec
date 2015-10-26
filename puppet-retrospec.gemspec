@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "puppet-retrospec"
-  s.version = "0.10.0"
+  s.version = "0.11.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-10-12"
+  s.date = "2015-10-26"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.extra_rdoc_files = [
@@ -29,6 +29,9 @@ Gem::Specification.new do |s|
     "VERSION",
     "lib/retrospec-puppet.rb",
     "lib/retrospec/plugins/v1/plugin/conditional.rb",
+    "lib/retrospec/plugins/v1/plugin/generators/fact_generator.rb",
+    "lib/retrospec/plugins/v1/plugin/generators/facter.rb",
+    "lib/retrospec/plugins/v1/plugin/generators/module_generator.rb",
     "lib/retrospec/plugins/v1/plugin/helpers.rb",
     "lib/retrospec/plugins/v1/plugin/puppet.rb",
     "lib/retrospec/plugins/v1/plugin/puppet_module.rb",
@@ -40,6 +43,9 @@ Gem::Specification.new do |s|
     "lib/retrospec/plugins/v1/plugin/variable_store.rb",
     "lib/retrospec/plugins/v1/plugin/version.rb",
     "puppet-retrospec.gemspec",
+    "spec/fixtures/facts/datacenter_facts.rb",
+    "spec/fixtures/facts/facts_with_methods.rb",
+    "spec/fixtures/facts/node_role.rb",
     "spec/fixtures/fixture_modules/one_resource_module/manifests/another_resource.pp",
     "spec/fixtures/fixture_modules/one_resource_module/manifests/inherits_params.pp",
     "spec/fixtures/fixture_modules/one_resource_module/manifests/one_resource_class.pp",
@@ -559,6 +565,8 @@ Gem::Specification.new do |s|
     "spec/integration/retrospec_spec.rb",
     "spec/spec_helper.rb",
     "spec/unit/conditional_spec.rb",
+    "spec/unit/generators/fact_generater_spec.rb",
+    "spec/unit/generators/fact_spec.rb",
     "spec/unit/module_spec.rb",
     "spec/unit/plugin_spec.rb",
     "spec/unit/puppet-retrospec_spec.rb",
@@ -1822,7 +1830,8 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
-      s.add_runtime_dependency(%q<retrospec>, ["~> 0.4.0"])
+      s.add_runtime_dependency(%q<retrospec>, ["~> 0.4"])
+      s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 3.2"])
       s.add_development_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_development_dependency(%q<yard>, ["~> 0.7"])
@@ -1833,7 +1842,8 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<fakefs>, [">= 0"])
     else
       s.add_dependency(%q<trollop>, [">= 0"])
-      s.add_dependency(%q<retrospec>, ["~> 0.4.0"])
+      s.add_dependency(%q<retrospec>, ["~> 0.4"])
+      s.add_dependency(%q<awesome_print>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 3.2"])
       s.add_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_dependency(%q<yard>, ["~> 0.7"])
@@ -1845,7 +1855,8 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<trollop>, [">= 0"])
-    s.add_dependency(%q<retrospec>, ["~> 0.4.0"])
+    s.add_dependency(%q<retrospec>, ["~> 0.4"])
+    s.add_dependency(%q<awesome_print>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 3.2"])
     s.add_dependency(%q<puppet>, ["= 3.7.3"])
     s.add_dependency(%q<yard>, ["~> 0.7"])
