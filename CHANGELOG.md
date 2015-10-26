@@ -1,3 +1,7 @@
+## 0.11.0
+ * gh-31 - add ability to generate new fact and spec tests
+ * add awesome_print gem
+ * gh-37 - move new module functionality to its own generator class 
 ## 0.10.0
  * refactor cli options to use retrospec 0.4.0 specifications
  * gh-32 - add ability to create new module

@@ -70,6 +70,14 @@ Installing ri documentation for puppet-retrospec-0.9.0
 
 ```
 
+### 0.11.0  New Features
+You can now create modules and facts with retrospec. If you currently have facts without unit tests, retrospec
+will create some basic tests for you.
+
+`retrospec -m /tmp/test_module_123 puppet new_module -n lmc-test123`
+`retrospec -m /tmp/test_module_123 puppet new_fact datacenter`
+
+
 ## Dependency
 Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into
 the library so there should not be conflicts with your existing puppet gem.
