@@ -1,0 +1,55 @@
+require 'spec_helper'
+
+describe Puppet::Type.type(<%= name.inspect.to_sym %>) do
+  let(:name) do
+    'some_name'
+  end
+
+  let(:type_instance) do
+    subject.new
+  end
+  <%- parameters.each do |param| %>
+  describe <%= param.inspect %> do
+    it 'should have a <%= param %> parameter' do
+      expect(Puppet::Type.type(<%= name.inspect.to_sym %>).attrtype(<%= param.inspect %>)).to eq(:param)
+    end
+    <%- if param == :name -%>
+    it 'should raise ArgumentError if not valid value' do
+      expect { Puppet::Type.type(<%= name.inspect.to_sym %>).new(:name => name, :ensure => :present) }.to raise_error(Puppet::ResourceError)
+    end
+    it 'should validate and pass if valid value' do
+      expect(Puppet::Type.type(<%= name.inspect %>).new(:name => name, :ensure => :present)).to eq('')
+    end
+    <%- else -%>
+    it 'should raise ArgumentError if not valid value' do
+      expect do
+        Puppet::Type.type(<%= name.inspect.to_sym %>).new(:name => name, :ensure => :present, <%= param.inspect %> => 'some_bad_value')
+      end.to raise_error(Puppet::ResourceError)
+    end
+    it 'should validate and pass if valid value' do
+      expect(Puppet::Type.type(<%= name.inspect %>).new(:name => name, :ensure => :present, <%= param.inspect%> => 'some_value')).to eq('')
+    end
+    <%- end -%>
+  end
+ <%- end -%>
+  <%- properties.each do |prop| %>
+  describe <%= prop.inspect %> do
+    it 'should have a <%= prop %> property' do
+      expect(Puppet::Type.type(<%= name.inspect.to_sym %>).attrtype(<%= prop.inspect %>)).to eq(:property)
+    end
+    it 'should raise ArgumentError if not valid value' do
+      expect do
+        Puppet::Type.type(<%= name.inspect.to_sym %>).new(:name => name, :ensure => :present, <%= prop.inspect -%> => 'some_bad_value')
+      end.to raise_error(Puppet::ResourceError)
+    end
+    it 'should validate and pass if valid value' do
+      expect(Puppet::Type.type(<%= name.inspect.to_sym %>).new(:name => name, :ensure => :present, <%= prop.inspect %> => 'some_value')).to eq('')
+    end
+  end
+  <%- end -%>
+  <%- instance_methods.each do |meth| %>
+  describe 'method <%= meth %>' do
+    it { expect(type_instance.<%= meth %>('blah').to eq('blah') }
+  end
+  <%- end -%>
+end

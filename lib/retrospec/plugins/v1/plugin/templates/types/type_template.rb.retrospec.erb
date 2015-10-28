@@ -1,0 +1,53 @@
+Puppet::Type.newtype(<%= type_name.to_sym.inspect %>) do
+  @doc = "Documention of type goes here"
+
+  # this is simple default for ensurable, but you might need something different
+  ensurable do
+    newvalue(:present) do
+      provider.install
+    end
+
+    newvalue(:absent) do
+      provider.remove
+    end
+  end
+  <%- parameters.each do |p| %>
+  newparam(<%= p.to_sym.inspect %>) do
+    desc "Enter what does this parameter does?"
+  end
+  <%- end -%>
+  <%- properties.each do |p| %>
+  newproperty(<%= p.to_sym.inspect %>) do
+    desc "Enter what does this property does?"
+  end
+  <%- end %>
+end
+
+
+#### Validation  ####
+## Add this to your attibute block
+#validate do |value|
+#  perform optional validation here
+#end
+
+
+#### Munging Values ####
+## Add this to your attribute block
+#munge do | value |
+  # alter the value of the parameter here if required
+#end
+
+#### Changing the event output  ####
+# for changing the event output of properties you can control the output by implementing these methods
+# inside the newproperty block
+# def should_to_s( value)
+#   value.inspect
+# end
+# def is_to_s( value)
+#   value.inspect
+# end
+#
+# def change_to_s( current, desire)
+#   "removing #{( HashDiff.diff( current, desire). inspect}, adding #{ HashDiff.diff( desire, current). inspect}."
+# end
+# source: Bode, Dan; Liu, Nan (2012-12-12). Puppet Types and Providers (p. 70). O'Reilly Media. Kindle Edition.

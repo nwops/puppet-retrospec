@@ -2,6 +2,11 @@
 require 'fileutils'
 require 'open-uri'
 
+# this hook is only called once until the template directory is clone
+# once the template directory is cloned the, the clone hook from the template directory
+# will be run instead of this file.  This is on purpose in order to allow the user
+# to easily to customize the hook.
+
 @template_dir    = ARGV[0] || File.join(ENV['HOME'], '.retrospec','repos','retrospec-puppet-templates')
 @template_repo   = ARGV[1] || 'https://github.com/nwops/retrospec-templates'
 @template_branch = ARGV[2] || 'master'
@@ -29,6 +34,10 @@ def update_templates(git_url, dest, branch='master')
 end
 
 def connected?
+  if ! ENV['CLONE_RETROSPEC_TEMPLATES'].nil?
+    # if the user wants internet but doesn't want cloning, allow them to set this variable
+    return false
+  end
   open("http://www.google.com/") rescue false
 end
 

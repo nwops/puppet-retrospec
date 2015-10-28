@@ -51,7 +51,7 @@ describe "facter" do
       File.join(fixtures_facts_path , 'facts_with_methods.rb')
     end
     it 'can be processed' do
-      Retrospec::Puppet::Generators::Facter.load_fact(file)
+      expect(Retrospec::Puppet::Generators::Facter.load_fact(file)).to_not eq(nil)
     end
   end
 

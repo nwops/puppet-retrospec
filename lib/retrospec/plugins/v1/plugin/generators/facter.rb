@@ -1,5 +1,4 @@
 require 'ostruct'
-
 # this is required to use when processing erb templates
 class OpenStruct
   def get_binding
