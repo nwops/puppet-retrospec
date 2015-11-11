@@ -39,23 +39,11 @@ module Retrospec
           t = eval(File.read(file))
           @model.name = t.name
           @model.parameters = t.parameters
-          @model.properties = t.resource_type.validproperties
+          @model.properties = t.properties.collect {|t| t.name }
           @model.instance_methods = t.instance_methods(false)
           @model
         end
         @model
-      end
-
-      def self.commands(name, options={}, &block)
-        binding.pry
-      end
-
-      def self.confine(name, options={}, &block)
-        binding.pry
-      end
-
-      def self.provide(name, options={}, &block)
-        binding.pry
       end
 
       def self.type(name, options={}, &block)

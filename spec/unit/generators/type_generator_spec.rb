@@ -30,7 +30,7 @@ describe "type generator" do
   end
 
   it 'returns type dir' do
-    expect(generator.type_dir).to eq(fixtures_facts_path)
+    expect(generator.type_dir).to eq(fixtures_type_path)
   end
 
   it 'returns module path' do

@@ -35,7 +35,7 @@ module Retrospec::Puppet::Generators
     def self.run_cli(global_opts)
       sub_command_opts = Trollop::options do
         banner <<-EOS
-Generates a new type with the given name, parameters, and properties.
+Generates a new provider with the given name.
 
         EOS
         opt :name, "The name of the type you wish to create", :type => :string, :required => true, :short => '-n'
@@ -54,12 +54,13 @@ Generates a new type with the given name, parameters, and properties.
     end
 
     # returns the type file that the provider uses
-    # if the type file does not exist it assumes a core puppet type and loads that type
-    def type_file
-      @type_dir ||= File.join(module_path, 'lib', 'puppet', 'type', "#{provider_type}.rb")
-      unless File.exists? @type_dir
-        @type_dir = "puppet/type/#{provider_type}"
+    # if the type file does not exist it assumes a core puppet type
+    def type_file(p_type=provider_type)
+      type_file = File.join(module_path, 'lib', 'puppet', 'type', "#{p_type}.rb")
+      unless File.exists? type_file
+        type_file = "puppet/type/#{p_type}"
       end
+      type_file
     end
 
     def provider_spec_dir
@@ -71,7 +72,7 @@ Generates a new type with the given name, parameters, and properties.
     end
 
     def provider_type
-      context.provider_type
+      @provider_type ||= context.provider_type
     end
 
     def provider_name
@@ -87,10 +88,12 @@ Generates a new type with the given name, parameters, and properties.
       provider_files = Dir.glob(File.join(provider_dir, '**', '*.rb')).sort
       spec_files = []
       provider_files.each do |provider_file|
+        t_name = File.basename(File.dirname(provider_file))
         begin
-          provider_file_data = Retrospec::Puppet::Type.load_type(type_file, provider_file)
+          provider_file_data = Retrospec::Puppet::Type.load_type(type_file(t_name), provider_file)
         rescue LoadError
-          return
+          puts "Error loading file #{type_file}".fatal
+          return spec_files
         end
         # because many facts can be in a single file we want to create a unique file for each fact
         provider_spec_path = File.join(provider_spec_dir, "#{provider_file_data.name}_spec.rb")

@@ -106,6 +106,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
                 plugin.new_type(plugin_data)
               when :new_fact
                 plugin.new_fact(plugin_data)
+              when :new_provider
+                plugin.new_provider(plugin_data)
               else
                 plugin.post_init   # finish initialization
                 plugin.send(sub_command, plugin_data[:module_path], plugin_data)
@@ -121,7 +123,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           plugin_data = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(config)
           p = Retrospec::Puppet::Generators::ProviderGenerator.new(plugin_data[:module_path], plugin_data)
           post_init
-          t.generate_provider_files
+          p.generate_provider_files
         end
 
         def provider_spec_files(module_path, config)
@@ -201,6 +203,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           safe_create_module_files
           fact(module_path, config_data)
           type_spec_files(module_path, config_data)
+          provider_spec_files(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           # a Type is nothing more than a defined type or puppet class
           # we could have named this manifest but there could be multiple types
