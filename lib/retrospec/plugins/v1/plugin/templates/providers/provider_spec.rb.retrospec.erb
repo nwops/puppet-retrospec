@@ -1,0 +1,28 @@
+describe Puppet::Type.type(<%= type_name.inspect %>).provider(<%= provider_name.inspect %>) do
+  let (:provider) { subject }
+  let(:resource) { subject.new(<%= properties.to_h.inspect %>) }
+  subject { resource.provider }
+
+  it 'should return an array of instances' do
+    expect(subject.instances).to_be instance_of?(Array)
+  end
+
+  describe 'getter property methods' do
+    <%- methods = properties -%>
+    <%- methods.each do |m| -%>
+    it "should return value for <%= m %> property" do
+      expect(resource.<%= m %>).to eq(nil)
+    end
+    <%- end -%>
+  end
+
+  describe 'setter property methods' do
+    <%- methods = properties -%>
+    <%- methods.each do |m| -%>
+    it "should allow setting of value for <%= m %> property" do
+      resource.<%= m %> = 'value1'
+      expect(resource.<%= m %>).to eq('value1')
+    end
+    <%- end -%>
+  end
+end

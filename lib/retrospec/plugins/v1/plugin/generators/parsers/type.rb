@@ -12,22 +12,59 @@ module Retrospec
   module Puppet
     class Type
 
-      def self.load_type(file)
-        name = eval(File.read(file))
-        require file
-        t = ::Puppet::Type.type(name)
-        @model = OpenStruct.new(:name => name, :file => file,
-                                :properties => [], :instance_methods => [],
-                                :parameters => [], :methods_defined => [])
-        @model.parameters = t.parameters
-        @model.properties = t.properties.collect { |p| p.name }
-        @model.instance_methods = t.instance_methods(false)
+      # loads the type_file and provider_file if given
+      # determines if type or provider is being used and
+      # evals the code
+      def self.load_type(type_file, provider_file=nil)
+        require type_file
+        if provider_file
+          require provider_file
+          file = provider_file
+          @model = OpenStruct.new(:name => nil, :file => file,
+                                  :class_methods => [], :instance_methods => [],
+                                  :properties => [], :parameters => []
+                                  )
+          t = eval(File.read(file))
+          @model.parameters = t.resource_type.parameters
+          @model.properties = t.resource_type.validproperties
+          @model.name = t.name
+          @model.class_methods = t.methods(false)
+          @model.instance_methods = t.instance_methods(false)
+          @model
+        else
+          file = type_file
+          @model = OpenStruct.new(:name => nil, :file => file,
+                                  :properties => [], :instance_methods => [],
+                                  :parameters => [], :methods_defined => [])
+          t = eval(File.read(file))
+          @model.name = t.name
+          @model.parameters = t.parameters
+          @model.properties = t.resource_type.validproperties
+          @model.instance_methods = t.instance_methods(false)
+          @model
+        end
         @model
+      end
+
+      def self.commands(name, options={}, &block)
+        binding.pry
+      end
+
+      def self.confine(name, options={}, &block)
+        binding.pry
+      end
+
+      def self.provide(name, options={}, &block)
+        binding.pry
+      end
+
+      def self.type(name, options={}, &block)
+        ::Puppet::Type.type(name)
       end
 
       # I don't know of a better way to get the name of the type
       def self.newtype(name, options={}, &block)
-        name
+        ::Puppet::Type.type(name)
       end
 
     end

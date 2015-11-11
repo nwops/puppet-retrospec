@@ -4,6 +4,7 @@ require 'retrospec/config'
 require_relative 'generators/fact_generator'
 require_relative 'generators/module_generator'
 require_relative 'generators/type_generator'
+require_relative 'generators/provider_generator'
 require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
@@ -64,7 +65,7 @@ module Retrospec
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = ['new_module', 'new_fact', 'new_type']
+          sub_commands  = ['new_module', 'new_fact', 'new_type', 'new_provider']
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
           else
@@ -114,6 +115,18 @@ Generates puppet rspec test code based on the classes and defines inside the man
             puts "The subcommand #{sub_command} is not supported or valid".fatal
             exit 1
           end
+        end
+
+        def new_provider(config)
+          plugin_data = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(config)
+          p = Retrospec::Puppet::Generators::ProviderGenerator.new(plugin_data[:module_path], plugin_data)
+          post_init
+          t.generate_provider_files
+        end
+
+        def provider_spec_files(module_path, config)
+          t = Retrospec::Puppet::Generators::ProviderGenerator.new(module_path, config)
+          t.generate_provider_spec_files
         end
 
         def new_type(config)
