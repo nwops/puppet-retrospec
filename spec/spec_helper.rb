@@ -16,11 +16,11 @@ def fixtures_facts_path
 end
 
 def fixtures_type_path
-  @fixtures_facts_path ||= File.expand_path(File.join(fixtures_path, 'types'))
+  @fixtures_type_path ||= File.expand_path(File.join(fixtures_path, 'types'))
 end
 
 def fixtures_provider_path
-  @fixtures_facts_path ||= File.expand_path(File.join(fixtures_path, 'providers'))
+  @fixtures_provider_path ||= File.expand_path(File.join(fixtures_path, 'providers'))
 end
 
 def clean_up_spec_dir(dir)

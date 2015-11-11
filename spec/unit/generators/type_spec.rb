@@ -20,13 +20,12 @@ describe "type" do
     end
 
     it 'has correct amount of parameters' do
-      expect(models.parameters).to eq([:name])
+      expect(models.parameters).to eq([:name, :provider])
     end
 
     it 'has the correct number of instance methods' do
       expect(models.instance_methods).to eq([:validaddr?])
     end
-
   end
 
   describe 'bmcuser' do
@@ -49,7 +48,7 @@ describe "type" do
     end
 
     it 'has correct amount of parameters' do
-      expect(models.parameters).to eq( [:name, :force])
+      expect(models.parameters).to eq([:name, :force, :provider])
     end
 
     it 'has the correct number of instance methods' do

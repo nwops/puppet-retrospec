@@ -1,0 +1,17 @@
+AllCops:
+  Exclude:
+    - vendor/**/*
+    - pkg/**/*
+    - spec/fixtures/**/*
+
+# Configuration parameters: AllowURI, URISchemes.
+Metrics/LineLength:
+  Max: 128
+
+# dealbreaker:
+Style/TrailingComma:
+  Enabled: false
+
+# we still support ruby 1.8
+Style/HashSyntax:
+  Enabled: false

@@ -57,7 +57,7 @@ Generates a new type with the given name, parameters, and properties.
         end
 
         def type_dir
-          @facter_dir ||= File.join(module_path, 'lib', 'puppet', 'type')
+          @type_dir ||= File.join(module_path, 'lib', 'puppet', 'type')
         end
 
         def type_spec_dir

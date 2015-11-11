@@ -30,7 +30,7 @@ describe "type generator" do
   end
 
   it 'returns type dir' do
-    expect(generator.type_dir).to eq(fixtures_facts_path)
+    expect(generator.type_dir).to eq(fixtures_type_path)
   end
 
   it 'returns module path' do
@@ -92,6 +92,14 @@ describe "type generator" do
     end
 
     it 'generate type file with correct number of parameters' do
+      ARGV.push('-p')
+      ARGV.push('param_one')
+      ARGV.push('param_two')
+      ARGV.push('-a')
+      ARGV.push('prop_one')
+      ARGV.push('prop_two')
+      ARGV.push('-n')
+      ARGV.push('vhost')
       opts = Retrospec::Puppet::Generators::TypeGenerator.run_cli(context)
       t = Retrospec::Puppet::Generators::TypeGenerator.new(opts[:module_path],opts)
       file = generator.generate_type_files
