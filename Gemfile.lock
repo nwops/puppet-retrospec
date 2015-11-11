@@ -17,6 +17,7 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
+    facets (3.0.0)
     facter (2.4.4)
       CFPropertyList (~> 2.2.6)
     fakefs (0.6.7)
@@ -94,6 +95,7 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   bundler (~> 1.0)
+  facets
   fakefs
   jeweler
   pry
