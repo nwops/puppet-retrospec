@@ -1,0 +1,64 @@
+Puppet::Type.type(<%= type_name.inspect %>).provide(<%= provider_name.inspect %>) do
+  desc "Descripton of the provider goes here"
+
+  mk_resource_methods
+
+  # Prefetching is necessary to use @property_hash inside any setter methods.
+  # self.prefetch uses self.instances to gather an array of user instances
+  # on the system, and then populates the @property_hash instance variable
+  # with attribute data for the specific instance in question (i.e. it
+  # gathers the 'is' values of the resource into the @property_hash instance
+  # variable so you don't have to read from the system every time you need
+  # to gather the 'is' values for a resource. The downside here is that
+  # populating this instance variable for every resource on the system
+  # takes time and front-loads your Puppet run.
+  def self.prefetch(resources)
+    instances.each do |prov|
+      if resource = resources[prov.name]
+        resource.provider = prov
+      end
+    end
+  end
+
+  # returns an array of hash data that represents an instance of this resource type
+  # this usually runs a command on the system and pull the state of the resource
+  # you will mostly likely have a parser the parse the data out
+  def self.get_data
+    []
+  end
+
+  # This method assembles an array of provider instances containing
+  # information about every instance of the user type on the system (i.e.
+  # every user and its attributes). The `puppet resource` command relies
+  # on self.instances to gather an array of user instances in order to
+  # display its output.
+  def self.instances
+    get_data.collect do |d|
+      new(
+        <%= properties.to_h.inspect %>
+      )
+    end
+  end
+
+
+  ##                   ##
+  ## Ensurable Methods ##
+  ##                   ##
+  def exists?
+
+  end
+
+  # This method is called if ensure => present is passed and the exists?
+  # method returns false. This will directly set most values, but the
+  # setter methods will be used for any exceptions.
+  def install
+
+  end
+
+  # This method is called when ensure => absent has been set.
+  # Deleting a user is handled by dscl
+  def remove
+
+  end
+
+end

@@ -15,7 +15,7 @@ describe "puppet" do
   end
 
   it 'can show the version' do
-    expect(Retrospec::Puppet::VERSION).to eq('0.10.0')
+    expect(Retrospec::Puppet::VERSION).to eq('0.11.0')
   end
 
   # disabling for now until we can stub gets
