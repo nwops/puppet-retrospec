@@ -15,7 +15,7 @@ module Retrospec
           # you will need to initialize this object, so the erb templates can get the binding
           # the SpecObject can be customized to your liking as its different for every plugin gem.
           @context = OpenStruct.new(:type_name => spec_object[:name], :parameters => spec_object[:parameters],
-                                    :properties => spec_object[:properties])
+                                    :properties => spec_object[:properties], :providers => spec_object[:providers])
         end
 
         def template_dir
@@ -45,8 +45,8 @@ Generates a new type with the given name, parameters, and properties.
                 :short => '-p', :default => ['name']
             opt :properties, "A list of properties to initialize your type with", :type => :strings, :required => false,
                 :short => '-a', :default => []
-            # opt :providers, "A list of providers to create and associate with this type",:type => Array,
-            #     default => ['default'], :required => false
+            opt :providers, "A list of providers to create and associate with this type",:type => :strings,
+                :default => ['default'], :required => false
           end
           unless sub_command_opts[:name]
             Trollop.educate
@@ -72,8 +72,18 @@ Generates a new type with the given name, parameters, and properties.
           context.type_name
         end
 
+        def generate_provider_files
+          providers = context.providers
+          providers.each do |provider|
+            plugin_data = { :name => provider, :type => type_name, :template_dir => config_data[:template_dir]}
+            p = Retrospec::Puppet::Generators::ProviderGenerator.new(module_path, plugin_data)
+            p.generate_provider_files
+          end
+        end
+
         def generate_type_files
           safe_create_template_file(type_name_path, File.join(template_dir, 'type_template.rb.retrospec.erb'), context)
+          generate_provider_files
           type_name_path
         end
 

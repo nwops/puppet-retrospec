@@ -41,4 +41,5 @@ describe "provider" do
   it 'contains parameters' do
     expect(models.parameters).to eq([:name, :provider])
   end
+
 end

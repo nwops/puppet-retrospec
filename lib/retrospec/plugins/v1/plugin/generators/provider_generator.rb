@@ -6,17 +6,21 @@ module Retrospec::Puppet::Generators
     attr_reader :template_dir, :context
     attr_accessor :provider_type
 
-    # retrospec will initilalize this class so its up to you
+    # retrospec will initaialize this class so its up to you
     # to set any additional variables you need in the context in feed the templates.
     def initialize(module_path, spec_object={})
       super
       # below is the Spec Object which serves as a context for template rendering
       # you will need to initialize this object, so the erb templates can get the binding
       # the SpecObject can be customized to your liking as its different for every plugin gem.
-      @context = OpenStruct.new(:provider_name => spec_object[:name], :provider_type => spec_object[:type])
-      @provider_type = context.provider_type
+      @context = OpenStruct.new(:provider_name => spec_object[:name], :type_name => spec_object[:type])
+      @provider_type = context.type_name
     end
 
+    # returns the path to the templates
+    # first looks inside the external templates directory for specific file
+    # then looks inside the gem path templates directory, which is really only useful
+    # when developing new templates.
     def template_dir
       unless @template_dir
         external_templates = File.expand_path(File.join(config_data[:template_dir], 'providers', 'provider_template.rb.retrospec.erb'))
@@ -94,6 +98,7 @@ Generates a new provider with the given name.
       provider_files.each do |provider_file|
         t_name = File.basename(File.dirname(provider_file))
         provider_file_data = Retrospec::Puppet::Type.load_type(type_file(t_name), provider_file)
+        provider_file_data.type_name = t_name # add the provider type
         # because many facts can be in a single file we want to create a unique file for each fact
         provider_spec_path = File.join(provider_spec_dir, t_name, "#{provider_file_data.name}_spec.rb")
         spec_files << provider_spec_path
