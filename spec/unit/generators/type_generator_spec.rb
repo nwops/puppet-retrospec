@@ -9,11 +9,20 @@ describe "type generator" do
   end
 
   after :each do
-    FileUtils.rm_f(generator.type_name_path) # ensure the file does not exist
+    FileUtils.rm_rf(File.dirname(File.dirname(generator.type_name_path))) # ensure the file does not exist
+    FileUtils.rm_rf(File.dirname(generator.type_spec_dir))
   end
 
   let(:type_spec_dir) do
     File.join(module_path, 'spec', 'unit', 'puppet', 'type')
+  end
+
+  let(:provider_dir) do
+    File.join(module_path, 'lib', 'puppet', 'provider')
+  end
+
+  let(:provider_spec_dir) do
+    File.join(module_path, 'spec', 'unit', 'puppet', 'provider')
   end
 
   let(:module_path) do
@@ -21,7 +30,7 @@ describe "type generator" do
   end
 
   let(:context) do
-    {:name => 'vhost', :properties => ['config1', 'config2'], :module_path => module_path, :parameters => ['prop1', 'prop2'],
+    {:name => 'vhost', :providers => [],:properties => ['config1', 'config2'], :module_path => module_path, :parameters => ['prop1', 'prop2'],
      :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))}
   end
 
@@ -73,7 +82,8 @@ describe "type generator" do
     end
 
     after :each do
-      FileUtils.rm_f(generator.type_name_path) # ensure the file does not exist
+      FileUtils.rm_rf(File.dirname(File.dirname(generator.type_name_path))) # ensure the file does not exist
+      FileUtils.rm_rf(File.dirname(generator.type_spec_dir))
     end
 
     it 'can run the cli options' do
@@ -106,6 +116,47 @@ describe "type generator" do
       require file
       t = Puppet::Type.type(:vhost)
       expect(t.parameters.count). to eq(2)
+    end
+
+    it 'generate type' do
+      ARGV.push('-p')
+      ARGV.push('param_one')
+      ARGV.push('param_two')
+      ARGV.push('-a')
+      ARGV.push('prop_one')
+      ARGV.push('prop_two')
+      ARGV.push('-n')
+      ARGV.push('vhost')
+      ARGV.push('--providers')
+      ARGV.push('default1')
+      ARGV.push('default2')
+      opts = Retrospec::Puppet::Generators::TypeGenerator.run_cli(context)
+      t = Retrospec::Puppet::Generators::TypeGenerator.new(opts[:module_path],opts)
+      file = t.generate_type_files
+      require file
+      t = Puppet::Type.type(:vhost)
+      expect(File.exists?(file)).to eq(true)
+    end
+
+    it 'generate providers' do
+      ARGV.push('-p')
+      ARGV.push('param_one')
+      ARGV.push('param_two')
+      ARGV.push('-a')
+      ARGV.push('prop_one')
+      ARGV.push('prop_two')
+      ARGV.push('-n')
+      ARGV.push('vhost')
+      ARGV.push('--providers')
+      ARGV.push('default1')
+      ARGV.push('default2')
+      opts = Retrospec::Puppet::Generators::TypeGenerator.run_cli(context)
+      t = Retrospec::Puppet::Generators::TypeGenerator.new(opts[:module_path],opts)
+      file = t.generate_type_files
+      p_vhost = File.join(provider_dir, 'vhost')
+      expect(File.exists?(File.join(p_vhost, 'default1.rb'))).to eq(true)
+      expect(File.exists?(File.join(p_vhost, 'default2.rb'))).to eq(true)
+      expect(t.context.providers).to eq(['default1', 'default2'])
     end
   end
 end
