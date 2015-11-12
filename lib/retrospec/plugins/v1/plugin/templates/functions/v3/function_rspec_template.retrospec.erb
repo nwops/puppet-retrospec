@@ -1,0 +1,47 @@
+require 'spec_helper'
+
+describe '<%= name %>' do
+  let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
+
+  let(:function_args) do
+    []
+  end
+  
+  let(:function) do
+     scope.function_<%= name %>(function_args)
+  end
+
+  let(:return_value) do
+     'some_value'
+  end
+
+  describe 'validate arity' do
+    let(:function_args) do
+       
+    end
+  end
+  
+  it "should exist" do
+    Puppet::Parser::Functions.function(subject).should == "function_#{subject}"
+  end
+
+  # help enforce good function practices
+  it 'should contain arity' do
+     expect()
+  end
+
+  it "should raise a ParseError if there is less than 1 arguments" do
+    lambda { function }.should( raise_error(Puppet::ParseError))
+  end
+
+  <%- if type == :rvalue -%>
+  it 'should return data' do
+    expect(function).to eq(return_value)
+  end
+  <%- else -%>
+  it 'should not return data' do
+    expect(function).to eq(nil)
+  end
+  <%- end -%>
+
+end
