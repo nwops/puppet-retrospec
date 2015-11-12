@@ -2,7 +2,7 @@ require 'ostruct'
 # this is required to use when processing erb templates
 class OpenStruct
   def get_binding
-    binding()
+    binding
   end
 end
 
@@ -13,9 +13,9 @@ module Retrospec
         # anytime a fact uses a facter lib we need to "mock" the fuction and record the value
         class Core
           class Execution
-            def self.execute(command, options={})
-              value = {:klass => self.to_s.gsub('Retrospec::Puppet::Generators::', ''),
-              :method => :execute, :value => command}
+            def self.execute(command, _options = {})
+              value = { :klass => to_s.gsub('Retrospec::Puppet::Generators::', ''),
+                        :method => :execute, :value => command }
               Retrospec::Puppet::Generators::Facter.exec_calls[command] = value
             end
           end
@@ -26,9 +26,9 @@ module Retrospec
         @confines = []
         @methods_defined = []
 
-        def initialize(name, options, &block)
+        def initialize(name, _options, &_block)
           @fact_name = name
-          #block.call
+          # block.call
         end
 
         def self.exec_calls
@@ -40,27 +40,25 @@ module Retrospec
         end
 
         def self.value(name)
-          used_facts[name] = {:name => name}
+          used_facts[name] = { :name => name }
         end
 
         def self.fact(name)
           fake_fact = OpenStruct.new(:value => '')
-          used_facts[name] = {:name => name}
+          used_facts[name] = { :name => name }
           fake_fact
         end
 
-        def self.method_missing(method_sym, *arguments, &block)
+        def self.method_missing(method_sym, *_arguments, &_block)
           @methods_defined << method_sym
         end
 
         def self.setcode(&block)
-          begin
-            block.call
-          rescue NameError => e
-          end
+          block.call
+        rescue NameError => e
         end
 
-        def self.confine(fact, *values)
+        def self.confine(fact, *_values)
           @confines << fact
         end
 
@@ -75,12 +73,12 @@ module Retrospec
 
         # every fact will have a Facter.add functionality
         # this is the startign point to collect all data
-        def self.add(name, options={}, &block)
+        def self.add(name, _options = {}, &block)
           @model.facts[name] = OpenStruct.new(:fact_name => name)
           # calls the facter.add block
           # this may call separate confine statements
           @model.global_used_facts = used_facts
-          @used_facts = {}  # clear before fact specific are evaluated
+          @used_facts = {} # clear before fact specific are evaluated
           @model.global_used_execs = exec_calls
           @exec_calls = {}
           begin
@@ -97,7 +95,7 @@ module Retrospec
         end
 
         def self.transform_data(data)
-          #ObenStruct.new(:)
+          # ObenStruct.new(:)
           # {:method_fact=>
           #      {:fact_name=>:method_fact,
           #       :used_facts=>{:is_virtual=>{:name=>:is_virtual}},
@@ -109,7 +107,6 @@ module Retrospec
           data
         end
       end
-
      end
   end
 end

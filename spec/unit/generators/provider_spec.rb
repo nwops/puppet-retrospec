@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe "provider" do
+describe 'provider' do
   let(:provider_file) do
-    File.join(fixtures_provider_path , 'bmc','ipmitool.rb')
+    File.join(fixtures_provider_path, 'bmc', 'ipmitool.rb')
   end
 
   let(:type_file) do
@@ -41,5 +41,4 @@ describe "provider" do
   it 'contains parameters' do
     expect(models.parameters).to eq([:name, :provider])
   end
-
 end

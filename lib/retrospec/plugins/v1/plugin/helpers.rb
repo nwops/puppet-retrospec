@@ -1,10 +1,9 @@
 require 'fileutils'
 
 class Helpers
-
   def self.get_module_name
     module_name = nil
-    Dir["manifests/*.pp"].entries.each do |manifest|
+    Dir['manifests/*.pp'].entries.each do |manifest|
       module_name = get_module_name_from_file(manifest)
       break unless module_name.nil?
     end
@@ -18,15 +17,12 @@ class Helpers
     tokens = p.fullscan
 
     i = tokens.index { |token| [:CLASS, :DEFINE].include? token.first }
-    unless i.nil?
-      module_name = tokens[i + 1].last[:value].split('::').first
-    end
+    module_name = tokens[i + 1].last[:value].split('::').first unless i.nil?
 
     module_name
   end
 
   def self.is_module_dir?(dir)
-    Dir[File.join(dir,"*")].entries.include? "manifests"
+    Dir[File.join(dir, '*')].entries.include? 'manifests'
   end
-
 end

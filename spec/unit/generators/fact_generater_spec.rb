@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-describe "fact generator" do
-
+describe 'fact generator' do
   before :each do
     FileUtils.rm_rf(facter_spec_dir)
     allow(generator).to receive(:facter_dir).and_return(fixtures_facts_path)
@@ -21,11 +20,11 @@ describe "fact generator" do
   end
 
   let(:context) do
-    {:name => 'datacenter', :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))}
+    { :name => 'datacenter', :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates')) }
   end
 
   let(:generator) do
-    Retrospec::Puppet::Generators::FactGenerator.new(module_path, context )
+    Retrospec::Puppet::Generators::FactGenerator.new(module_path, context)
   end
 
   it 'returns facter dir' do
@@ -42,12 +41,10 @@ describe "fact generator" do
 
   it 'can generate a fact file' do
     expect(generator.generate_fact_file.count).to eq(3)
-    expect(File.exists?(File.join(generator.facter_dir, "#{generator.fact_name}.rb")))
+    expect(File.exist?(File.join(generator.facter_dir, "#{generator.fact_name}.rb")))
   end
 
   it 'can generate a spec file' do
-
     expect(generator.generate_fact_spec_files.count).to eq(3)
   end
-
 end
