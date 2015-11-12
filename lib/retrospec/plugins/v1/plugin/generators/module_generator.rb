@@ -5,12 +5,11 @@ module Retrospec
   module Puppet
     module Generators
       class ModuleGenerator < Retrospec::Plugins::V1::Plugin
-
         attr_reader :template_dir, :context, :module_path, :fact_name, :config_data
 
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.
-        def initialize(module_path, spec_object={})
+        def initialize(module_path, spec_object = {})
           super
           # below is the Spec Object which serves as a context for template rendering
           # you will need to initialize this object, so the erb templates can get the binding
@@ -27,17 +26,17 @@ module Retrospec
         def self.run_cli(global_opts)
           namespace     = global_opts['plugins::puppet::namespace'] || 'namespace'
           author        = global_opts['plugins::puppet::author'] || 'author_name'
-          sub_command_opts = Trollop::options do
+          sub_command_opts = Trollop.options do
             banner <<-EOS
 Generates a new module with the given name and namespace
 
             EOS
-            opt :name, "The name of the module you wish to create", :type => :string, :required => false, :short => '-n',
-                :default => File.basename(global_opts[:module_path])
-            opt :namespace, "The namespace to use only when creating a new module", :default => namespace, :required => false,
-                :type => :string
-            opt :author, "The full name of the module author", :default => author, :required => false, :short => '-a',
-                :type => :string
+            opt :name, 'The name of the module you wish to create', :type => :string, :required => false, :short => '-n',
+                                                                    :default => File.basename(global_opts[:module_path])
+            opt :namespace, 'The namespace to use only when creating a new module', :default => namespace, :required => false,
+                                                                                    :type => :string
+            opt :author, 'The full name of the module author', :default => author, :required => false, :short => '-a',
+                                                               :type => :string
           end
           unless sub_command_opts[:name]
             Trollop.educate
@@ -54,9 +53,7 @@ Generates a new module with the given name and namespace
             unless ENV['RETROSPEC_PUPPET_AUTO_GENERATE'] == 'true'
               print "The module located at: #{module_path} does not exist, do you wish to create it? (y/n): "
               answer = gets.chomp
-              unless answer =~ /y/i
-                exit 1
-              end
+              exit 1 unless answer =~ /y/i
             end
 
             create_manifest_file(init_class, content)
@@ -77,28 +74,28 @@ Generates a new module with the given name and namespace
         end
 
         # generates the metadata file in the module directory
-        def generate_metadata_file(mod_name,config_data)
+        def generate_metadata_file(mod_name, config_data)
           require 'puppet/module_tool/metadata'
           # make sure the metadata file exists
           module_path = config_data[:module_path]
           author = config_data[:author] || config_data['plugins::puppet::author'] || 'your_name'
           namespace = config_data[:namespace] || config_data['plugins::puppet::namespace'] || 'namespace'
           metadata_file = File.join(module_path, 'metadata.json')
-          unless File.exists?(metadata_file)
+          unless File.exist?(metadata_file)
             # by default the module tool metadata checks for a namespece
-            if ! mod_name.include?('-')
+            if !mod_name.include?('-')
               name = "#{namespace}-#{mod_name}"
             else
               name = mod_name
             end
             begin
               metadata = ::Puppet::ModuleTool::Metadata.new.update(
-                  'name' => name.downcase,
-                  'version' => '0.1.0',
-                  'author'  => author,
-                  'dependencies' => [
-                      { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 4.9.0' }
-                  ]
+                'name' => name.downcase,
+                'version' => '0.1.0',
+                'author'  => author,
+                'dependencies' => [
+                  { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 4.9.0' }
+                ]
               )
             rescue ArgumentError => e
               puts e.message
@@ -107,7 +104,6 @@ Generates a new module with the given name and namespace
             safe_create_file(metadata_file, metadata.to_json)
           end
         end
-
       end
     end
   end

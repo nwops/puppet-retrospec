@@ -8,8 +8,8 @@ class Conditional
   # those that can be changed
   # those that can be influenced (facts, other variables that contain variables)
   # takes a subtype of Puppet::AST::Branch that contains conditional logic
-  def initialize(branch, parameters)
-     @statements = branch.statements
+  def initialize(branch, _parameters)
+    @statements = branch.statements
   end
 
   # get the attributes for the given resources found in the type code passed in
@@ -24,7 +24,7 @@ class Conditional
 
   # a array of types the are known to contain conditional code and statements
   def self.types
-    #test, statement, value
+    # test, statement, value
     # if I don't have a statement that I am part of a bigger code block
     # [Puppet::Parser::AST::IfStatement, Puppet::Parser::AST::CaseStatement, Puppet::Parser::AST::Else,
     #  Puppet::Parser::AST::CaseOpt, Puppet::Parser::AST::Selector]
@@ -35,7 +35,7 @@ class Conditional
   def self.find_conditionals(type)
     conds = []
     if type.code.respond_to?(:find_all)
-      conds = type.code.find_all {|c| types.include?(c.class)  }
+      conds = type.code.find_all { |c| types.include?(c.class) }
     end
     conds
   end
@@ -49,5 +49,4 @@ class Conditional
     end
     conditionals
   end
-
 end

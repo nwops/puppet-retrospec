@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe "type" do
+describe 'type' do
   describe 'bmc' do
     let(:file) do
-      File.join(fixtures_type_path , 'bmc.rb')
+      File.join(fixtures_type_path, 'bmc.rb')
     end
 
     let(:models) do
@@ -30,7 +30,7 @@ describe "type" do
 
   describe 'bmcuser' do
     let(:file) do
-      File.join(fixtures_type_path , 'bmcuser.rb')
+      File.join(fixtures_type_path, 'bmcuser.rb')
     end
 
     let(:models) do
@@ -43,8 +43,7 @@ describe "type" do
     end
 
     it 'has correct amount of properties' do
-      expect(models.properties).to eq([:ensure ,:id,:username, :userpass,:privlevel])
-
+      expect(models.properties).to eq([:ensure, :id, :username, :userpass, :privlevel])
     end
 
     it 'has correct amount of parameters' do
@@ -55,5 +54,4 @@ describe "type" do
       expect(models.instance_methods).to eq([])
     end
   end
-
 end

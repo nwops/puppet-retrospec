@@ -8,7 +8,7 @@ module Retrospec::Puppet::Generators
 
     # retrospec will initaialize this class so its up to you
     # to set any additional variables you need in the context in feed the templates.
-    def initialize(module_path, spec_object={})
+    def initialize(module_path, spec_object = {})
       super
       # below is the Spec Object which serves as a context for template rendering
       # you will need to initialize this object, so the erb templates can get the binding
@@ -24,7 +24,7 @@ module Retrospec::Puppet::Generators
     def template_dir
       unless @template_dir
         external_templates = File.expand_path(File.join(config_data[:template_dir], 'providers', 'provider_template.rb.retrospec.erb'))
-        if File.exists?(external_templates)
+        if File.exist?(external_templates)
           @template_dir = File.join(config_data[:template_dir], 'types')
         else
           @template_dir = File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'providers'))
@@ -39,13 +39,13 @@ module Retrospec::Puppet::Generators
     # all options here are available in the config passed into config object
     # returns the parameters
     def self.run_cli(global_opts)
-      sub_command_opts = Trollop::options do
+      sub_command_opts = Trollop.options do
         banner <<-EOS
 Generates a new provider with the given name.
 
         EOS
-        opt :name, "The name of the type you wish to create", :type => :string, :required => true, :short => '-n'
-        opt :type, "The type name of the provider", :type => :string, :required => true, :short => '-t'
+        opt :name, 'The name of the type you wish to create', :type => :string, :required => true, :short => '-n'
+        opt :type, 'The type name of the provider', :type => :string, :required => true, :short => '-t'
       end
       unless sub_command_opts[:name]
         Trollop.educate
@@ -66,7 +66,7 @@ Generates a new provider with the given name.
     # returns the type file that the provider uses
     # if the type file does not exist it assumes a core puppet type
     # because we could potentially dealing with multiple
-    def type_file(p_type=provider_type)
+    def type_file(p_type = provider_type)
       if core_types.include?(p_type)
         type_file = "puppet/type/#{p_type}"
       else
@@ -111,53 +111,53 @@ Generates a new provider with the given name.
 
     def core_types
       %w(augeas
-      computer
-      cron
-      exec
-      file
-      filebucket
-      group
-      host
-      interface
-      k5login
-      macauthorization
-      mailalias
-      maillist
-      mcx
-      mount
-      nagios_command
-      nagios_contact
-      nagios_contactgroup
-      nagios_host
-      nagios_hostdependency
-      nagios_hostescalation
-      nagios_hostextinfo
-      nagios_hostgroup
-      nagios_service
-      nagios_servicedependency
-      nagios_serviceescalation
-      nagios_serviceextinfo
-      nagios_servicegroup
-      nagios_timeperiod
-      notify
-      package
-      resources
-      router
-      schedule
-      scheduled_task
-      selboolean
-      selmodule
-      service
-      ssh_authorized_key
-      sshkey
-      stage
-      tidy
-      user
-      vlan
-      yumrepo
-      zfs
-      zone
-      zpool )
+         computer
+         cron
+         exec
+         file
+         filebucket
+         group
+         host
+         interface
+         k5login
+         macauthorization
+         mailalias
+         maillist
+         mcx
+         mount
+         nagios_command
+         nagios_contact
+         nagios_contactgroup
+         nagios_host
+         nagios_hostdependency
+         nagios_hostescalation
+         nagios_hostextinfo
+         nagios_hostgroup
+         nagios_service
+         nagios_servicedependency
+         nagios_serviceescalation
+         nagios_serviceextinfo
+         nagios_servicegroup
+         nagios_timeperiod
+         notify
+         package
+         resources
+         router
+         schedule
+         scheduled_task
+         selboolean
+         selmodule
+         service
+         ssh_authorized_key
+         sshkey
+         stage
+         tidy
+         user
+         vlan
+         yumrepo
+         zfs
+         zone
+         zpool )
     end
   end
 end

@@ -1,6 +1,5 @@
 require_relative 'parsers/type'
 
-
 module Retrospec
   module Puppet
     module Generators
@@ -9,7 +8,7 @@ module Retrospec
 
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.
-        def initialize(module_path, spec_object={})
+        def initialize(module_path, spec_object = {})
           super
           # below is the Spec Object which serves as a context for template rendering
           # you will need to initialize this object, so the erb templates can get the binding
@@ -21,7 +20,7 @@ module Retrospec
         def template_dir
           unless @template_dir
             external_templates = File.expand_path(File.join(config_data[:template_dir], 'types', 'type_template.rb.retrospec.erb'))
-            if File.exists?(external_templates)
+            if File.exist?(external_templates)
               @template_dir = File.join(config_data[:template_dir], 'types')
             else
               @template_dir = File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'types'))
@@ -35,18 +34,18 @@ module Retrospec
         # all options here are available in the config passed into config object
         # returns the parameters
         def self.run_cli(global_opts)
-          sub_command_opts = Trollop::options do
+          sub_command_opts = Trollop.options do
             banner <<-EOS
 Generates a new type with the given name, parameters, and properties.
 
             EOS
-            opt :name, "The name of the type you wish to create", :type => :string, :required => true, :short => '-n'
-            opt :parameters, "A list of parameters to initialize your type with", :type => :strings, :required => false,
-                :short => '-p', :default => ['name']
-            opt :properties, "A list of properties to initialize your type with", :type => :strings, :required => false,
-                :short => '-a', :default => []
-            opt :providers, "A list of providers to create and associate with this type",:type => :strings,
-                :default => ['default'], :required => false
+            opt :name, 'The name of the type you wish to create', :type => :string, :required => true, :short => '-n'
+            opt :parameters, 'A list of parameters to initialize your type with', :type => :strings, :required => false,
+                                                                                  :short => '-p', :default => ['name']
+            opt :properties, 'A list of properties to initialize your type with', :type => :strings, :required => false,
+                                                                                  :short => '-a', :default => []
+            opt :providers, 'A list of providers to create and associate with this type', :type => :strings,
+                                                                                          :default => ['default'], :required => false
           end
           unless sub_command_opts[:name]
             Trollop.educate
@@ -75,7 +74,7 @@ Generates a new type with the given name, parameters, and properties.
         def generate_provider_files
           providers = context.providers
           providers.each do |provider|
-            plugin_data = { :name => provider, :type => type_name, :template_dir => config_data[:template_dir]}
+            plugin_data = { :name => provider, :type => type_name, :template_dir => config_data[:template_dir] }
             p = Retrospec::Puppet::Generators::ProviderGenerator.new(module_path, plugin_data)
             p.generate_provider_files
           end

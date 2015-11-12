@@ -25,9 +25,9 @@ module Retrospec
         include Retrospec::Puppet::TemplateHelpers
         attr_reader :template_dir, :context, :manifest_dir, :manifest_files
 
-        def initialize(supplied_module_path=nil,config={})
+        def initialize(supplied_module_path = nil, config = {})
           super
-          @manifest_dir = File.join(supplied_module_path,'manifests')
+          @manifest_dir = File.join(supplied_module_path, 'manifests')
           Utilities::PuppetModule.instance.future_parser = config_data[:enable_future_parser]
           # user supplied a template path or user wants to use local templates
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])
@@ -65,27 +65,27 @@ module Retrospec
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = ['new_module', 'new_fact', 'new_type', 'new_provider']
+          sub_commands  = %w(new_module new_fact new_type new_provider)
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
           else
-            sub_command_help = ""
+            sub_command_help = ''
           end
-          plugin_opts = Trollop::options do
+          plugin_opts = Trollop.options do
             version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
 #{sub_command_help}
 
             EOS
-            opt :template_dir, "Path to templates directory (only for overriding Retrospec templates)", :type => :string,
-                :required => false, :default => template_dir
-            opt :scm_url, "SCM url for retrospec templates", :type => :string, :required => false,
-                :default => scm_url
-            opt :branch, "Branch you want to use for the retrospec template repo", :type => :string, :required => false,
-                :default => scm_branch
-            opt :enable_beaker_tests, "Enable the creation of beaker tests", :require => false, :type => :boolean, :default => beaker_tests
-            opt :enable_future_parser, "Enables the future parser only during validation", :default => future_parser, :require => false, :type => :boolean
+            opt :template_dir, 'Path to templates directory (only for overriding Retrospec templates)', :type => :string,
+                                                                                                        :required => false, :default => template_dir
+            opt :scm_url, 'SCM url for retrospec templates', :type => :string, :required => false,
+                                                             :default => scm_url
+            opt :branch, 'Branch you want to use for the retrospec template repo', :type => :string, :required => false,
+                                                                                   :default => scm_branch
+            opt :enable_beaker_tests, 'Enable the creation of beaker tests', :require => false, :type => :boolean, :default => beaker_tests
+            opt :enable_future_parser, 'Enables the future parser only during validation', :default => future_parser, :require => false, :type => :boolean
             stop_on sub_commands
           end
           # the passed in options will always override the config file
@@ -93,24 +93,24 @@ Generates puppet rspec test code based on the classes and defines inside the man
           # define the default action to use the plugin here, the default is run
           sub_command = (args.shift || :run).to_sym
           # create an instance of this plugin
-          plugin = self.new(plugin_data[:module_path],plugin_data)
+          plugin = new(plugin_data[:module_path], plugin_data)
           # check if the plugin supports the sub command
           if plugin.respond_to?(sub_command)
             case sub_command
-              when :new_module
-                plugin.send(sub_command, plugin_data)
-                plugin.post_init   # finish initialization
-              when :run
-                plugin.post_init   # finish initialization
-              when :new_type
-                plugin.new_type(plugin_data)
-              when :new_fact
-                plugin.new_fact(plugin_data)
-              when :new_provider
-                plugin.new_provider(plugin_data)
-              else
-                plugin.post_init   # finish initialization
-                plugin.send(sub_command, plugin_data[:module_path], plugin_data)
+            when :new_module
+              plugin.send(sub_command, plugin_data)
+              plugin.post_init # finish initialization
+            when :run
+              plugin.post_init   # finish initialization
+            when :new_type
+              plugin.new_type(plugin_data)
+            when :new_fact
+              plugin.new_fact(plugin_data)
+            when :new_provider
+              plugin.new_provider(plugin_data)
+            else
+              plugin.post_init   # finish initialization
+              plugin.send(sub_command, plugin_data[:module_path], plugin_data)
             end
             plugin.send(:run)
           else
@@ -145,7 +145,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
 
         def new_fact(plugin_data)
           f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data)
-          post_init   # finish initialization
+          post_init # finish initialization
           f.generate_fact_file
         end
 
@@ -169,10 +169,10 @@ Generates puppet rspec test code based on the classes and defines inside the man
 
         # runs a user defined hook called pre-hook
         def run_pre_hook
-          hook_file = File.join(template_dir,'pre-hook')
-          if File.exists?(hook_file)
+          hook_file = File.join(template_dir, 'pre-hook')
+          if File.exist?(hook_file)
             output = `#{hook_file} #{module_path}`
-            if $?.success?
+            if $CHILD_STATUS.success?
               puts "Successfully ran hook: #{hook_file}".info
               puts output.info
             else
@@ -184,10 +184,10 @@ Generates puppet rspec test code based on the classes and defines inside the man
 
         # runs a user defined hook called post-hook
         def run_post_hook
-          hook_file = File.join(template_dir,'post-hook')
-          if File.exists?(hook_file)
+          hook_file = File.join(template_dir, 'post-hook')
+          if File.exist?(hook_file)
             output = `#{hook_file} #{module_path}`
-            if $?.success?
+            if $CHILD_STATUS.success?
               puts "Successfully ran hook: #{hook_file}".info
               puts output.info
             else
@@ -210,9 +210,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           # in a manifest.
           types.each do |type|
             safe_create_resource_spec_files(type)
-            if context.enable_beaker_tests?
-              safe_create_acceptance_tests(type)
-            end
+            safe_create_acceptance_tests(type) if context.enable_beaker_tests?
           end
           Utilities::PuppetModule.clean_tmp_modules_dir
           true
@@ -224,13 +222,13 @@ Generates puppet rspec test code based on the classes and defines inside the man
         # filenames must named how they would appear in the normal module path.  The directory
         # structure where the file is contained
         def safe_create_module_files
-          templates = Find.find(File.join(template_dir,'module_files')).sort
+          templates = Find.find(File.join(template_dir, 'module_files')).sort
           templates.each do |template|
             # need to remove the erb extension and rework the destination path
             if template =~ /nodesets|spec_helper_acceptance/ and !context.enable_beaker_tests?
               next
             else
-              dest = template.gsub(File.join(template_dir,'module_files'), module_path)
+              dest = template.gsub(File.join(template_dir, 'module_files'), module_path)
               if File.symlink?(template)
                 safe_create_symlink(template, dest)
               elsif File.directory?(template)
@@ -251,7 +249,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
         end
 
         # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
-        def safe_create_resource_spec_files(type,template=File.join(template_dir,'resource_spec_file.retrospec.erb'))
+        def safe_create_resource_spec_files(type, template = File.join(template_dir, 'resource_spec_file.retrospec.erb'))
           context.parameters = type.arguments
           context.type = type
           VariableStore.populate(type)
@@ -259,15 +257,15 @@ Generates puppet rspec test code based on the classes and defines inside the man
           # pass the type to the variable store and it will discover all the variables and try to resolve them.
           # this does not get deep nested conditional blocks
           context.resources += Conditional.all(type)
-          dest = File.join(module_path,generate_file_path(type, false))
+          dest = File.join(module_path, generate_file_path(type, false))
           safe_create_template_file(dest, template, context)
           dest
         end
 
-        def safe_create_acceptance_tests(type,template=File.join(template_dir,'acceptance_spec_test.retrospec.erb'))
+        def safe_create_acceptance_tests(type, template = File.join(template_dir, 'acceptance_spec_test.retrospec.erb'))
           @parameters = type.arguments
           @type = type
-          dest = File.join(module_path,generate_file_path(type, true))
+          dest = File.join(module_path, generate_file_path(type, true))
           safe_create_template_file(dest, template, context)
           dest
         end
@@ -282,17 +280,17 @@ Generates puppet rspec test code based on the classes and defines inside the man
           hosts_dir   = 'hosts'
           acceptance_dir = 'acceptance'
           case type.type
-            when :hostclass
-              type_dir_name = classes_dir
-            when :definition
-              type_dir_name = defines_dir
-            when :node
-              type_dir_name = hosts_dir
-            else
-              raise "#{type.type} retrospec does not support this resource type yet"
+          when :hostclass
+            type_dir_name = classes_dir
+          when :definition
+            type_dir_name = defines_dir
+          when :node
+            type_dir_name = hosts_dir
+          else
+            fail "#{type.type} retrospec does not support this resource type yet"
           end
           if is_acceptance_test
-            type_dir_name = File.join('spec',acceptance_dir, type_dir_name)
+            type_dir_name = File.join('spec', acceptance_dir, type_dir_name)
           else
             type_dir_name = File.join('spec', type_dir_name)
           end
@@ -307,10 +305,10 @@ Generates puppet rspec test code based on the classes and defines inside the man
             # remove the last token since its the class name
             tokens.pop
             # so lets make a directory structure out of it
-            dir_name = File.join(tokens)  # config/server
-            dir_name = File.join(type_dir_name,dir_name, file_name) # spec/classes/tomcat/config/server
+            dir_name = File.join(tokens) # config/server
+            dir_name = File.join(type_dir_name, dir_name, file_name) # spec/classes/tomcat/config/server
           else
-            dir_name = File.join(type_dir_name,file_name)
+            dir_name = File.join(type_dir_name, file_name)
           end
           dir_name
         end
@@ -338,7 +336,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
         def self.file_type
           '.pp'
         end
-
       end
     end
   end

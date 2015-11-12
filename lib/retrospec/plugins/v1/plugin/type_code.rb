@@ -5,9 +5,9 @@ require 'retrospec/exceptions'
 class TypeCode
   attr_reader :type, :variables, :scope_name, :parent, :name
 
-  #TODO figure out how to store vardef statements that are contained inside conditional blocks
+  # TODO: figure out how to store vardef statements that are contained inside conditional blocks
   def initialize(type)
-    raise TypeNotFoundException unless type
+    fail TypeNotFoundException unless type
     @scope_name = type.namespace
     @name = type.name
     @type = type
@@ -21,7 +21,7 @@ class TypeCode
   # returns a list of variables found in the main code block
   def variables
     if @type.code.respond_to?(:find_all)
-      @variables ||= @type.code.find_all {|i| i.instance_of?(Puppet::Parser::AST::VarDef) }
+      @variables ||= @type.code.find_all { |i| i.instance_of?(Puppet::Parser::AST::VarDef) }
     else
       @variables = []
     end

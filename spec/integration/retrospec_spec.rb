@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-describe "variable_store" do
-
+describe 'variable_store' do
   # after :all do
   #   # enabling the removal slows down tests, but from time to time we may need to
   #   FileUtils.rm_rf(fixture_modules_path) if ENV['RETROSPEC_CLEAN_UP_TEST_MODULES'] =~ /true/
@@ -32,5 +31,4 @@ describe "variable_store" do
   #   #clean_up_spec_dir(@path)
   #
   # end
-
 end
