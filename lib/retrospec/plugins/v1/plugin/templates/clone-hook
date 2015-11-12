@@ -7,7 +7,7 @@ require 'open-uri'
 # will be run instead of this file.  This is on purpose in order to allow the user
 # to easily to customize the hook.
 
-@template_dir    = ARGV[0] || File.join(ENV['HOME'], '.retrospec','repos','retrospec-puppet-templates')
+@template_dir    = ARGV[0] || File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates')
 @template_repo   = ARGV[1] || 'https://github.com/nwops/retrospec-templates'
 @template_branch = ARGV[2] || 'master'
 
@@ -19,30 +19,28 @@ def create_repo(template_dir, git_url, branch)
 end
 
 def git_exists?(template_dir)
-  File.exists? File.join(template_dir,'.git','config')
+  File.exist? File.join(template_dir, '.git', 'config')
 end
 
 def origin_exists?(template_dir)
   `git -C #{template_dir} remote show origin`
-  $?.success?
+  $CHILD_STATUS.success?
 end
 
-def update_templates(git_url, dest, branch='master')
+def update_templates(git_url, dest, branch = 'master')
   create_repo(dest, git_url, branch)
   puts `git -C #{dest} pull`
   dest
 end
 
 def connected?
-  if ! ENV['CLONE_RETROSPEC_TEMPLATES'].nil?
+  unless ENV['CLONE_RETROSPEC_TEMPLATES'].nil?
     # if the user wants internet but doesn't want cloning, allow them to set this variable
     return false
   end
-  open("http://www.google.com/") rescue false
+  open('http://www.google.com/') rescue false
 end
 
 # sometimes I work on an airplane and don't care to clone everything all the time
 # so lets check for connectivity first
-if connected?
-  update_templates(@template_repo, @template_dir, @template_branch)
-end
+update_templates(@template_repo, @template_dir, @template_branch) if connected?

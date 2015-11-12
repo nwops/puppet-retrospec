@@ -4,12 +4,11 @@ module Retrospec
   module Puppet
     module Generators
       class FactGenerator < Retrospec::Plugins::V1::Plugin
-
         attr_reader :template_dir, :context, :module_path, :fact_name, :config_data
 
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.
-        def initialize(module_path, spec_object={})
+        def initialize(module_path, spec_object = {})
           # below is the Spec Object which serves as a context for template rendering
           # you will need to initialize this object, so the erb templates can get the binding
           # the SpecObject can be customized to your liking as its different for every plugin gem.
@@ -23,12 +22,12 @@ module Retrospec
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into config object
         def self.run_cli(global_opts)
-          sub_command_opts = Trollop::options do
+          sub_command_opts = Trollop.options do
             banner <<-EOS
 Generates a new fact with the given name
 
             EOS
-            opt :name, "The name of the fact you wish to create", :type => :string, :require => :true, :short => '-n'
+            opt :name, 'The name of the fact you wish to create', :type => :string, :require => :true, :short => '-n'
           end
           unless sub_command_opts[:name]
             Trollop.educate
@@ -87,7 +86,7 @@ Generates a new fact with the given name
         def template_dir
           unless @template_dir
             external_templates = File.expand_path(File.join(config_data[:template_dir], 'facts', 'fact.rb.retrospec.erb'))
-            if File.exists?(external_templates)
+            if File.exist?(external_templates)
               @template_dir = File.join(config_data[:template_dir], 'facts')
             else
               @template_dir = File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'facts'))

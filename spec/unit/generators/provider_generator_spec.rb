@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe 'provider_generator' do
   before :each do
     FileUtils.rm_rf(provider_spec_dir)
@@ -39,12 +38,12 @@ describe 'provider_generator' do
   end
 
   let(:context) do
-    {:module_path => module_path,
-     :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))}
+    { :module_path => module_path,
+      :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates')) }
   end
 
   let(:generator) do
-    Retrospec::Puppet::Generators::ProviderGenerator.new(module_path, cli_opts )
+    Retrospec::Puppet::Generators::ProviderGenerator.new(module_path, cli_opts)
   end
 
   it 'returns provider dir' do
@@ -61,7 +60,7 @@ describe 'provider_generator' do
 
   it 'can generate a provider file' do
     expect(generator.generate_provider_files).to eq(File.join(provider_dir, "#{provider_name}.rb"))
-    expect(File.exists?(File.join(provider_dir, "#{provider_name}.rb")))
+    expect(File.exist?(File.join(provider_dir, "#{provider_name}.rb")))
   end
 
   # because these tests were initially designed to only work with a single type name we will have to go
@@ -69,7 +68,7 @@ describe 'provider_generator' do
   it 'can generate a spec file' do
     allow(generator).to receive(:provider_dir).and_return(fixtures_provider_path)
     allow(generator).to receive(:type_dir).and_return(fixtures_type_path)
-    files = [File.join(provider_spec_dir, 'bmc', "ipmitool_spec.rb"), File.join(provider_spec_dir, 'bmcuser', "ipmitool_spec.rb")]
+    files = [File.join(provider_spec_dir, 'bmc', 'ipmitool_spec.rb'), File.join(provider_spec_dir, 'bmcuser', 'ipmitool_spec.rb')]
     expect(generator.generate_provider_spec_files).to eq(files)
   end
 

@@ -4,10 +4,8 @@ module Retrospec
     # this object is passed to the templates for erb template rendering
     # you can use data contained in this object in your templates
     class SpecObject < Retrospec::Plugins::V1::ContextObject
-
       attr_reader :instance, :module_path, :module_name, :all_hiera_data, :config
       attr_accessor :enable_beaker_tests, :parameters, :types, :resources, :type
-
 
       def initialize(mod_path, instance_data, config_data)
         @instance = instance_data
@@ -27,9 +25,9 @@ module Retrospec
       def class_hiera_data(classname)
         data = {}
         types.each do |t|
-          next unless t.type == :hostclass   #defines don't have hiera lookup values
+          next unless t.type == :hostclass # defines don't have hiera lookup values
           next unless t.name == classname
-          t.arguments.each do |k, v|
+          t.arguments.each do |k, _v|
             key = "#{t.name}::#{k}"
             data[key] = nil
           end
@@ -42,8 +40,8 @@ module Retrospec
         if @all_hiera_data.nil?
           @all_hiera_data = {}
           types.each do |t|
-            next unless t.type == :hostclass   #defines don't have hiera lookup values
-            t.arguments.each do |k, v|
+            next unless t.type == :hostclass # defines don't have hiera lookup values
+            t.arguments.each do |k, _v|
               key = "#{t.name}::#{k}"
               @all_hiera_data[key] = nil
             end
@@ -64,7 +62,6 @@ module Retrospec
       def fact_name
         instance[:name]
       end
-
     end
   end
 end
