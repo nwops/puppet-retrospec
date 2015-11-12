@@ -1,10 +1,7 @@
 require 'retrospec/plugins/v1/module_helpers'
 require 'retrospec/plugins/v1'
 require 'retrospec/config'
-require_relative 'generators/fact_generator'
-require_relative 'generators/module_generator'
-require_relative 'generators/type_generator'
-require_relative 'generators/provider_generator'
+require_relative 'generators/generators'
 require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
@@ -38,7 +35,7 @@ module Retrospec
           # validation also occurs when setting the module path
           Utilities::PuppetModule.instance.module_path = module_path
           Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
-          # setting the context is require to make other methods below work.  #TODO lazy create the context
+          # setting the context is required to make other methods below work.  #TODO lazy create the context
           @context = ::Retrospec::Puppet::SpecObject.new(module_path, Utilities::PuppetModule.instance, config_data)
         end
 
@@ -65,7 +62,7 @@ module Retrospec
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = %w(new_module new_fact new_type new_provider)
+          sub_commands  = %w(new_module new_fact new_type new_provider new_function)
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
           else
@@ -104,6 +101,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
               plugin.post_init   # finish initialization
             when :new_type
               plugin.new_type(plugin_data)
+            when :new_function
+              plugin.new_function(plugin_data)
             when :new_fact
               plugin.new_fact(plugin_data)
             when :new_provider
@@ -117,6 +116,18 @@ Generates puppet rspec test code based on the classes and defines inside the man
             puts "The subcommand #{sub_command} is not supported or valid".fatal
             exit 1
           end
+        end
+
+        def new_function(config)
+          plugin_data = Retrospec::Puppet::Generators::FunctionGenerator.run_cli(config)
+          f = Retrospec::Puppet::Generators::FunctionGenerator.new(plugin_data[:module_path], plugin_data)
+          post_init
+          f.generate_function_file
+        end
+
+        def function_spec_files(module_path, config)
+          f = Retrospec::Puppet::Generators::FunctionGenerator.new(module_path, config)
+          f.generate_spec_files
         end
 
         def new_provider(config)
@@ -204,6 +215,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           fact(module_path, config_data)
           type_spec_files(module_path, config_data)
           provider_spec_files(module_path, config_data)
+          function_spec_files(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           # a Type is nothing more than a defined type or puppet class
           # we could have named this manifest but there could be multiple types

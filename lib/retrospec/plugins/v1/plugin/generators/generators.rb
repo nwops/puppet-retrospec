@@ -1,0 +1,5 @@
+require_relative 'fact_generator'
+require_relative 'module_generator'
+require_relative 'function_generator'
+require_relative 'type_generator'
+require_relative 'provider_generator'
