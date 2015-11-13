@@ -55,8 +55,9 @@ describe 'type generator' do
   end
 
   it 'can generate a spec file' do
-    expect(generator.generate_type_spec_files).to eq(['/Users/cosman/github/puppet-retrospec/spec/fixtures/modules/tomcat/spec/unit/puppet/type/bmc_spec.rb',
-                                                      '/Users/cosman/github/puppet-retrospec/spec/fixtures/modules/tomcat/spec/unit/puppet/type/bmcuser_spec.rb'])
+    type_path = File.join(module_path, 'spec', 'unit', 'puppet', 'type')
+    files = [File.join(type_path, 'bmc_spec.rb'), File.join(type_path, 'bmcuser_spec.rb'), File.join(type_path, 'db_opatch_spec.rb')]
+    expect(generator.generate_type_spec_files).to eq(files)
   end
 
   describe 'cli' do
