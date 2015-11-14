@@ -33,20 +33,32 @@ module Retrospec
             @model.instance_methods = t.instance_methods(false)
           rescue LoadError => e
             puts "#{e.message}, generating empty file".fatal
+          rescue NameError => e
+            puts "#{e.message}, is this valid provider code?".fatal
+          rescue NoMethodError => e
+            puts "#{e.message}, is this valid provider code?".fatal
           end
           @model
         else
-          require type_file
-          file = type_file
-          @model = OpenStruct.new(:name => nil, :file => file,
-                                  :properties => [], :instance_methods => [],
-                                  :parameters => [], :methods_defined => [])
-          t = eval(File.read(file))
-          @model.name = t.name
-          @model.parameters = t.parameters
-          @model.properties = t.properties.collect(&:name)
-          @model.instance_methods = t.instance_methods(false)
-          @model
+          begin
+            require type_file
+            file = type_file
+            @model = OpenStruct.new(:name => File.basename(file, '.rb'), :file => file,
+                                    :properties => [], :instance_methods => [],
+                                    :parameters => [], :methods_defined => [])
+            t = eval(File.read(file))
+            @model.name = t.name
+            @model.parameters = t.parameters
+            @model.properties = t.properties.collect(&:name)
+            @model.instance_methods = t.instance_methods(false)
+            @model
+          rescue LoadError => e
+            puts "#{e.message}, generating empty file".fatal
+          rescue NameError => e
+            puts "#{e.message}, is this valid type code?".fatal
+          rescue NoMethodError => e
+            puts "#{e.message}, is this valid type code?".fatal
+          end
         end
         @model
       end
@@ -59,6 +71,7 @@ module Retrospec
       def self.newtype(name, _options = {}, &_block)
         ::Puppet::Type.type(name)
       end
+
     end
   end
 end
