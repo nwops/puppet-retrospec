@@ -38,6 +38,11 @@ Puppet::Type.newtype(:db_opatch) do
       isnamevar
     end
 
+    newproperty(:test_boolean) do
+      #newvalue :true
+      newvalue :false
+      defaultto true
+    end
     newparam(:patch_id) do
       desc <<-EOT
         The patchId of the OPatch.

@@ -70,7 +70,7 @@ describe 'type' do
     end
 
     it 'has correct amount of properties' do
-      expect(models.properties).to eq([:ensure])
+      expect(models.properties).to eq([:ensure, :test_boolean])
     end
 
     it 'has correct amount of parameters' do
