@@ -49,7 +49,7 @@ describe Puppet::Type.type(<%= name.inspect.to_sym %>) do
   <%- end -%>
   <%- instance_methods.each do |meth| %>
   describe 'method <%= meth %>' do
-    it { expect(type_instance.<%= meth %>('blah').to eq('blah') }
+    it { expect(type_instance.<%= meth %>('blah')).to eq('blah') }
   end
   <%- end -%>
 end
