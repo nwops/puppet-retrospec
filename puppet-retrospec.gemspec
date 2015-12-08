@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "puppet-retrospec"
-  s.version = "0.11.0"
+  s.version = "0.12.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Corey Osman"]
-  s.date = "2015-10-26"
+  s.date = "2015-12-08"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.extra_rdoc_files = [
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     ".rspec",
+    ".rubocop.yml",
     ".travis.yml",
     "CHANGELOG.md",
     "Gemfile",
@@ -32,6 +33,9 @@ Gem::Specification.new do |s|
     "lib/retrospec/plugins/v1/plugin/generators/fact_generator.rb",
     "lib/retrospec/plugins/v1/plugin/generators/facter.rb",
     "lib/retrospec/plugins/v1/plugin/generators/module_generator.rb",
+    "lib/retrospec/plugins/v1/plugin/generators/parsers/type.rb",
+    "lib/retrospec/plugins/v1/plugin/generators/provider_generator.rb",
+    "lib/retrospec/plugins/v1/plugin/generators/type_generator.rb",
     "lib/retrospec/plugins/v1/plugin/helpers.rb",
     "lib/retrospec/plugins/v1/plugin/puppet.rb",
     "lib/retrospec/plugins/v1/plugin/puppet_module.rb",
@@ -39,6 +43,10 @@ Gem::Specification.new do |s|
     "lib/retrospec/plugins/v1/plugin/spec_object.rb",
     "lib/retrospec/plugins/v1/plugin/template_helpers.rb",
     "lib/retrospec/plugins/v1/plugin/templates/clone-hook",
+    "lib/retrospec/plugins/v1/plugin/templates/providers/provider_spec.rb.retrospec.erb",
+    "lib/retrospec/plugins/v1/plugin/templates/providers/provider_template.rb.retrospec.erb",
+    "lib/retrospec/plugins/v1/plugin/templates/types/type_spec.rb.retrospec.erb",
+    "lib/retrospec/plugins/v1/plugin/templates/types/type_template.rb.retrospec.erb",
     "lib/retrospec/plugins/v1/plugin/type_code.rb",
     "lib/retrospec/plugins/v1/plugin/variable_store.rb",
     "lib/retrospec/plugins/v1/plugin/version.rb",
@@ -53,6 +61,9 @@ Gem::Specification.new do |s|
     "spec/fixtures/fixture_modules/zero_resource_module/manifests/empty_class.pp",
     "spec/fixtures/fixture_modules/zero_resource_module/manifests/not_a_resource_defination.pp",
     "spec/fixtures/fixture_modules/zero_resource_module/metadata.json",
+    "spec/fixtures/functions/bad_sha1.rb",
+    "spec/fixtures/functions/defined.rb",
+    "spec/fixtures/functions/sha1.rb",
     "spec/fixtures/manifests/includes-class.pp",
     "spec/fixtures/manifests/includes-defines.pp",
     "spec/fixtures/modules/concat/CHANGELOG.md",
@@ -562,11 +573,19 @@ Gem::Specification.new do |s|
     "spec/fixtures/modules/tomcat/manifests/setenv/entry.pp",
     "spec/fixtures/modules/tomcat/manifests/war.pp",
     "spec/fixtures/modules/tomcat/metadata.json",
+    "spec/fixtures/providers/bmc/ipmitool.rb",
+    "spec/fixtures/providers/bmcuser/ipmitool.rb",
+    "spec/fixtures/types/bmc.rb",
+    "spec/fixtures/types/bmcuser.rb",
     "spec/integration/retrospec_spec.rb",
     "spec/spec_helper.rb",
     "spec/unit/conditional_spec.rb",
     "spec/unit/generators/fact_generater_spec.rb",
     "spec/unit/generators/fact_spec.rb",
+    "spec/unit/generators/provider_generator_spec.rb",
+    "spec/unit/generators/provider_spec.rb",
+    "spec/unit/generators/type_generator_spec.rb",
+    "spec/unit/generators/type_spec.rb",
     "spec/unit/module_spec.rb",
     "spec/unit/plugin_spec.rb",
     "spec/unit/puppet-retrospec_spec.rb",
@@ -1832,6 +1851,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
       s.add_runtime_dependency(%q<retrospec>, ["~> 0.4"])
       s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
+      s.add_runtime_dependency(%q<facets>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 3.2"])
       s.add_development_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_development_dependency(%q<yard>, ["~> 0.7"])
@@ -1844,6 +1864,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<trollop>, [">= 0"])
       s.add_dependency(%q<retrospec>, ["~> 0.4"])
       s.add_dependency(%q<awesome_print>, [">= 0"])
+      s.add_dependency(%q<facets>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 3.2"])
       s.add_dependency(%q<puppet>, ["= 3.7.3"])
       s.add_dependency(%q<yard>, ["~> 0.7"])
@@ -1857,6 +1878,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<trollop>, [">= 0"])
     s.add_dependency(%q<retrospec>, ["~> 0.4"])
     s.add_dependency(%q<awesome_print>, [">= 0"])
+    s.add_dependency(%q<facets>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 3.2"])
     s.add_dependency(%q<puppet>, ["= 3.7.3"])
     s.add_dependency(%q<yard>, ["~> 0.7"])
