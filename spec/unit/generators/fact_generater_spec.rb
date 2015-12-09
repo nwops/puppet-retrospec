@@ -21,33 +21,48 @@ describe "fact generator" do
   end
 
   let(:context) do
-    {:name => 'datacenter', :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))}
+    {:name => 'datacenter', :template_dir => retrospec_templates_path }
   end
 
   let(:generator) do
     Retrospec::Puppet::Generators::FactGenerator.new(module_path, context )
   end
 
-  it 'returns facter dir' do
-    expect(generator.facter_dir).to eq(fixtures_facts_path)
+  describe :datacenter do
+    let(:context) do
+      {:name => 'datacenter', :template_dir => retrospec_templates_path}
+    end
+    it 'returns facter dir' do
+      expect(generator.facter_dir).to eq(fixtures_facts_path)
+    end
+
+    it 'returns module path' do
+      expect(generator.facter_spec_dir).to eq(facter_spec_dir)
+    end
+
+    it 'can return fact name' do
+      expect(generator.fact_name).to eq('datacenter')
+    end
+
+    it 'can generate a fact file' do
+      expect(generator.generate_fact_file.count).to eq(6)
+      expect(File.exists?(File.join(generator.facter_dir, "#{generator.fact_name}.rb")))
+    end
+
+    it 'can generate a spec file' do
+      expect(generator.generate_fact_spec_files.count).to eq(6)
+    end
   end
 
-  it 'returns module path' do
-    expect(generator.facter_spec_dir).to eq(facter_spec_dir)
-  end
+  describe :oracle_controls do
+    let(:context) do
+      {:name => 'oracle_controls',:template_dir => retrospec_templates_path}
+    end
 
-  it 'can return fact name' do
-    expect(generator.fact_name).to eq('datacenter')
-  end
-
-  it 'can generate a fact file' do
-    expect(generator.generate_fact_file.count).to eq(3)
-    expect(File.exists?(File.join(generator.facter_dir, "#{generator.fact_name}.rb")))
-  end
-
-  it 'can generate a spec file' do
-
-    expect(generator.generate_fact_spec_files.count).to eq(3)
+    it 'can generate a spec file' do
+      allow(generator).to receive(:fact_files).and_return([File.join(fixtures_facts_path, 'oracle_controls.rb')])
+      expect(generator.generate_fact_spec_files.count).to eq(2)
+    end
   end
 
 end

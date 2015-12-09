@@ -15,7 +15,7 @@ module Retrospec
           class Execution
             def self.execute(command, options={})
               value = {:klass => self.to_s.gsub('Retrospec::Puppet::Generators::', ''),
-              :method => :execute, :value => command}
+                       :method => :execute, :value => command}
               Retrospec::Puppet::Generators::Facter.exec_calls[command] = value
             end
           end
@@ -33,6 +33,10 @@ module Retrospec
           @used_facts ||= {}
         end
 
+        def self.methods_defined
+          @methods_defined ||= []
+        end
+
         def self.value(name)
           used_facts[name] = {:name => name}
         end
@@ -44,7 +48,9 @@ module Retrospec
         end
 
         def self.method_missing(method_sym, *arguments, &block)
-          @methods_defined << method_sym
+          unless methods_defined.include?(method_sym)
+            methods_defined << method_sym
+          end
         end
 
         def self.setcode(&block)
@@ -61,10 +67,11 @@ module Retrospec
         # loads the fact into the loader for evaluation
         # and data collection
         def self.load_fact(file)
-          @model = OpenStruct.new(:facts => {})
+          @model = OpenStruct.new(:facts => {}, :defined_methods => [], :global_used_facts => {}, :global_used_execs => {})
           @used_facts = {}
           @confines = []
-          @model = eval(File.read(file))
+          eval(File.read(file))
+          @model
         end
 
         # every fact will have a Facter.add functionality
@@ -73,9 +80,9 @@ module Retrospec
           @model.facts[name] = OpenStruct.new(:fact_name => name)
           # calls the facter.add block
           # this may call separate confine statements
-          @model.global_used_facts = used_facts
-          @used_facts = {}  # clear before fact specific are evaluated
-          @model.global_used_execs = exec_calls
+          # for each Facter.add block that gets called we need to reset a few things
+          @confines = {}
+          @used_facts = {}
           @exec_calls = {}
           begin
             block.call
@@ -83,9 +90,7 @@ module Retrospec
           end
           @model.facts[name].used_facts = used_facts
           @model.facts[name].confines = @confines
-          # clear any persistant data
-          @confines = []
-          @model.defined_methods = @methods_defined
+          @model.defined_methods = methods_defined
           @model.facts[name].exec_calls = exec_calls
           @model
         end

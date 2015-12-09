@@ -14,7 +14,7 @@ describe "facter" do
     model_facts = models.facts[fact_name].used_facts
     global_used_facts = models.global_used_facts
     expect(fact_name).to eq(:node_role)
-    expect(confines).to eq([{:kernel=>"Windows"}, {:is_virtual=>true}])
+    expect(confines).to eq({:kernel=>"Windows", :is_virtual=>true})
     expect(model_facts).to eq({})
     expect(global_used_facts).to eq({})
   end
@@ -32,7 +32,7 @@ describe "facter" do
       confines = fact_data.confines
       model_facts = fact_data.used_facts
       expect(fact_name).to eq(:fact1)
-      expect(confines).to eq([{:kernel=>"Linux"}])
+      expect(confines).to eq({:kernel=>"Linux"})
       expect(model_facts).to eq({})
       expect(global_used_facts).to eq({})
       fact_name = models.facts.keys.last
@@ -40,7 +40,7 @@ describe "facter" do
       confines = fact_data.confines
       model_facts = fact_data.used_facts
       expect(fact_name).to eq(:fact2)
-      expect(confines).to eq([{:kernel=>"Windows"}])
+      expect(confines).to eq({:kernel=>"Windows"})
       expect(model_facts).to eq({})
       expect(global_used_facts).to eq({})
     end
