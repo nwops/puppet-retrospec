@@ -21,14 +21,8 @@ module Retrospec
           end
         end
 
-        @model = OpenStruct.new(:facts => {})
-        @used_facts = {}
-        @confines = []
-        @methods_defined = []
-
         def initialize(name, options, &block)
           @fact_name = name
-          #block.call
         end
 
         def self.exec_calls
@@ -69,8 +63,8 @@ module Retrospec
         def self.load_fact(file)
           @model = OpenStruct.new(:facts => {})
           @used_facts = {}
+          @confines = []
           @model = eval(File.read(file))
-          transform_data(@model)
         end
 
         # every fact will have a Facter.add functionality
@@ -95,21 +89,7 @@ module Retrospec
           @model.facts[name].exec_calls = exec_calls
           @model
         end
-
-        def self.transform_data(data)
-          #ObenStruct.new(:)
-          # {:method_fact=>
-          #      {:fact_name=>:method_fact,
-          #       :used_facts=>{:is_virtual=>{:name=>:is_virtual}},
-          #       :confines=>[{:kernel=>"Linux"}],
-          #       :exec_calls=>["which lsb"]},
-          #  :global_used_facts=>{},
-          #  :global_used_execs=>[],
-          #  :defined_methods=>[:default_kernel]}
-          data
-        end
       end
-
      end
   end
 end
