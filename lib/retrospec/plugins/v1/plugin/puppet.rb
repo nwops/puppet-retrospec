@@ -59,7 +59,7 @@ module Retrospec
         # all options here are available in the config passed into the initialize code
         # this is the only entry point into the plugin
         def self.run_cli(global_opts, global_config, plugin_config, args=ARGV)
-          template_dir = plugin_config['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
+          template_dir = ENV['RETROSPEC_TEMPLATES_DIR'] || plugin_config['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
           scm_url = ENV['RETROSPEC_PUPPET_SCM_URL'] || plugin_config['plugins::puppet::templates::url']
           scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false

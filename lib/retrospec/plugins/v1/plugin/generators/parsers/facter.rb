@@ -15,20 +15,14 @@ module Retrospec
           class Execution
             def self.execute(command, options={})
               value = {:klass => self.to_s.gsub('Retrospec::Puppet::Generators::', ''),
-              :method => :execute, :value => command}
+                       :method => :execute, :value => command}
               Retrospec::Puppet::Generators::Facter.exec_calls[command] = value
             end
           end
         end
 
-        @model = OpenStruct.new(:facts => {})
-        @used_facts = {}
-        @confines = []
-        @methods_defined = []
-
         def initialize(name, options, &block)
           @fact_name = name
-          #block.call
         end
 
         def self.exec_calls
@@ -37,6 +31,10 @@ module Retrospec
 
         def self.used_facts
           @used_facts ||= {}
+        end
+
+        def self.methods_defined
+          @methods_defined ||= []
         end
 
         def self.value(name)
@@ -50,12 +48,16 @@ module Retrospec
         end
 
         def self.method_missing(method_sym, *arguments, &block)
-          @methods_defined << method_sym
+          unless methods_defined.include?(method_sym)
+            methods_defined << method_sym
+          end
+          method_sym
         end
 
         def self.setcode(&block)
           begin
             block.call
+          rescue Exception => e
           rescue NameError => e
           end
         end
@@ -67,49 +69,41 @@ module Retrospec
         # loads the fact into the loader for evaluation
         # and data collection
         def self.load_fact(file)
-          @model = OpenStruct.new(:facts => {})
-          @used_facts = {}
-          @model = eval(File.read(file))
-          transform_data(@model)
+          @model = OpenStruct.new(:facts => {}, :defined_methods => [], :global_used_facts => {}, :global_used_execs => {})
+          begin
+            proc = Proc.new {}
+            eval(File.read(file), proc.binding, file)
+          rescue LoadError => e
+            puts "Error loading dependency for file: #{file}, skipping".fatal
+          rescue Exception => e
+            puts "Error evaluating file: #{file}, skipping".fatal
+          end
+          @model
         end
 
         # every fact will have a Facter.add functionality
         # this is the startign point to collect all data
         def self.add(name, options={}, &block)
-          @model.facts[name] = OpenStruct.new(:fact_name => name)
           # calls the facter.add block
           # this may call separate confine statements
-          @model.global_used_facts = used_facts
-          @used_facts = {}  # clear before fact specific are evaluated
-          @model.global_used_execs = exec_calls
+          # for each Facter.add block that gets called we need to reset a few things
+          @confines = {}
+          @used_facts = {}
           @exec_calls = {}
           begin
             block.call
+          rescue Exception => e
           rescue NameError => e
           end
+
+          @model.facts[name] = OpenStruct.new(:fact_name => name)
           @model.facts[name].used_facts = used_facts
           @model.facts[name].confines = @confines
-          # clear any persistant data
-          @confines = []
-          @model.defined_methods = @methods_defined
+          @model.defined_methods = methods_defined
           @model.facts[name].exec_calls = exec_calls
           @model
         end
-
-        def self.transform_data(data)
-          #ObenStruct.new(:)
-          # {:method_fact=>
-          #      {:fact_name=>:method_fact,
-          #       :used_facts=>{:is_virtual=>{:name=>:is_virtual}},
-          #       :confines=>[{:kernel=>"Linux"}],
-          #       :exec_calls=>["which lsb"]},
-          #  :global_used_facts=>{},
-          #  :global_used_execs=>[],
-          #  :defined_methods=>[:default_kernel]}
-          data
-        end
       end
-
      end
   end
 end

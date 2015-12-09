@@ -32,6 +32,13 @@ def clean_up_spec_dir(dir)
 
 end
 
+def retrospec_templates_path
+  # I like to develop the templates at the same time as this gem
+  # but I keep the templates in another repo
+  # as a side effect, puppet retrospec will pick up this environment variable as well
+  ENV['RETROSPEC_TEMPLATES_DIR'] ||= File.join(ENV['HOME'], 'github', 'retrospec-templates')
+end
+
 def install_module(module_name)
   FileUtils.mkdir_p(fixture_modules_path)
   puts `puppet module install -i #{fixture_modules_path} #{module_name}`

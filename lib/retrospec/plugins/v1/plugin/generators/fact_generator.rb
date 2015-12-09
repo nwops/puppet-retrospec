@@ -1,4 +1,4 @@
-require_relative 'facter'
+require_relative 'parsers/facter'
 
 module Retrospec
   module Puppet
@@ -60,17 +60,26 @@ Generates a new fact with the given name
           generate_fact_spec_files
         end
 
+        # returns an array of fact files found in the facter directory
+        def fact_files
+          @fact_files ||= Dir.glob(File.join(facter_dir, '*.rb')).sort
+        end
+
         # generates spec files for each fact defined in the fact file
+        # returns a array of generated spec files
         def generate_fact_spec_files
-          fact_files = Dir.glob(File.join(facter_dir, '*.rb')).sort
+          spec_files = []
+          template_file = File.join(template_dir, 'fact_spec.rb.retrospec.erb')
           fact_files.each do | fact_file|
             fact_file_data = Retrospec::Puppet::Generators::Facter.load_fact(fact_file)
             fact_file_data.facts.each do |name, fact_data|
               # because many facts can be in a single file we want to create a unique file for each fact
               fact_spec_path = File.join(facter_spec_dir, "#{name}_spec.rb")
-              safe_create_template_file(fact_spec_path, File.join(template_dir, 'fact_spec.rb.retrospec.erb'), fact_data)
+              safe_create_template_file(fact_spec_path,template_file , fact_data)
+              spec_files << fact_spec_path
             end
           end
+          spec_files
         end
 
         # the template directory located inside the your retrospec plugin gem
