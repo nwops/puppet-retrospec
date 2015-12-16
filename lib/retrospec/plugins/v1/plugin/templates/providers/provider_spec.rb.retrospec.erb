@@ -1,10 +1,14 @@
+require 'spec_helper'
+
 describe Puppet::Type.type(<%= type_name.inspect %>).provider(<%= provider_name.inspect %>) do
   let (:provider) { subject }
-  let(:resource) { subject.new(<%= properties.to_h.inspect %>) }
-  subject { resource.provider }
+  let(:properties) do
+    <%= properties.to_h.inspect %>
+  end
+  let(:resource) { subject.new(properties) }
 
   it 'should return an array of instances' do
-    expect(subject.instances).to_be instance_of?(Array)
+    expect(subject.instances).to be_instance_of(Array)
   end
 
   describe 'getter property methods' do
