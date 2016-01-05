@@ -70,7 +70,13 @@ module Retrospec
           @model = OpenStruct.new(:facts => {}, :defined_methods => [], :global_used_facts => {}, :global_used_execs => {})
           @used_facts = {}
           @confines = []
-          eval(File.read(file))
+          begin
+            eval(File.read(file))
+          rescue LoadError => e
+            puts "Error loading dependency for file: #{file}, skipping".fatal
+          rescue
+            puts "Error evaling file: #{file}, skipping".fatal
+          end
           @model
         end
 
