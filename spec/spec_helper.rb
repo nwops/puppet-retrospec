@@ -7,6 +7,10 @@ def fixture_modules_path
   @fixture_module_path ||= File.expand_path(File.join(fixtures_path, 'modules'))
 end
 
+def fake_fixture_modules
+  @fake_fixture_modules ||= File.expand_path(File.join(fixtures_path, 'fixture_modules'))
+end
+
 def gem_template_path
   @gem_template_path ||= File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'lib', 'retrospec', 'plugins', 'v1', 'plugin', 'templates'))
 end
