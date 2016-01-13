@@ -118,6 +118,13 @@ Generates puppet rspec test code based on the classes and defines inside the man
           end
         end
 
+        def new_schema(module_path, config)
+          plugin_data = Retrospec::Puppet::Generators::SchemaGenerator.run_cli(config)
+          plugin_data[:puppet_context] = context
+          s = Retrospec::Puppet::Generators::SchemaGenerator.new(plugin_data[:module_path], plugin_data)
+          s.generate_schema_file
+        end
+
         def new_function(config)
           plugin_data = Retrospec::Puppet::Generators::FunctionGenerator.run_cli(config)
           f = Retrospec::Puppet::Generators::FunctionGenerator.new(plugin_data[:module_path], plugin_data)
@@ -216,6 +223,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           type_spec_files(module_path, config_data)
           provider_spec_files(module_path, config_data)
           function_spec_files(module_path, config_data)
+          new_schema(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           # a Type is nothing more than a defined type or puppet class
           # we could have named this manifest but there could be multiple types

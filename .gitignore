@@ -1,4 +1,5 @@
 # rcov generated
+*.swp
 coverage
 coverage.data
 spec/fixtures/modules

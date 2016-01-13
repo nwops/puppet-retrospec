@@ -7,6 +7,10 @@ describe 'puppet-retrospec' do
     FileUtils.rm_rf(fixture_modules_path) if ENV['RETROSPEC_CLEAN_UP_TEST_MODULES'] =~ /true/
   end
 
+  let(:template_dir) do
+    File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))
+  end
+
   let(:global_config) do
     { 'author' => 'Corey Osman' }
   end
@@ -41,7 +45,7 @@ describe 'puppet-retrospec' do
   before :each do
     clean_up_spec_dir(@path)
     @opts = { :module_path => @path, :enable_beaker_tests => false, :name => 'name-test123',
-              :enable_user_templates => false, :template_dir => '/tmp/.retrospec_templates' }
+              :enable_user_templates => false, :template_dir => template_dir }
   end
 
   it 'should run without errors using new' do
