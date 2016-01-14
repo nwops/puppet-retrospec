@@ -47,7 +47,7 @@ describe 'type' do
     end
 
     it 'has correct amount of parameters' do
-      expect(models.parameters).to eq([:name, :force, :provider])
+      expect(models.parameters).to eq([:name, :force])
     end
 
     it 'has the correct number of instance methods' do

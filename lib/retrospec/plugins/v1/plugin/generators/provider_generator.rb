@@ -44,7 +44,7 @@ module Retrospec::Puppet::Generators
 Generates a new provider with the given name.
 
         EOS
-        opt :name, 'The name of the type you wish to create', :type => :string, :required => true, :short => '-n'
+        opt :name, 'The name of the provider you wish to create', :type => :string, :required => true, :short => '-n'
         opt :type, 'The type name of the provider', :type => :string, :required => true, :short => '-t'
       end
       unless sub_command_opts[:name]

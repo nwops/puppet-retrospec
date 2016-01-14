@@ -37,6 +37,8 @@ module Retrospec
             puts "#{e.message}, is this valid provider code?".fatal
           rescue NoMethodError => e
             puts "#{e.message}, is this valid provider code?".fatal
+          rescue ::Puppet::Context::UndefinedBindingError => e
+            puts "There was an issue with loading the provider code for #{file}, skipping".fatal
           end
           @model
         else
