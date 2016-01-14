@@ -4,8 +4,6 @@ describe "fact generator" do
 
   before :each do
     FileUtils.rm_rf(facter_spec_dir)
-    allow(generator).to receive(:facter_dir).and_return(fixtures_facts_path)
-    allow(generator).to receive(:fact_name_path).and_return(File.join(module_path, 'lib', 'facter', "#{generator.fact_name}.rb"))
   end
 
   after :each do
@@ -29,6 +27,11 @@ describe "fact generator" do
   end
 
   describe :datacenter do
+    before(:each) do
+      allow(generator).to receive(:facter_dir).and_return(fixtures_facts_path)
+      allow(generator).to receive(:fact_name_path).and_return(File.join(module_path, 'lib', 'facter', "#{generator.fact_name}.rb"))
+    end
+
     let(:context) do
       {:name => 'datacenter', :template_dir => retrospec_templates_path}
     end
@@ -55,6 +58,11 @@ describe "fact generator" do
   end
 
   describe :oracle_controls do
+    before(:each) do
+      allow(generator).to receive(:facter_dir).and_return(fixtures_facts_path)
+      allow(generator).to receive(:fact_name_path).and_return(File.join(module_path, 'lib', 'facter', "#{generator.fact_name}.rb"))
+    end
+
     let(:context) do
       {:name => 'oracle_controls',:template_dir => retrospec_templates_path}
     end
@@ -65,4 +73,13 @@ describe "fact generator" do
     end
   end
 
+  describe 'real module' do
+    let(:module_path) do
+      sample_module_path
+    end
+
+    it 'can generate a spec file' do
+      expect(generator.generate_fact_spec_files).to eq([File.join(facter_spec_dir, 'fix_installed_spec.rb')])
+    end
+  end
 end
