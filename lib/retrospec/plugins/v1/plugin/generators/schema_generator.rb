@@ -15,6 +15,7 @@ module Retrospec
           # the SpecObject can be customized to your liking as its different for every plugin gem.
           @context = OpenStruct.new(:puppet_context => spec_object[:puppet_context])
           @schema = base_schema
+          @parameter_count = 0
         end
 
         def description
@@ -28,6 +29,7 @@ module Retrospec
 # By default this schema is generic and only covers basic parameter types.
 # You should update the schema to match your expected data types in your puppet classes
 # or anywhere else you call hiera using the hiera() function.
+# This schema contains #{@parameter_count} entries.
           EOF
         end
         # used to display subcommand options to the cli
@@ -84,65 +86,55 @@ Generates a kwalify schema based off class parameters.
 
         private
 
+        # generates a class or defination map
+        def generate_type_map(puppet_type)
+          type_name = puppet_type.type.to_s
+          arg_map = {}
+          #arg_map = {'mapping' => {}, 'required' => false, 'type' => 'map' }
+          puppet_type.arguments.each do |k, _v|
+            key = "#{puppet_type.name}::#{k}"
+            kwalify_type = type_map(_v.class)
+            @parameter_count = @parameter_count + 1
+            arg_map.deep_merge!(generate_map(key, _v, kwalify_type))
+          end
+          t_map = {type_name => { 'type' => 'map', 'mapping' => arg_map}}
+        end
+
+        def parameter_schema(found_types)
+          parameter_data = {}
+          found_types.each do |t|
+            parameter_data = parameter_data.deep_merge(generate_type_map(t))
+          end
+          parameter_data
+        end
+
         # gathers all the class parameters that could be used in hiera data mocking
         # this is the only function that generates the necessary data to be used for schema
         # creation.
         def all_hiera_data
           if @all_hiera_data.nil?
-            @all_hiera_data = {}
-            types.each do |t|
-              next unless t.type == :hostclass # defines don't have hiera lookup values
-              t.arguments.each do |k, _v|
-                key = "#{t.name}::#{k}"
-                @all_hiera_data[key] = {'type' => type_mapper(_v.class.to_s), 'required' => is_required?(_v) }
-              end
-            end
+            @all_hiera_data = parameter_schema(types)
           end
           @all_hiera_data
         end
-
-
 
         def is_required?(item)
           item.nil?
         end
 
-
-        # map the puppet data type to a kwalify data type
-        # str
-        # int
-        # float
-        # number (== int or float)
-        # text (== str or number)
-        # bool
-        # date
-        # time
-        # timestamp
-        # seq
-        # map
-        # scalar (all but seq and map)
-        # any (means any data)
-        def type_mapper(data_type)
-          case data_type
-            when 'Puppet::Parser::AST::Variable'
-              'any'
-            when 'Puppet::Parser::AST::Boolean'
-              'bool'
-            when 'Puppet::Parser::AST::String'
-              'str'
-            when 'Puppet::Parser::AST::ASTHash'
-              'map'
-            when 'Puppet::Parser::AST::ASTArray'
-              'seq'
-            else
-              'any'
-          end
-        end
-
         def base_schema
           @base_schema ||= {
             "type" => "map",
-            "mapping" => {}
+            "mapping" => {
+              "hostclass" => {
+                "type" => "map",
+                "mapping" => {}
+              },
+              "definition" => {
+                "type" => "map",
+                "mapping" => {}
+              }
+            }
           }
         end
 
@@ -158,6 +150,63 @@ Generates a kwalify schema based off class parameters.
           context.puppet_context
         end
 
+        # conversion table from ruby types to kwalify types
+        def type_table
+          @type_table ||= {
+            'Array'=>"seq",
+            'Hash'=>"map",
+            'String'=>"str",
+            'Integer'=>"int",
+            'Float'=>"float",
+            'Numeric'=>"number",
+            'Date'=>"date",
+            'Time'=>"timestamp",
+            'Object'=>"any",
+            'FalseClass' => 'bool',
+            'TrueClass' => 'bool',
+            'Fixnum' => 'number',
+            'NilClass' => 'any',
+            'Puppet::Parser::AST::Variable' => 'any',
+            'Puppet::Parser::AST::Boolean' => 'bool',
+            'Puppet::Parser::AST::String' => 'str',
+            'Puppet::Parser::AST::ASTHash' => 'map',
+            'Puppet::Parser::AST::ASTArray' => 'seq',
+          }
+        end
+
+        # convert the given class to a kwalify class, defaults to any
+        def type_map(klass)
+          type_table[klass.to_s] || 'any'
+        end
+
+        # given a kwalify key undefined error
+        # this method will produce a map of how the key should be defined
+        # example
+        #"motd::motd_content" => {
+        #   "type" => "str",
+        #   "required" => false
+        # },
+        def generate_map(key, value, value_type)
+          case value_type
+            when 'seq'
+              {key => {
+                "type" => 'seq',
+                "sequence" => [{'type' => 'str'}],
+                "required" => is_required?(value)
+              }}
+            when 'map'
+              {key => {
+                "type" => 'map',
+                "mapping" => {'=' => {'type' => 'any', 'required' => false}},
+                "required" => is_required?(value)
+              }}
+            else
+              {key => {
+                "type" => value_type,
+                "required" => is_required?(value)
+              }}
+          end
+        end
       end
     end
   end

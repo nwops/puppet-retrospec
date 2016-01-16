@@ -34,14 +34,25 @@ describe 'schema_generator' do
   let(:schema_map) do
     {"type"=>"map",
      "mapping"=>
-       {"tomcat::catalina_home"=>{"type"=>"any", "required"=>false},
-        "tomcat::user"=>{"type"=>"any", "required"=>false},
-        "tomcat::group"=>{"type"=>"any", "required"=>false},
-        "tomcat::install_from_source"=>{"type"=>"bool", "required"=>false},
-        "tomcat::purge_connectors"=>{"type"=>"bool", "required"=>false},
-        "tomcat::purge_realms"=>{"type"=>"bool", "required"=>false},
-        "tomcat::manage_user"=>{"type"=>"bool", "required"=>false},
-        "tomcat::manage_group"=>{"type"=>"bool", "required"=>false}
+       {"hostclass" =>{
+         "tomcat::catalina_home"=>{"type"=>"any", "required"=>false},
+         "tomcat::user"=>{"type"=>"any", "required"=>false},
+         "tomcat::group"=>{"type"=>"any", "required"=>false},
+         "tomcat::install_from_source"=>{"type"=>"bool", "required"=>false},
+         "tomcat::purge_connectors"=>{"type"=>"bool", "required"=>false},
+         "tomcat::purge_realms"=>{"type"=>"bool", "required"=>false},
+         "tomcat::manage_user"=>{"type"=>"bool", "required"=>false},
+         "tomcat::manage_group"=>{"type"=>"bool", "required"=>false}
+       },
+        "defination" => {
+          "tomcat::war::catalina_base"=>{"type"=>"any", "required"=>false},
+          "tomcat::war::app_base"=>{"type"=>"any", "required"=>false},
+          "tomcat::war::deployment_path"=>{"type"=>"any", "required"=>false},
+          "tomcat::war::war_ensure"=>{"type"=>"str", "required"=>false},
+          "tomcat::war::war_name"=>{"type"=>"any", "required"=>false},
+          "tomcat::war::war_purge"=>{"type"=>"bool", "required"=>false},
+          "tomcat::war::war_source"=>{"type"=>"any", "required"=>false}
+        }
        }
     }
   end
@@ -53,6 +64,7 @@ describe 'schema_generator' do
 
   it 'should contain proper mapping' do
     schema_file = generator.generate_schema_file
+    binding.pry
     expect(YAML.load_file(schema_file)).to eq(schema_map)
   end
 
