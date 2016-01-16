@@ -18,15 +18,12 @@ module Retrospec
         end
 
         def template_dir
-          unless @template_dir
             external_templates = File.expand_path(File.join(config_data[:template_dir], 'types', 'type_template.rb.retrospec.erb'))
             if File.exist?(external_templates)
-              @template_dir = File.join(config_data[:template_dir], 'types')
+              File.join(config_data[:template_dir], 'types')
             else
-              @template_dir = File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'types'))
+              File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'types'))
             end
-          end
-          @template_dir
         end
         # used to display subcommand options to the cli
         # the global options are passed in for your usage

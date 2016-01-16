@@ -22,15 +22,12 @@ module Retrospec::Puppet::Generators
     # then looks inside the gem path templates directory, which is really only useful
     # when developing new templates.
     def template_dir
-      unless @template_dir
-        external_templates = File.expand_path(File.join(config_data[:template_dir], 'providers', 'provider_template.rb.retrospec.erb'))
-        if File.exist?(external_templates)
-          @template_dir = File.join(config_data[:template_dir], 'types')
-        else
-          @template_dir = File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'providers'))
-        end
+      external_templates = File.expand_path(File.join(config_data[:template_dir], 'providers', 'provider_template.rb.retrospec.erb'))
+      if File.exist?(external_templates)
+        File.join(config_data[:template_dir], 'providers')
+      else
+        File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'providers'))
       end
-      @template_dir
     end
 
     # used to display subcommand options to the cli
