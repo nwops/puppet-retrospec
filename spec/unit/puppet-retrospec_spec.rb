@@ -8,7 +8,7 @@ describe 'puppet-retrospec' do
   end
 
   let(:template_dir) do
-    File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))
+    retrospec_templates_path
   end
 
   let(:global_config) do
@@ -60,25 +60,176 @@ describe 'puppet-retrospec' do
     tomcat.post_init
     expect(tomcat.context.instance.future_parser).to eq(true)
   end
-  describe 'new module' do
-    after :each do
-      FileUtils.rm_rf('/tmp/new_module')
+
+  describe 'new_module' do
+  
+    let(:module_path) do
+      '/tmp/testabc123'
     end
-    it 'should create a module when it does not exist' do
-      opts = { 'plugins::puppet::author' => 'test_name', :module_path => '/tmp/new_module', :create => true,
-               :namespace => 'retrospec', :enable_beaker_tests => false,
-               :enable_user_templates => false, :name => 'moduletest',
-               :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates')),
-               :enable_future_parser => true }
+
+    before(:all) do
       ENV['RETROSPEC_PUPPET_AUTO_GENERATE'] = 'true'
-      new_module = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
-      allow(new_module).to receive(:gets).and_return("y\n")
-      new_module.new_module(opts)
-      new_module.post_init
-      new_module.run
-      expect(File.exist?(File.join(new_module.manifest_dir, 'init.pp'))).to eq(true)
-      expect(File.exist?(File.join(new_module.module_path, 'metadata.json'))).to eq(true)
-      expect(JSON.parse(File.read(File.join(new_module.module_path, 'metadata.json')))['author']).to eq('test_name')
+    end
+
+    let(:plugin_config) do
+      {
+        'plugins::puppet::template_dir' => retrospec_templates_path,
+        'plugins::puppet::author' => 'test_name',
+        'plugins::puppet::default_license' => 'Apache-3.0'
+      }
+    end
+    describe 'without module path' do
+      before(:each) do
+        FileUtils.rm_rf('/tmp/testabc123')
+      end
+      let(:module_path) do
+        '/tmp'
+      end
+
+      let(:global_opts) do
+        {:module_path => module_path }
+      end
+
+      let(:args) do
+        ['new_module', '-n', 'testabc123']
+      end
+
+      it 'should create a module when it does not exist' do
+        data = Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+        expect(File.exist?(File.join(module_path, 'testabc123', 'manifests', 'init.pp'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'testabc123', 'metadata.json'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'testabc123', 'testabc123_schema.yaml'))).to eq(true)
+        metadata = JSON.parse(File.read(File.join(module_path, 'testabc123', 'metadata.json')))
+        expect(metadata['author']).to eq('test_name')
+        expect(metadata['license']).to eq('Apache-3.0')
+      end
+    end
+    describe 'with path' do
+      let(:module_path) do
+        '/tmp/testabc124'
+      end
+
+      let(:global_opts) do
+        {:module_path => module_path }
+      end
+
+      before(:all) do
+        FileUtils.rm_rf('/tmp/testabc124')
+      end
+
+      let(:args) do
+        ['new_module', '-n', 'testabc124']
+      end
+
+      it 'should create a module when it does not exist' do
+        data = Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+        expect(File.exist?(File.join(module_path, 'manifests', 'init.pp'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'metadata.json'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'testabc124_schema.yaml'))).to eq(true)
+        metadata = JSON.parse(File.read(File.join(module_path, 'metadata.json')))
+        expect(metadata['author']).to eq('test_name')
+        expect(metadata['license']).to eq('Apache-3.0')
+      end
+    end
+  end
+  describe 'generator functions' do
+    let(:module_path) do
+      '/tmp/testabc123'
+    end
+
+    before(:all) do
+      ENV['RETROSPEC_PUPPET_AUTO_GENERATE'] = 'true'
+    end
+
+    let(:plugin_config) do
+      {
+        'plugins::puppet::template_dir' => retrospec_templates_path,
+        'plugins::puppet::author' => 'test_name'
+      }
+    end
+
+    let(:global_opts) do
+      {:module_path => module_path }
+    end
+
+    before(:each) do
+      FileUtils.rm_rf(module_path)
+      Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config,['new_module', '-n', 'testabc123'])
+    end
+
+    after(:all) do
+      FileUtils.rm_rf(module_path)
+    end
+
+    describe 'new_fact' do
+
+      let(:args) do
+        ['new_fact', '-n', 'test_fact']
+      end
+
+      it 'should create spec and rb file' do
+        Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+        expect(File.exist?(File.join(module_path,'lib', 'facter', 'test_fact.rb'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'spec', 'unit', 'facter', 'test_fact_spec.rb'))).to eq(true)
+      end
+    end
+    describe 'new_type' do
+
+      let(:args) do
+        ['new_type', '-n', 'type_a']
+      end
+
+      it 'should create spec and rb file' do
+        Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+        expect(File.exist?(File.join(module_path,'lib', 'puppet', 'type', 'type_a.rb'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'spec', 'unit', 'puppet', 'type', 'type_a_spec.rb'))).to eq(true)
+      end
+    end
+    describe 'new_provider' do
+
+      let(:args) do
+        ['new_provider', '-n', 'pname', '--type', 'type_a']
+      end
+
+      it 'should create spec and rb file' do
+        Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+        expect(File.exist?(File.join(module_path,'lib', 'puppet', 'provider', 'type_a', 'pname.rb'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'spec', 'unit', 'puppet', 'provider', 'type_a', 'pname_spec.rb'))).to eq(true)
+      end
+    end
+    describe 'new_function' do
+
+      describe 'v3' do
+        let(:args) do
+          ['new_function', '-n', 'test_func_v3', '--type', 'v3']
+        end
+
+        it 'should create v3 function' do
+          Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+          expect(File.exist?(File.join(module_path,'lib', 'puppet','parser', 'functions', 'test_func_v3.rb'))).to eq(true)
+        end
+
+        it 'should create v3 function spec file' do
+          Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+          expect(File.exist?(File.join(module_path, 'spec', 'functions', 'test_func_v3_spec.rb'))).to eq(true)
+        end
+
+      end
+      describe 'v4' do
+        let(:args) do
+          ['new_function', '-n', 'test_func_v4', '--type', 'v4']
+        end
+
+        it 'should create v4 function' do
+          Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+          expect(File.exist?(File.join(module_path,'lib', 'puppet', 'functions', 'test_func_v4.rb'))).to eq(true)
+        end
+
+        it 'should create v4 function spec file' do
+          Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, plugin_config, args)
+          expect(File.exist?(File.join(module_path, 'spec', 'functions', 'test_func_v4_spec.rb'))).to eq(true)
+        end
+      end
     end
   end
 
@@ -160,7 +311,7 @@ describe 'puppet-retrospec' do
 
   it 'should create acceptance spec helper file' do
     opts = { :module_path => @path, :enable_beaker_tests => true,
-             :template_dir => '/tmp/my_templates' }
+             :template_dir => template_dir }
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper_acceptance.rb'))
@@ -170,7 +321,7 @@ describe 'puppet-retrospec' do
 
   it 'should not create acceptance spec helper file' do
     opts = { :module_path => @path, :enable_beaker_tests => false,
-             :template_dir => '/tmp/my_templates' }
+             :template_dir => template_dir }
     filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper_acceptance.rb'))
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
@@ -180,7 +331,7 @@ describe 'puppet-retrospec' do
 
   it 'should create 15 nodesets' do
     opts = { :module_path => @path, :enable_beaker_tests => true,
-             :template_dir => '/tmp/my_templates' }
+             :template_dir => template_dir }
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(@path, 'spec', 'acceptance', 'nodesets', 'default.yml'))

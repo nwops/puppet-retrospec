@@ -21,8 +21,8 @@ module Retrospec
         # the global options are passed in for your usage
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into config object
-        def self.run_cli(global_opts)
-          sub_command_opts = Trollop.options do
+        def self.run_cli(global_opts, args=ARGV)
+          sub_command_opts = Trollop.options(args) do
             banner <<-EOS
 Generates a new fact with the given name
 

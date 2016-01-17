@@ -5,7 +5,7 @@ module Retrospec
   module Puppet
     module Generators
       class ModuleGenerator < Retrospec::Plugins::V1::Plugin
-        attr_reader :template_dir, :context, :module_path, :fact_name, :config_data
+        attr_reader :template_dir, :context, :fact_name, :config_data
 
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.
@@ -23,27 +23,28 @@ module Retrospec
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into config object
         # returns a new instance of this class
-        def self.run_cli(global_opts)
+        def self.run_cli(global_opts, args=ARGV)
           namespace     = global_opts['plugins::puppet::namespace'] || 'namespace'
           author        = global_opts['plugins::puppet::author'] || 'author_name'
-          sub_command_opts = Trollop.options do
+          license       = global_opts['plugins::puppet::default_license'] || 'Apache-2.0'
+          sub_command_opts = Trollop.options(args) do
             banner <<-EOS
 Generates a new module with the given name and namespace
 
             EOS
-            opt :name, 'The name of the module you wish to create', :type => :string, :required => false, :short => '-n',
+            opt :name, 'The name of the module you wish to create', :type => :string, :required => true, :short => '-n',
                                                                     :default => File.basename(global_opts[:module_path])
             opt :namespace, 'The namespace to use only when creating a new module', :default => namespace, :required => false,
                                                                                     :type => :string
             opt :author, 'The full name of the module author', :default => author, :required => false, :short => '-a',
                                                                :type => :string
+            opt :license, "The license type for the module", :default => license, :type => :string, :short => '-l'
           end
           unless sub_command_opts[:name]
             Trollop.educate
             exit 1
           end
           plugin_data = global_opts.merge(sub_command_opts)
-          Retrospec::Puppet::Generators::ModuleGenerator.new(plugin_data[:module_path], plugin_data)
         end
 
         def run(manifest_dir)
@@ -78,6 +79,7 @@ Generates a new module with the given name and namespace
           require 'puppet/module_tool/metadata'
           # make sure the metadata file exists
           module_path = config_data[:module_path]
+          license = config_data[:license] || config_data['plugins::puppet::default_license'] || 'Apache-2.0'
           author = config_data[:author] || config_data['plugins::puppet::author'] || 'your_name'
           namespace = config_data[:namespace] || config_data['plugins::puppet::namespace'] || 'namespace'
           metadata_file = File.join(module_path, 'metadata.json')
@@ -93,8 +95,9 @@ Generates a new module with the given name and namespace
                 'name' => name.downcase,
                 'version' => '0.1.0',
                 'author'  => author,
+                'license' => license,
                 'dependencies' => [
-                  { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 4.9.0' }
+                  { 'name' => 'puppetlabs-stdlib', 'version_requirement' => '>= 4.11.0' }
                 ]
               )
             rescue ArgumentError => e

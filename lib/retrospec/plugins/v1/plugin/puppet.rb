@@ -20,7 +20,8 @@ module Retrospec
     module V1
       class Puppet < Retrospec::Plugins::V1::Plugin
         include Retrospec::Puppet::TemplateHelpers
-        attr_reader :template_dir, :context, :manifest_dir, :manifest_files
+        attr_reader :template_dir, :context, :manifest_files
+        attr_accessor :manifest_dir
 
         def initialize(supplied_module_path = nil, config = {})
           super
@@ -33,6 +34,9 @@ module Retrospec
         def post_init
           # before we validate the module directory we should ensure the module exists by creating it
           # validation also occurs when setting the module path
+          # these are required because the puppet module creates a singleton with some cached values
+          Utilities::PuppetModule.instance.module_dir_name = File.basename(module_path)
+          Utilities::PuppetModule.instance.module_name = File.basename(module_path)
           Utilities::PuppetModule.instance.module_path = module_path
           Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
           # setting the context is required to make other methods below work.  #TODO lazy create the context
@@ -45,8 +49,17 @@ module Retrospec
         # anything since it is not mandatory
         # I thought about using the the module face to perform this generation but it seems like its not
         # supported at this time, and you can't specify the path to generate the module in
-        def new_module(plugin_data)
-          f = Retrospec::Puppet::Generators::ModuleGenerator.run_cli(plugin_data)
+        def new_module(plugin_data, args)
+          plugin_data = Retrospec::Puppet::Generators::ModuleGenerator.run_cli(plugin_data, args)
+          unless File.basename(plugin_data[:module_path]) == plugin_data[:name]
+            plugin_data[:module_path] = File.join(plugin_data[:module_path], plugin_data[:name])
+          end
+          # we need to set this because the this class is created before we created the new module directory
+          # so we now have to set the manifests and module directory
+          self.module_path = plugin_data[:module_path]
+          config_data[:module_path] = plugin_data[:module_path]
+          self.manifest_dir = File.join(plugin_data[:module_path], 'manifests')
+          f = Retrospec::Puppet::Generators::ModuleGenerator.new(plugin_data[:module_path], plugin_data)
           f.run(manifest_dir)
         end
 
@@ -68,7 +81,7 @@ module Retrospec
           else
             sub_command_help = ''
           end
-          plugin_opts = Trollop.options do
+          plugin_opts = Trollop.options(args) do
             version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
 Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
@@ -76,17 +89,17 @@ Generates puppet rspec test code based on the classes and defines inside the man
 
             EOS
             opt :template_dir, 'Path to templates directory (only for overriding Retrospec templates)', :type => :string,
-                                                                                                        :required => false, :default => template_dir
+                :required => false, :default => template_dir
             opt :scm_url, 'SCM url for retrospec templates', :type => :string, :required => false,
-                                                             :default => scm_url
+                :default => scm_url
             opt :branch, 'Branch you want to use for the retrospec template repo', :type => :string, :required => false,
-                                                                                   :default => scm_branch
+                :default => scm_branch
             opt :enable_beaker_tests, 'Enable the creation of beaker tests', :require => false, :type => :boolean, :default => beaker_tests
             opt :enable_future_parser, 'Enables the future parser only during validation', :default => future_parser, :require => false, :type => :boolean
             stop_on sub_commands
           end
           # the passed in options will always override the config file
-          plugin_data = plugin_opts.merge(global_config).merge(global_opts).merge(plugin_opts)
+          plugin_data = plugin_opts.merge(global_config).merge(global_opts).merge(plugin_opts).merge(plugin_config)
           # define the default action to use the plugin here, the default is run
           sub_command = (args.shift || :run).to_sym
           # create an instance of this plugin
@@ -95,38 +108,39 @@ Generates puppet rspec test code based on the classes and defines inside the man
           if plugin.respond_to?(sub_command)
             case sub_command
             when :new_module
-              plugin.send(sub_command, plugin_data)
+              plugin.send(sub_command, plugin_data, args)
               plugin.post_init # finish initialization
             when :run
               plugin.post_init   # finish initialization
             when :new_type
-              plugin.new_type(plugin_data)
+              plugin.new_type(plugin_data, args)
             when :new_function
-              plugin.new_function(plugin_data)
+              plugin.new_function(plugin_data, args)
             when :new_fact
-              plugin.new_fact(plugin_data)
+              plugin.new_fact(plugin_data, args)
             when :new_provider
-              plugin.new_provider(plugin_data)
+              plugin.new_provider(plugin_data, args)
             else
               plugin.post_init   # finish initialization
-              plugin.send(sub_command, plugin_data[:module_path], plugin_data)
+              plugin.send(sub_command, plugin_data[:module_path], plugin_data, args)
             end
             plugin.send(:run)
           else
             puts "The subcommand #{sub_command} is not supported or valid".fatal
             exit 1
           end
+          plugin_data
         end
 
-        def new_schema(module_path, config)
-          plugin_data = Retrospec::Puppet::Generators::SchemaGenerator.run_cli(config)
+        def new_schema(module_path, config, args=[])
+          plugin_data = Retrospec::Puppet::Generators::SchemaGenerator.run_cli(config, args)
           plugin_data[:puppet_context] = context
           s = Retrospec::Puppet::Generators::SchemaGenerator.new(plugin_data[:module_path], plugin_data)
           s.generate_schema_file
         end
 
-        def new_function(config)
-          plugin_data = Retrospec::Puppet::Generators::FunctionGenerator.run_cli(config)
+        def new_function(config, args)
+          plugin_data = Retrospec::Puppet::Generators::FunctionGenerator.run_cli(config, args)
           f = Retrospec::Puppet::Generators::FunctionGenerator.new(plugin_data[:module_path], plugin_data)
           post_init
           f.generate_function_file
@@ -137,8 +151,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
           f.generate_spec_files
         end
 
-        def new_provider(config)
-          plugin_data = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(config)
+        def new_provider(config, args)
+          plugin_data = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(config, args)
           p = Retrospec::Puppet::Generators::ProviderGenerator.new(plugin_data[:module_path], plugin_data)
           post_init
           p.generate_provider_files
@@ -149,8 +163,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
           t.generate_provider_spec_files
         end
 
-        def new_type(config)
-          plugin_data = Retrospec::Puppet::Generators::TypeGenerator.run_cli(config)
+        def new_type(config, args)
+          plugin_data = Retrospec::Puppet::Generators::TypeGenerator.run_cli(config, args)
           t = Retrospec::Puppet::Generators::TypeGenerator.new(plugin_data[:module_path], plugin_data)
           post_init
           t.generate_type_files
@@ -161,8 +175,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
           t.generate_type_spec_files
         end
 
-        def new_fact(plugin_data)
-          f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data)
+        def new_fact(plugin_data, args)
+          f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data, args)
           post_init # finish initialization
           f.generate_fact_file
         end

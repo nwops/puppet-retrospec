@@ -36,8 +36,8 @@ module Retrospec
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into config object
         # returns the parameters
-        def self.run_cli(global_opts)
-          sub_command_opts = Trollop.options do
+        def self.run_cli(global_opts, args=ARGV)
+          sub_command_opts = Trollop.options(args) do
             banner <<-EOS
 Generates a kwalify schema based off class parameters.
 
