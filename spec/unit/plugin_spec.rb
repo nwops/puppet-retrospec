@@ -18,13 +18,4 @@ describe 'puppet' do
     expect(Retrospec::Puppet::VERSION).to be_instance_of(String)
   end
 
-  # disabling for now until we can stub gets
-  xit 'can run cli and create new module' do
-    expect(Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, {}, ['new_module'])).to eq(nil)
-  end
-
-  xit 'can run cli' do
-    Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, {}, ['new_module'])
-    expect(Retrospec::Plugins::V1::Puppet.run_cli(global_opts, {}, {}, [])).to eq(nil)
-  end
 end

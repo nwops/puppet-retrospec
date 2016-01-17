@@ -39,9 +39,7 @@ module Utilities
     def self.clean_tmp_modules_dir
       FileUtils.remove_entry_secure instance.tmp_modules_dir # ensure we remove the temporary directory
     end
-
     attr_reader :module_path
-
     # validate and set the module path
     def module_path=(path)
       @module_path = validate_module_dir(path)
@@ -111,15 +109,23 @@ module Utilities
       @module_dir_name ||= File.basename(module_path)
     end
 
+    def module_dir_name=(name)
+      @module_dir_name = name
+    end
+
     def module_type_names
       types.map(&:name)
+    end
+
+    def module_name=(name)
+      @module_name = name
     end
 
     # returns the name of the module  ie. mysql::config  => mysql
     def module_name
       @module_name ||= types.first.name.split('::').first
     rescue
-      @module_name = module_dir_name
+      @module_name ||= module_dir_name
     end
 
     # creates a tmp module directory so puppet can work correctly

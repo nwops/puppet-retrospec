@@ -42,7 +42,7 @@ module Retrospec
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into config object
         # returns the parameters
-        def self.run_cli(global_opts)
+        def self.run_cli(global_opts, args=ARGV)
           func_types = ['v3', 'v4']
           func_type  = global_opts['plugins::puppet::default_function_version'] || 'v3'
           test_type  = global_opts['plugins::puppet::default_function_test_type'] || 'rspec'
