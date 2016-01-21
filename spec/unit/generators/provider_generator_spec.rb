@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'provider_generator' do
   before :each do
     FileUtils.rm_rf(provider_spec_dir)
+    FileUtils.rm_rf(provider_dir)
   end
 
   let(:type_name) do
@@ -29,17 +30,17 @@ describe 'provider_generator' do
     File.join(fixture_modules_path, 'tomcat')
   end
 
+  let(:opts) do
+    ['-n', provider_name, '-t', type_name]
+  end
+
   let(:cli_opts) do
-    ARGV.push('-n')
-    ARGV.push(provider_name)
-    ARGV.push('-t')
-    ARGV.push(type_name)
-    cli_opts = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(context)
+    cli_opts = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(context, opts)
   end
 
   let(:context) do
     { :module_path => module_path,
-      :template_dir => File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates')) }
+      :template_dir => retrospec_templates_path }
   end
 
   let(:generator) do
@@ -83,8 +84,9 @@ describe 'provider_generator' do
     end
 
     it 'return path of core type' do
-      expect(generator.type_file('package')).to eq('puppet/type/package')
+      expect(generator.type_file('package')).to eq('puppet/type/package.rb')
     end
+
   end
   describe 'cli' do
     it 'can run the cli options' do
@@ -92,6 +94,27 @@ describe 'provider_generator' do
       expect(cli_opts).to be_an_instance_of Hash
       expect(cli_opts[:name]).to eq(provider_name)
       expect(cli_opts[:type]).to eq(type_name)
+    end
+  end
+  describe 'existing type' do
+    describe 'package' do
+      let(:type_name) do
+        'package'
+      end
+      let(:provider_name) do
+        'ibm_pkg'
+      end
+
+      it 'can generate a spec file' do
+        generator.generate_provider_files
+        files = [File.join(provider_spec_dir, "#{type_name}", "#{provider_name}_spec.rb")]
+        expect(generator.generate_provider_spec_files).to eq(files)
+      end
+
+      it 'can generate a provider file' do
+        expect(generator.generate_provider_files).to eq(File.join(provider_dir, "#{provider_name}.rb"))
+        expect(File.exist?(File.join(provider_dir, "#{provider_name}.rb")))
+      end
     end
   end
 end

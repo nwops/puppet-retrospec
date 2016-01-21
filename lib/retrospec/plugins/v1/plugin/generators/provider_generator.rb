@@ -64,8 +64,8 @@ Generates a new provider with the given name.
     # if the type file does not exist it assumes a core puppet type
     # because we could potentially dealing with multiple
     def type_file(p_type = provider_type)
-      if core_types.include?(p_type)
-        type_file = "puppet/type/#{p_type}"
+      if TypeGenerator::CORE_TYPES.include?(p_type)
+        type_file = "puppet/type/#{p_type}.rb"
       else
         type_file = File.join(type_dir, "#{p_type}.rb")
       end
@@ -102,59 +102,6 @@ Generates a new provider with the given name.
         safe_create_template_file(provider_spec_path, File.join(template_dir, 'provider_spec.rb.retrospec.erb'), provider_file_data)
       end
       spec_files
-    end
-
-    private
-
-    def core_types
-      %w(augeas
-         computer
-         cron
-         exec
-         file
-         filebucket
-         group
-         host
-         interface
-         k5login
-         macauthorization
-         mailalias
-         maillist
-         mcx
-         mount
-         nagios_command
-         nagios_contact
-         nagios_contactgroup
-         nagios_host
-         nagios_hostdependency
-         nagios_hostescalation
-         nagios_hostextinfo
-         nagios_hostgroup
-         nagios_service
-         nagios_servicedependency
-         nagios_serviceescalation
-         nagios_serviceextinfo
-         nagios_servicegroup
-         nagios_timeperiod
-         notify
-         package
-         resources
-         router
-         schedule
-         scheduled_task
-         selboolean
-         selmodule
-         service
-         ssh_authorized_key
-         sshkey
-         stage
-         tidy
-         user
-         vlan
-         yumrepo
-         zfs
-         zone
-         zpool )
     end
   end
 end
