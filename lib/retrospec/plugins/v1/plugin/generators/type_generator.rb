@@ -6,6 +6,19 @@ module Retrospec
       class TypeGenerator < Retrospec::Plugins::V1::Plugin
         attr_reader :template_dir, :context
 
+        # this is the list of core puppet types that cannot be recreated
+        CORE_TYPES = ["augeas", "computer", "cron", "exec", "file", "filebucket",
+           "group", "host", "interface", "k5login", "macauthorization", "mailalias",
+           "maillist", "mcx", "mount", "nagios_command", "nagios_contact",
+           "nagios_contactgroup", "nagios_host", "nagios_hostdependency",
+           "nagios_hostescalation", "nagios_hostextinfo", "nagios_hostgroup",
+           "nagios_service", "nagios_servicedependency",
+           "nagios_serviceescalation", "nagios_serviceextinfo",
+           "nagios_servicegroup", "nagios_timeperiod", "notify", "package",
+           "resources", "router", "schedule", "scheduled_task", "selboolean",
+           "selmodule", "service", "ssh_authorized_key", "sshkey", "stage",
+           "tidy", "user", "vlan", "yumrepo", "zfs", "zone", "zpool"]
+
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.
         def initialize(module_path, spec_object = {})
@@ -13,6 +26,9 @@ module Retrospec
           # below is the Spec Object which serves as a context for template rendering
           # you will need to initialize this object, so the erb templates can get the binding
           # the SpecObject can be customized to your liking as its different for every plugin gem.
+          if CORE_TYPES.include?(spec_object[:name])
+            raise Retrospec::Puppet::Generators::CoreTypeException
+          end
           @context = OpenStruct.new(:type_name => spec_object[:name], :parameters => spec_object[:parameters],
                                     :properties => spec_object[:properties], :providers => spec_object[:providers])
         end

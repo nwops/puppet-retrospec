@@ -1,7 +1,8 @@
 require 'retrospec/plugins/v1/module_helpers'
 require 'retrospec/plugins/v1'
 require 'retrospec/config'
-require_relative 'generators/generators'
+require_relative 'generators'
+require_relative 'exceptions'
 require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
@@ -51,7 +52,12 @@ module Retrospec
         # supported at this time, and you can't specify the path to generate the module in
         def new_module(plugin_data, args)
           plugin_data = Retrospec::Puppet::Generators::ModuleGenerator.run_cli(plugin_data, args)
-          unless File.basename(plugin_data[:module_path]) == plugin_data[:name]
+          # the user passed in /tmp/test1 and the name is irrelevent
+          if ! File.exists?(plugin_data[:module_path])
+            plugin_data[:module_path] = File.join(plugin_data[:module_path])
+          # if the module path basename is the same as the module name
+          # this is a parent directory or the module already exists
+          elsif File.basename(plugin_data[:module_path]) != plugin_data[:name]
             plugin_data[:module_path] = File.join(plugin_data[:module_path], plugin_data[:name])
           end
           # we need to set this because the this class is created before we created the new module directory
@@ -105,28 +111,40 @@ Generates puppet rspec test code based on the classes and defines inside the man
           # create an instance of this plugin
           plugin = new(plugin_data[:module_path], plugin_data)
           # check if the plugin supports the sub command
-          if plugin.respond_to?(sub_command)
-            case sub_command
-            when :new_module
-              plugin.send(sub_command, plugin_data, args)
-              plugin.post_init # finish initialization
-            when :run
-              plugin.post_init   # finish initialization
-            when :new_type
-              plugin.new_type(plugin_data, args)
-            when :new_function
-              plugin.new_function(plugin_data, args)
-            when :new_fact
-              plugin.new_fact(plugin_data, args)
-            when :new_provider
-              plugin.new_provider(plugin_data, args)
+          begin
+            if plugin.respond_to?(sub_command)
+              case sub_command
+              when :new_module
+                plugin.send(sub_command, plugin_data, args)
+                plugin.post_init # finish initialization
+              when :run
+                plugin.post_init   # finish initialization
+              when :new_type
+                plugin.new_type(plugin_data, args)
+              when :new_function
+                plugin.new_function(plugin_data, args)
+              when :new_fact
+                plugin.new_fact(plugin_data, args)
+              when :new_provider
+                plugin.new_provider(plugin_data, args)
+              else
+                plugin.post_init   # finish initialization
+                plugin.send(sub_command, plugin_data[:module_path], plugin_data, args)
+              end
+              plugin.send(:run)
             else
-              plugin.post_init   # finish initialization
-              plugin.send(sub_command, plugin_data[:module_path], plugin_data, args)
+              puts "The subcommand #{sub_command} is not supported or valid".fatal
+              exit 1
             end
-            plugin.send(:run)
-          else
-            puts "The subcommand #{sub_command} is not supported or valid".fatal
+          rescue Retrospec::Puppet::InvalidModulePathError  => e
+            exit 1
+          rescue Retrospec::Puppet::NoManifestDirError => e
+            exit 1
+          rescue Retrospec::Puppet::ParserError => e
+            exit 1
+          rescue Retrospec::Puppet::Generators::CoreTypeException => e
+            puts e.message.fatal
+          rescue Exception => e
             exit 1
           end
           plugin_data
