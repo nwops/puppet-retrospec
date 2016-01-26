@@ -1,5 +1,7 @@
 require 'singleton'
 require 'puppet/face'
+require_relative 'exceptions'
+
 module Utilities
   class PuppetModule
     attr_writer :module_path
@@ -33,17 +35,13 @@ module Utilities
 
     # create the temporary module create, validate the
     def self.create_tmp_module_path
-      Utilities::PuppetModule::instance.create_tmp_module_path(module_path)
+      Utilities::PuppetModule.instance.create_tmp_module_path(module_path)
     end
 
     def self.clean_tmp_modules_dir
-      FileUtils.remove_entry_secure instance.tmp_modules_dir  # ensure we remove the temporary directory
+      FileUtils.remove_entry_secure instance.tmp_modules_dir # ensure we remove the temporary directory
     end
-
-    def module_path
-      @module_path
-    end
-
+    attr_reader :module_path
     # validate and set the module path
     def module_path=(path)
       @module_path = validate_module_dir(path)
@@ -62,14 +60,14 @@ module Utilities
       if dir.nil?
         dir = '.'
       elsif dir.instance_of?(Array)
-        puts "Retrospec - an array of module paths is not supported at this time".fatal
-        exit 1
+        puts 'Retrospec - an array of module paths is not supported at this time'.fatal
+        raise Retrospec::Puppet::InvalidModulePathError
       end
       dir = File.expand_path(dir)
-      manifest_dir = File.join(dir,'manifests')
-      if ! File.exist?(manifest_dir)
+      manifest_dir = File.join(dir, 'manifests')
+      if !File.exist?(manifest_dir)
         puts "No manifest directory in #{manifest_dir}, cannot validate this is a module".fatal
-        exit 1
+        raise Retrospec::Puppet::NoManifestDirError
       else
         files = Dir.glob("#{manifest_dir}/**/*.pp")
         warn "No puppet manifest files found at #{manifest_dir}".warning if files.length < 1
@@ -80,7 +78,7 @@ module Utilities
             Puppet::Face[:parser, :current].validate(file)
           rescue SystemExit => e
             puts "Manifest file: #{file} has parser errors, please fix and re-check using\n puppet parser validate #{file}".fatal
-            exit 1
+            raise Retrospec::Puppet::ParserError
           end
         end
         # switch back to current parser, since we rely on the AST parser
@@ -93,9 +91,9 @@ module Utilities
 
     # puts a symlink in that module directory that points back to the user supplied module path
     def create_tmp_module_path(module_path)
-      raise "ModulePathNotFound" unless module_path
+      fail 'ModulePathNotFound' unless module_path
       path = File.join(tmp_modules_dir, module_dir_name)
-      unless File.exists?(path) # only create if it doesn't already exist
+      unless File.exist?(path) # only create if it doesn't already exist
         # create a link where source is the current repo and dest is /tmp/modules/module_name
         FileUtils.ln_s(module_path, path)
       end
@@ -109,26 +107,32 @@ module Utilities
     # the directory name of the module
     # usually this is the same as the module name but it can be namespaced sometimes
     def module_dir_name
-      raise "ModulePathNotFound" unless module_path
+      fail 'ModulePathNotFound' unless module_path
       @module_dir_name ||= File.basename(module_path)
     end
 
+    def module_dir_name=(name)
+      @module_dir_name = name
+    end
+
     def module_type_names
-      types.map {|x| x.name}
+      types.map(&:name)
+    end
+
+    def module_name=(name)
+      @module_name = name
     end
 
     # returns the name of the module  ie. mysql::config  => mysql
     def module_name
-      begin
-        @module_name ||= types.first.name.split('::').first
-      rescue
-        @module_name = module_dir_name
-      end
+      @module_name ||= types.first.name.split('::').first
+    rescue
+      @module_name ||= module_dir_name
     end
 
     # creates a tmp module directory so puppet can work correctly
     def tmp_modules_dir
-      if @tmp_modules_dir.nil? or not File.exists?(@tmp_modules_dir)
+      if @tmp_modules_dir.nil? || !File.exist?(@tmp_modules_dir)
         dir = Dir.mktmpdir
         tmp_path = File.expand_path(File.join(dir, 'modules'))
         FileUtils.mkdir_p(tmp_path)
@@ -136,7 +140,6 @@ module Utilities
       end
       @tmp_modules_dir
     end
-
 
     # creates a puppet environment given a module path and environment name
     def puppet_environment
@@ -164,12 +167,12 @@ module Utilities
     end
 
     # returns the resource types found in the module
-    def search_module(pattern='*')
+    def search_module(pattern = '*')
       request = request(pattern, 'search')
       resource_type_parser.search(request)
     end
 
-    # TODO we need to parse the types and find all the types that inherit other types and then order them so we can load the files first
+    # TODO: we need to parse the types and find all the types that inherit other types and then order them so we can load the files first
     def types
       @types ||= search_module || []
     end

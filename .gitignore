@@ -1,7 +1,8 @@
 # rcov generated
+*.swp
 coverage
 coverage.data
-fixtures/
+spec/fixtures/modules
 # rdoc generated
 rdoc
 

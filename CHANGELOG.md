@@ -1,3 +1,10 @@
+## 0.12.0
+ * fix an annoying issue when creating new modules and current directory
+ * gh-38 - added ability to create new types and type unit tests
+ * gh-39 - add functionality to create new providers
+ * gh-40 - add ability to generate functions
+ * gh-43 - add ability to create kwalify schema files
+ * gh-42 - continue with creating files when retrospec parser fails on invalid code
 ## 0.11.0
  * gh-31 - add ability to generate new fact and spec tests
  * add awesome_print gem
