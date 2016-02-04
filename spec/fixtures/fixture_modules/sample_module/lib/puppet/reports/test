@@ -1,0 +1,16 @@
+# More info for creating reports can be found here:
+# https://docs.puppetlabs.com/guides/reporting.html
+require 'puppet'
+# require any other Ruby libraries necessary for this specific report
+
+Puppet::Reports.register_report(:myreport) do
+  desc <<EOF
+Process reports via the my_cool_cmdb API.
+  EOF
+
+  def process
+    # do something that sets up the API we're sending the report to.
+    # Post the report object (self), after dumping it to yaml:
+    my_api.post(self.to_yaml)
+  end
+end

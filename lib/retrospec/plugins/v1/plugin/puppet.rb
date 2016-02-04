@@ -81,7 +81,7 @@ module Retrospec
           future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = %w(new_module new_fact new_type new_provider new_function)
+          sub_commands  = %w(new_module new_fact new_type new_provider new_function new_report)
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
           else
@@ -145,9 +145,16 @@ Generates puppet rspec test code based on the classes and defines inside the man
           rescue Retrospec::Puppet::Generators::CoreTypeException => e
             puts e.message.fatal
           rescue Exception => e
+            puts e.message
             exit 1
           end
           plugin_data
+        end
+
+        def new_report(module_path, config, args=[])
+          plugin_data = Retrospec::Puppet::Generators::ReportGenerator.run_cli(config, args)
+          p = Retrospec::Puppet::Generators::ReportGenerator.new(module_path, plugin_data)
+          p.run
         end
 
         def new_schema(module_path, config, args=[])
