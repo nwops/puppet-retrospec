@@ -130,6 +130,19 @@ describe 'puppet' do
         ['new_module', '-n', 'testabc123'])
     end
 
+    describe 'new_report' do
+      let(:args) do
+        ['new_report', '-n', 'test_report']
+      end
+
+      it 'should create report rb file' do
+        report_file = File.join(module_path,'lib', 'puppet', 'reports', 'test_report.rb')
+        retrospec
+        expect(File.read(report_file)).to match(/Puppet::Reports\.register_report\(:test_report\)/)
+        expect(File.exist?(report_file)).to eq(true)
+      end
+    end
+
     describe 'new_fact' do
 
       let(:args) do
