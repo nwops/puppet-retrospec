@@ -23,13 +23,13 @@ def git_exists?(template_dir)
 end
 
 def origin_exists?(template_dir)
-  `git -C #{template_dir} remote show origin`
+  `git --git-dir #{template_dir}/.git --work-tree #{template_dir} remote show origin`
   $CHILD_STATUS.success?
 end
 
 def update_templates(git_url, dest, branch = 'master')
   create_repo(dest, git_url, branch)
-  puts `git -C #{dest} pull`
+  puts `git --git-dir #{dest}/.git --work-tree #{dest} pull`
   dest
 end
 
