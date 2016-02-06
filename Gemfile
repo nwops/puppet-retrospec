@@ -7,7 +7,7 @@ gem 'facets'
 # Include everything needed to run rake, tests, features, etc.
 group :development do
   gem 'rspec', '~> 3.2'
-  gem 'puppet', '3.7.3', :path => 'vendor/gems/puppet-3.7.3'
+  gem 'puppet', '4.3.2', :path => 'vendor/gems/puppet-4.3.2'
   gem 'yard', '~> 0.7'
   gem 'rdoc', '~> 3.12'
   gem 'bundler', '~> 1.0'

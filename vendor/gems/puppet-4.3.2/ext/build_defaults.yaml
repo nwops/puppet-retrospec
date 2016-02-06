@@ -1,0 +1,20 @@
+---
+packaging_url: 'git://github.com/puppetlabs/packaging.git --branch=master'
+packaging_repo: 'packaging'
+packager: 'puppetlabs'
+gpg_key: '4BD6EC30'
+
+# These are the build targets used by the packaging repo. Uncomment to allow use.
+#final_mocks: 'pl-el-5-i386 pl-el-6-i386 pl-el-7-x86_64'
+#cows: 'base-lucid-i386.cow base-precise-i386.cow base-squeeze-i386.cow base-trusty-i386.cow base-wheezy-i386.cow'
+pbuild_conf: '/etc/pbuilderrc'
+
+build_gem: TRUE
+build_dmg: FALSE
+sign_tar: FALSE
+yum_host: 'yum.puppetlabs.com'
+yum_repo_path: '/opt/repository/yum/'
+apt_signing_server: 'apt.puppetlabs.com'
+apt_repo_url: 'http://apt.puppetlabs.com'
+apt_repo_path: '/opt/repository/incoming'
+tar_host: 'downloads.puppetlabs.com'
