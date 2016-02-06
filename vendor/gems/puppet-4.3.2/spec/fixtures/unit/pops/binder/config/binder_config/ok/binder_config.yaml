@@ -1,0 +1,9 @@
+---
+version: 1
+layers:
+  - {name: site, include: 'confdir:/'}
+  - {name: modules, include: 'module:/*::test/', exclude: 'module:/bad::test/' }
+categories:
+  - ['node', '$fqn']
+  - ['environment', '$environment']
+  - ['common', 'true']

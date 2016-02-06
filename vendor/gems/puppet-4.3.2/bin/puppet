@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'puppet/util/command_line'
+  Puppet::Util::CommandLine.new.execute
+rescue LoadError => e
+  $stderr.puts e.message
+  exit(1)
+end

@@ -1,0 +1,2 @@
+# You may specify parameters to the puppet client here
+#PUPPET_EXTRA_OPTS=--waitforcert=500

@@ -1,0 +1,10 @@
+---
+version: 1
+layers:
+  [{name: site, include: 'confdir:/confdirtest'},
+   {name: test, include: 'echo:/quick/brown/fox'},
+   {name: modules, include: ['module:/*::default'], exclude: 'module:/bad::default/' }
+  ]
+extensions:
+  scheme_handlers:
+    echo: 'PuppetX::Awesome2::EchoSchemeHandler'
