@@ -1,5 +1,7 @@
 require_relative 'base_generator'
 require_relative 'serializers/rspec_dumper'
+require_relative 'serializers/rspec_dumper_full'
+
 require 'puppet'
 require 'puppet/pops'
 

@@ -104,6 +104,10 @@ module Retrospec
           @indent_count += 1
         when :dedent
           @indent_count -= 1
+        when :do
+          result << format_r([x.to_s, :indent, :break])
+        when :end
+          result << format_r([:dedent, :break,x.to_s])
         when Array
           #result << '('
           result += x.collect {|a| format_r(a) }.flatten
@@ -117,12 +121,12 @@ module Retrospec
       end
 
       def dump_ResourceTypeDefinition o
-        result = ["describe #{o.name.inspect} do", :indent, :break]
+        result = ["describe #{o.name.inspect}", :do]
         result << ['let(:title) do',:indent, :break, 'XXreplace_meXX'.inspect, :break]
-        result << [:dedent, :break, :end, :dedent, :break]
-        result << [:indent, :break,'let(:params) do',:indent, :break, '{', :break]
+        result << [:end, :dedent, :break]
+        result << [:indent, :break,'let(:params)', :do, '{', :break]
         result << o.parameters.collect {|k| do_dump(k)}
-        result << ['}', :dedent, :break, 'end']
+        result << ['}', 'end']
         # result << ["inherits", o.parent_class] if o.parent_class
         # we need to process the body so that we can relize which facts are used
         body_result = []
@@ -131,58 +135,11 @@ module Retrospec
         else
           body_result << []
         end
-        result << [:break,'let(:facts) do',:indent, :break, '{',:break]
+        result << [:break,:break,'let(:facts)', :do, '{',:break]
         result << dump_top_scope_vars
-        result << ['}', :dedent, :break, :end]
+        result << ['}',:end]
         result << body_result
-        result << [:dedent,:break, :end]
-        result
-      end
-
-      def dump_CaseExpression o
-        expr_name = dump(o.test.expr)
-        expr_value = dump(o.test)
-        result = ["describe '#{expr_name}' do"]
-        result << [:indent, :break,'let(:params) do',:indent, :break]
-        #TODO figure out if the expr_name is a param and than we can mock it here
-        result << 'params.merge({})' # merge in the parent level params
-        result << [:dedent, :break, 'end']
-        result << [:break,'let(:facts) do',:break]
-        result << [:break, 'end']
-        o.options.each do |s|
-          result << :break << do_dump(s)
-        end
-        result << :dedent
-      end
-
-      def dump_CaseOption o
-        expr_name = dump(o.eContainer.test.expr)
-        expr_value = dump(o.eContainer.test)
-        result = []
-        o.values.each do |x|
-          test_name = do_dump(x)
-          result << ["context #{test_name} do", :indent, :break]
-          result << [do_dump(o.then_expr)]
-        end
-        result << [:dedent,:break, :end]
-        result
-      end
-
-      def dump_IfExpression o
-        # this should be a test becuase if its function
-        #Puppet::Pops::Model::CallNamedFunctionExpression
-        case o.test
-        when ::Puppet::Pops::Model::ComparisonExpression
-          test_name = dump(o.test)
-        when ::Puppet::Pops::Model::CallNamedFunctionExpression
-          test_name = "#{dump(o.test.functor_expr)}(#{o.test.arguments.collect { |a| dump(a.expr)}})"
-        end
-        result = ["context '#{test_name}' do", :indent, :break]
-        then_name = do_dump(o.then_expr)
-        result << then_name
-        else_name = do_dump(o.else_expr) unless is_nop? o.else_expr
-        result << else_name
-        result << [:dedent, :break, :end]
+        result << [:end]
         result
       end
 
@@ -201,23 +158,23 @@ module Retrospec
       end
 
       def dump_HostClassDefinition o
-        result = ["describe #{o.name.inspect} do"]
-        result << [:indent, :break,'let(:params) do',:indent, :break, '{', :break]
+        result = ["describe #{o.name.inspect}", :do]
+        result << ['let(:params)', :do, '{', :break]
         result << o.parameters.collect {|k| do_dump(k)}
-        result << ['}', :dedent, :break, 'end']
+        result << ['}', :end]
         # result << ["inherits", o.parent_class] if o.parent_class
         # we need to process the body so that we can relize which facts are used
         body_result = []
         if o.body
-          body_result << [:break, do_dump(o.body)]
+          body_result << [do_dump(o.body)]
         else
           body_result << []
         end
-        result << [:break,'let(:facts) do',:indent, :break, '{',:break]
+        result << [:break,:break,'let(:facts)', :do, '{',:break]
         result << dump_top_scope_vars
-        result << ['}', :dedent, :break, :end]
+        result << ['}',:end]
         result << body_result
-        result << [:dedent,:break, 'end']
+        result << [:end]
         result
       end
 
@@ -260,11 +217,11 @@ module Retrospec
         if relationship.left_expr.object_id == id
           type_name = dump(relationship.right_expr.type_name).capitalize
           titles = relationship.right_expr.bodies.map{|b| dump(b.title)}
-          result << ['"that_comes_before"', '=>', "#{type_name}#{titles}" ]
+          result << ['"that_comes_before"', '=>', "#{type_name}#{titles}," ]
         else
           type_name = dump(relationship.left_expr.type_name).capitalize
           titles = relationship.left_expr.bodies.map{|b| dump(b.title)}
-          result << ['"that_requires"', '=>', "#{type_name}#{titles}"]
+          result << ['"that_requires"', '=>', "#{type_name}#{titles},"]
         end
         result
       end
@@ -272,7 +229,7 @@ module Retrospec
       def dump_ResourceBody o
         type_name = do_dump(o.eContainer.type_name).gsub('::', '__')
         title = do_dump(o.title)
-        result = ['it do', :indent, :break, "is_expected.to contain_#{type_name}(#{title})"]
+        result = ['it', :do, "is_expected.to contain_#{type_name}(#{title})"]
         # this determies if we should use the with() or not
         if o.operations.count > 0
           result << [ :indent, :break,'.with({', :indent, :break]
@@ -282,8 +239,13 @@ module Retrospec
           result << dump_Resource_Relationship(o) if o.eContainer.eContainer.class != ::Puppet::Pops::Model::BlockExpression
           result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
         end
-        result << [:dedent, :break, 'end', :break]
+        result << [:end, :break]
         result
+      end
+
+      def method_missing(name, *args, &block)
+        logger.debug("Method #{name} called".warning)
+        []
       end
 
       # Interpolated strings are shown as (cat seg0 seg1 ... segN)
@@ -296,28 +258,11 @@ module Retrospec
         [do_dump(o.expr)]
       end
 
-      def dump_CallNamedFunctionExpression o
-        func_name = dump o.functor_expr
-        args = o.arguments.collect {|a| do_dump(a) }.join(',')
-        # because rspec-puppet cannot check if functions are called within a manifest
-        # I don't think we can build a good test case here like
-        # we could also mock the function here as well
-        ["it { is_expected.to call(#{func_name}).with(#{args})}"]
-      end
-
-      def dump_CallMethodExpression o
-        result = [o.rval_required ? "call-method" : "invoke-method", do_dump(o.functor_expr)]
-        o.arguments.collect {|a| result << do_dump(a) }
-        result << do_dump(o.lambda) if o.lambda
-        result
-      end
-
       # outputs the value of the variable
       def dump_VariableExpression o
         key = dump(o.expr)
         if value = lookup_var(dump(o.expr))
           value  # return the looked up value
-
         elsif [::Puppet::Pops::Model::AttributeOperation,
            ::Puppet::Pops::Model::AssignmentExpression].include?(o.eContainer.class)
           dump(o.expr)
@@ -353,10 +298,8 @@ module Retrospec
       end
 
       def dump_BlockExpression o
-        #result = ["block", :indent]
-        result = []
-        o.statements.each {|x| result << :break; result << do_dump(x) }
-        result << :break
+        result = [:break]
+        o.statements.each {|x| result << do_dump(x) }
         result
       end
 
@@ -405,87 +348,6 @@ module Retrospec
         o.value.to_s
       end
 
-      def dump_Factory o
-        do_dump(o.current)
-      end
-
-      def dump_Application o
-        ["application", o.name, do_dump(o.parameters), do_dump(o.body)]
-      end
-
-      def dump_ArithmeticExpression o
-        [o.operator.to_s, do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
-      # x[y] prints as (slice x y)
-      def dump_AccessExpression o
-        if o.keys.size <= 1
-          ["slice", do_dump(o.left_expr), do_dump(o.keys[0])]
-        else
-          ["slice", do_dump(o.left_expr), do_dump(o.keys)]
-        end
-      end
-
-      def dump_MatchesExpression o
-        [o.operator.to_s, do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
-      def dump_CollectExpression o
-        result = ["collect", do_dump(o.type_expr), :indent, :break, do_dump(o.query), :indent]
-        o.operations do |ao|
-          result << :break << do_dump(ao)
-        end
-        result += [:dedent, :dedent ]
-        result
-      end
-
-      def dump_EppExpression o
-        result = ["epp"]
-        #    result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size() > 0
-        if o.body
-          result << do_dump(o.body)
-        else
-          result << []
-        end
-        result
-      end
-
-      def dump_ExportedQuery o
-        result = ["<<| |>>"]
-        result += dump_QueryExpression(o) unless is_nop?(o.expr)
-        result
-      end
-
-      def dump_VirtualQuery o
-        result = ["<| |>"]
-        result += dump_QueryExpression(o) unless is_nop?(o.expr)
-        result
-      end
-
-      def dump_QueryExpression o
-        [do_dump(o.expr)]
-      end
-
-      def dump_ComparisonExpression o
-        "#{dump(o.left_expr)} #{o.operator} #{dump o.right_expr}"
-      end
-
-      def dump_AndExpression o
-        ["&&", do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
-      def dump_OrExpression o
-        ["||", do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
-      def dump_InExpression o
-        ["in", do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
-      def dump_AttributesOperation o
-        ['* =>', do_dump(o.expr)]
-      end
-
       def dump_LiteralList o
         o.values.collect {|x| do_dump(x)}
       end
@@ -495,27 +357,8 @@ module Retrospec
         Hash[*data.flatten]
       end
 
-      def dump_KeyedEntry o
-        [do_dump(o.key), do_dump(o.value)]
-      end
-
-      def dump_MatchExpression o
-        [o.operator.to_s, do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
       def dump_LiteralString o
         "'#{o.value}'"
-      end
-
-      def dump_LambdaExpression o
-        result = ["lambda"]
-        result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size() > 0
-        if o.body
-          result << do_dump(o.body)
-        else
-          result << []
-        end
-        result
       end
 
       def dump_LiteralDefault o
@@ -534,10 +377,6 @@ module Retrospec
         ":nop"
       end
 
-      def dump_NamedAccessExpression o
-        [".", do_dump(o.left_expr), do_dump(o.right_expr)]
-      end
-
       def dump_NilClass o
         ":undef"
       end
@@ -546,56 +385,8 @@ module Retrospec
         ['!', dump(o.expr)]
       end
 
-      def dump_UnaryMinusExpression o
-        ['-', do_dump(o.expr)]
-      end
-
-      def dump_UnfoldExpression o
-        ['unfold', do_dump(o.expr)]
-      end
-
-      def dump_HeredocExpression(o)
-        result = ["@(#{o.syntax})", :indent, :break, do_dump(o.text_expr), :dedent, :break]
-      end
-
-      def dump_NodeDefinition o
-        result = ["node"]
-        result << ["matches"] + o.host_matches.collect {|m| do_dump(m) }
-        result << ["parent", do_dump(o.parent)] if o.parent
-        if o.body
-          result << do_dump(o.body)
-        else
-          result << []
-        end
-        result
-      end
-
-      def dump_SiteDefinition o
-        result = ["site"]
-        if o.body
-          result << do_dump(o.body)
-        else
-          result << []
-        end
-        result
-      end
-
       def dump_CapabilityMapping o
         [o.kind, do_dump(o.component), o.capability, do_dump(o.mappings)]
-      end
-
-      def dump_ResourceOverrideExpression o
-        form = o.form == :regular ? '' : o.form.to_s + "-"
-        result = [form+"override", do_dump(o.resources), :indent]
-        o.operations.each do |p|
-          result << :break << do_dump(p)
-        end
-        result << :dedent
-        result
-      end
-
-      def dump_ReservedWord o
-        [ 'reserved', o.word ]
       end
 
       def dump_ParenthesizedExpression o
@@ -608,54 +399,12 @@ module Retrospec
         dump(o.body)
       end
 
-      def dump_SelectorExpression o
-        ["?", do_dump(o.left_expr)] + o.selectors.collect {|x| do_dump(x) }
-      end
-
-      def dump_SelectorEntry o
-        [do_dump(o.matching_expr), "=>", do_dump(o.value_expr)]
-      end
-
-      def dump_SubLocatedExpression o
-        ["sublocated", do_dump(o.expr)]
-      end
-
       def dump_Object o
-        [o.class.to_s, o.to_s]
+        []
       end
 
       def is_nop? o
         o.nil? || o.is_a?(::Puppet::Pops::Model::Nop)
-      end
-
-      def dump_RenderStringExpression o
-        ["render-s", " '#{o.value}'"]
-      end
-
-      def dump_RenderExpression o
-        ["render", do_dump(o.expr)]
-      end
-
-      def dump_ResourceDefaultsExpression o
-        form = o.form == :regular ? '' : o.form.to_s + "-"
-        result = [form+"resource-defaults", do_dump(o.type_ref), :indent]
-        o.operations.each do |p|
-          result << :break << do_dump(p)
-        end
-        result << :dedent
-        result
-      end
-
-
-
-      def dump_UnlessExpression o
-        result = ["unless", do_dump(o.test), :indent, :break,
-          ["then", :indent, do_dump(o.then_expr), :dedent]]
-          result +=
-          [:break,
-            ["else", :indent, do_dump(o.else_expr), :dedent],
-            :dedent] unless is_nop? o.else_expr
-        result
       end
 
     end
