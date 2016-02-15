@@ -117,20 +117,25 @@ module Retrospec
       end
 
       def dump_ResourceTypeDefinition o
-        result = dump_NamedDefinition(o)
-        result[0] = 'define'
-        result
-      end
-
-      def dump_NamedDefinition o
-        # the nil must be replaced with a string
-        result = [nil, o.name]
-        result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size() > 0
+        result = ["describe #{o.name.inspect} do", :indent, :break]
+        result << ['let(:title) do',:indent, :break, 'XXreplace_meXX'.inspect, :break]
+        result << [:dedent, :break, :end, :dedent, :break]
+        result << [:indent, :break,'let(:params) do',:indent, :break, '{', :break]
+        result << o.parameters.collect {|k| do_dump(k)}
+        result << ['}', :dedent, :break, 'end']
+        # result << ["inherits", o.parent_class] if o.parent_class
+        # we need to process the body so that we can relize which facts are used
+        body_result = []
         if o.body
-          result << do_dump(o.body)
+          body_result << [:break, do_dump(o.body)]
         else
-          result << []
+          body_result << []
         end
+        result << [:break,'let(:facts) do',:indent, :break, '{',:break]
+        result << dump_top_scope_vars
+        result << ['}', :dedent, :break, :end]
+        result << body_result
+        result << [:dedent,:break, :end]
         result
       end
 
@@ -148,16 +153,6 @@ module Retrospec
           result << :break << do_dump(s)
         end
         result << :dedent
-      end
-
-      # outputs the value of the variable
-      def dump_VariableExpression o
-        key = dump(o.expr)
-        if value = lookup_var(dump(o.expr))
-          value  # return the looked up value
-        else
-          add_var_to_store(key, "$#{dump(o.expr)}", false, :top_scope)
-        end
       end
 
       def dump_CaseOption o
@@ -200,13 +195,13 @@ module Retrospec
       def dump_top_scope_vars
         result = []
         top_scope_vars.each do |k, v|
-          result << [k.gsub('$::', ':'), '=>',"#{v[:value]},", :break ]
+          result << ['  ',k.gsub('$::', ':'), '=>',"#{v[:value]},", :break ]
         end
         result
       end
 
       def dump_HostClassDefinition o
-        result = ["describe #{o.name.to_sym.inspect} do"]
+        result = ["describe #{o.name.inspect} do"]
         result << [:indent, :break,'let(:params) do',:indent, :break, '{', :break]
         result << o.parameters.collect {|k| do_dump(k)}
         result << ['}', :dedent, :break, 'end']
@@ -218,9 +213,9 @@ module Retrospec
         else
           body_result << []
         end
-        result << [:break,'let(:facts) do',:indent, '{',:break]
+        result << [:break,'let(:facts) do',:indent, :break, '{',:break]
         result << dump_top_scope_vars
-        result << ['}', :dedent, :break, 'end']
+        result << ['}', :dedent, :break, :end]
         result << body_result
         result << [:dedent,:break, 'end']
         result
@@ -250,10 +245,28 @@ module Retrospec
           value = {:type => data_type, :name => name_part, :default_value => ',', :required => true}
         end
         if value[:required]
-          ["#{value[:name].to_sym.inspect}", '=>', value[:default_value], :break]
+          ['  ', "#{value[:name].to_sym.inspect}", '=>', value[:default_value], :break]
         else
-          ["##{value[:name].to_sym.inspect}", '=>', value[:default_value], :break]
+          ['  ', "##{value[:name].to_sym.inspect}", '=>', value[:default_value], :break]
         end
+      end
+
+      # this will determine and dump the resource requirement by
+      # comparing itself against the resource relationship expression
+      def dump_Resource_Relationship o
+        result = []
+        id = o.eContainer.object_id # the id of this container
+        relationship = o.eContainer.eContainer.eContainer.eContents.first
+        if relationship.left_expr.object_id == id
+          type_name = dump(relationship.right_expr.type_name).capitalize
+          titles = relationship.right_expr.bodies.map{|b| dump(b.title)}
+          result << ['"that_comes_before"', '=>', "#{type_name}#{titles}" ]
+        else
+          type_name = dump(relationship.left_expr.type_name).capitalize
+          titles = relationship.left_expr.bodies.map{|b| dump(b.title)}
+          result << ['"that_requires"', '=>', "#{type_name}#{titles}"]
+        end
+        result
       end
 
       def dump_ResourceBody o
@@ -266,6 +279,7 @@ module Retrospec
           o.operations.each do |p|
             result << [do_dump(p), :break]
           end
+          result << dump_Resource_Relationship(o) if o.eContainer.eContainer.class != ::Puppet::Pops::Model::BlockExpression
           result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
         end
         result << [:dedent, :break, 'end', :break]
@@ -296,6 +310,21 @@ module Retrospec
         o.arguments.collect {|a| result << do_dump(a) }
         result << do_dump(o.lambda) if o.lambda
         result
+      end
+
+      # outputs the value of the variable
+      def dump_VariableExpression o
+        key = dump(o.expr)
+        if value = lookup_var(dump(o.expr))
+          value  # return the looked up value
+
+        elsif [::Puppet::Pops::Model::AttributeOperation,
+           ::Puppet::Pops::Model::AssignmentExpression].include?(o.eContainer.class)
+          dump(o.expr)
+        else
+          # when doing things like Puppet::Pops::Model::ComparisonExpression
+          add_var_to_store(key, "$#{dump(o.expr)}", false, :top_scope)
+        end
       end
 
       # this doesn't return anything as we use it to store variables
@@ -331,8 +360,21 @@ module Retrospec
         result
       end
 
+      # this is the beginning of the resource not the body itself
+      def dump_ResourceExpression o
+        #form = o.form == :regular ? '' : o.form.to_s + "-"
+        result = []
+        o.bodies.each do |b|
+          result << :break << do_dump(b)
+        end
+        #result << :dedent
+        result
+      end
+
+      # defines the resource expression and outputs -> when used
+      # this would be the place to insert relationsip matchers
       def dump_RelationshipExpression o
-        [o.operator.to_s, do_dump(o.left_expr), do_dump(o.right_expr)]
+        [do_dump(o.left_expr), do_dump(o.right_expr)]
       end
 
       # Produces (name => expr) or (name +> expr)
@@ -604,16 +646,7 @@ module Retrospec
         result
       end
 
-      # this is the beginning of the resource not the body itself
-      def dump_ResourceExpression o
-        #form = o.form == :regular ? '' : o.form.to_s + "-"
-        result = []
-        o.bodies.each do |b|
-          result << :break << do_dump(b)
-        end
-        #result << :dedent
-        result
-      end
+
 
       def dump_UnlessExpression o
         result = ["unless", do_dump(o.test), :indent, :break,

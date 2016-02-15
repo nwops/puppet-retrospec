@@ -223,6 +223,11 @@ describe 'rspec_serializer' do
         serializer.dump(parameters)
         serializer.dump(ast)
       end
+
+      it 'should return correct top scope' do
+        expect(serializer.top_scope_vars).to eq([["$::kernel", {:value=>"$::kernel", :type=>:top_scope}]])
+      end
+
       it 'should return correct data' do
         expect(serializer.lookup_var('$merged_ssdt_install_options')).to_not match(/it/)
       end

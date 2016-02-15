@@ -10,7 +10,7 @@ class sql(
   Hash   $ssdt_install_options   = {}
 ) {
     if $::kernel == 'linux' {
-      $value = 'linux'
+      $o = 'linux'
     }
     case $install_type {
       'custom': {

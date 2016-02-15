@@ -39,9 +39,15 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
     expect(generator.item_spec_path).to eq(spec_file)
   end
 
-  it 'should generate the content' do
-    expect(generator.generate_content).to eq('')
+  describe 'content' do
+    let(:data) do
+      "describe \"one_resource::one_define\" do\n  let(:title) do\n    \"XXreplace_meXX\"\n    \n  end\n\n  let(:params) do\n    {\n      #:one => 'one',\n    }\n  end\n  let(:facts) do\n    {\n    }\n  end\n  \n  \n  it do\n    is_expected.to contain_notify('hello')\n  end\n  \n  \nend"
+    end
+    it 'should generate the content' do
+      expect(generator.generate_content).to eq(data)
+    end
   end
+
 
   describe 'spec files' do
     let(:generated_files) do
