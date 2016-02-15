@@ -71,8 +71,10 @@ module Retrospec
         # then looks inside the gem path templates directory, which is really only useful
         # when developing new templates.
         def template_dir
-          external_templates = Dir.glob(File.expand_path(File.join(config_data[:template_dir], plural_name, '*.erb')))
-          if external_templates.count > 0
+          if config_data[:template_dir]
+            external_templates = Dir.glob(File.expand_path(File.join(config_data[:template_dir], plural_name, '*.erb')))
+          end
+          if external_templates and external_templates.count > 0
             File.join(config_data[:template_dir], plural_name)
           else
             File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', plural_name))

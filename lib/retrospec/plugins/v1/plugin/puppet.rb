@@ -266,13 +266,11 @@ Generates puppet rspec test code based on the classes and defines inside the man
           function_spec_files(module_path, config_data)
           new_schema(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
-          # a Type is nothing more than a defined type or puppet class
-          # we could have named this manifest but there could be multiple types
-          # in a manifest.
-          types.each do |type|
-            safe_create_resource_spec_files(type)
-            safe_create_acceptance_tests(type) if context.enable_beaker_tests?
-          end
+          Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path)
+          # types.each do |type|
+          #   safe_create_resource_spec_files(type)
+          #   safe_create_acceptance_tests(type) if context.enable_beaker_tests?
+          # end
           Utilities::PuppetModule.clean_tmp_modules_dir
           true
         end

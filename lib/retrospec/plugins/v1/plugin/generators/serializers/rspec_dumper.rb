@@ -116,6 +116,24 @@ module Retrospec
         result
       end
 
+      def dump_ResourceTypeDefinition o
+        result = dump_NamedDefinition(o)
+        result[0] = 'define'
+        result
+      end
+
+      def dump_NamedDefinition o
+        # the nil must be replaced with a string
+        result = [nil, o.name]
+        result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size() > 0
+        if o.body
+          result << do_dump(o.body)
+        else
+          result << []
+        end
+        result
+      end
+
       def dump_CaseExpression o
         expr_name = dump(o.test.expr)
         expr_value = dump(o.test)
@@ -189,9 +207,9 @@ module Retrospec
 
       def dump_HostClassDefinition o
         result = ["describe #{o.name.to_sym.inspect} do"]
-        result << [:indent, :break,'let(:params) do',:indent, :break]
+        result << [:indent, :break,'let(:params) do',:indent, :break, '{', :break]
         result << o.parameters.collect {|k| do_dump(k)}
-        result << [:dedent, :break, 'end']
+        result << ['}', :dedent, :break, 'end']
         # result << ["inherits", o.parent_class] if o.parent_class
         # we need to process the body so that we can relize which facts are used
         body_result = []
@@ -200,9 +218,9 @@ module Retrospec
         else
           body_result << []
         end
-        result << [:break,'let(:facts) do',:indent, :break]
+        result << [:break,'let(:facts) do',:indent, '{',:break]
         result << dump_top_scope_vars
-        result << [:dedent, :break, 'end']
+        result << ['}', :dedent, :break, 'end']
         result << body_result
         result << [:dedent,:break, 'end']
         result
@@ -215,9 +233,13 @@ module Retrospec
         data_type = do_dump(do_dump(o.value)).first || do_dump(o.type_expr)
         # records what is most likely a variable of some time and its value
         variable_value = do_dump(o.value)
-        parent_name = o.eContainer.name
-        add_var_to_store("#{parent_name}::#{name_part}", variable_value, false, :parameter)
-
+        # need a case for Puppet::Pops::Model::LambdaExpression
+        if o.eContainer.class == ::Puppet::Pops::Model::LambdaExpression
+          add_var_to_store("#{name_part}", variable_value, false, :lambda_scope)
+        else
+          parent_name = o.eContainer.name
+          add_var_to_store("#{parent_name}::#{name_part}", variable_value, false, :parameter)
+        end
         if o.value && o.type_expr
           value = {:type => data_type, :name => name_part, :required => false, :default_value => "#{variable_value},"}
         elsif o.value
@@ -513,24 +535,6 @@ module Retrospec
         else
           result << []
         end
-        result
-      end
-
-      def dump_NamedDefinition o
-        # the nil must be replaced with a string
-        result = [nil, o.name]
-        result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size() > 0
-        if o.body
-          result << do_dump(o.body)
-        else
-          result << []
-        end
-        result
-      end
-
-      def dump_ResourceTypeDefinition o
-        result = dump_NamedDefinition(o)
-        result[0] = 'define'
         result
       end
 
