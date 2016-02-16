@@ -56,4 +56,13 @@ describe 'HostClassGenerator' do
     end
   end
 
+  describe 'apache test' do
+    let(:sample_file) do
+      File.join(fixtures_path, 'manifests', 'apache.pp')
+    end
+    it 'should generate test for apache' do
+      expect(generator.generate_content).to eq('')
+    end
+  end
+
 end

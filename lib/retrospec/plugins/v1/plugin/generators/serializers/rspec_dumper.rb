@@ -17,7 +17,11 @@ module Retrospec
         unless @logger
           require 'logger'
           @logger = Logger.new(STDOUT)
-          @logger.level = Logger::DEBUG
+          if ENV['RETROSPEC_LOGGER_LEVEL'] == 'debug'
+            @logger.level = Logger::DEBUG
+          else
+            @logger.level = Logger::INFO
+          end
         end
         @logger
       end
@@ -149,10 +153,11 @@ module Retrospec
         end
       end
 
+      #
       def dump_top_scope_vars
         result = []
-        top_scope_vars.each do |k, v|
-          result << ['  ',k.gsub('$::', ':'), '=>',"#{v[:value]},", :break ]
+        top_scope_vars.sort.each do |k, v|
+          result << ['  ',k.gsub('$::', '').inspect, '=>',v[:value].inspect + ',', :break ]
         end
         result
       end
@@ -193,18 +198,18 @@ module Retrospec
           add_var_to_store("#{parent_name}::#{name_part}", variable_value, false, :parameter)
         end
         if o.value && o.type_expr
-          value = {:type => data_type, :name => name_part, :required => false, :default_value => "#{variable_value},"}
+          value = {:type => data_type, :name => name_part, :required => false, :default_value => variable_value}
         elsif o.value
-          value = {:type => data_type, :name => name_part, :default_value => "#{variable_value},", :required => false}
+          value = {:type => data_type, :name => name_part, :default_value => variable_value, :required => false}
         elsif o.type_expr
-          value = {:type => data_type, :name => name_part, :required => true,  :default_value => ','}
+          value = {:type => data_type, :name => name_part, :required => true,  :default_value => ''}
         else
-          value = {:type => data_type, :name => name_part, :default_value => ',', :required => true}
+          value = {:type => data_type, :name => name_part, :default_value => '', :required => true}
         end
         if value[:required]
-          ['  ', "#{value[:name].to_sym.inspect}", '=>', value[:default_value], :break]
+          ['  ', "#{value[:name].to_sym.inspect}", '=>', ',', :break]
         else
-          ['  ', "##{value[:name].to_sym.inspect}", '=>', value[:default_value], :break]
+          ['  ', "##{value[:name].to_sym.inspect}", '=>', value[:default_value].inspect + ',', :break]
         end
       end
 
@@ -217,18 +222,19 @@ module Retrospec
         if relationship.left_expr.object_id == id
           type_name = dump(relationship.right_expr.type_name).capitalize
           titles = relationship.right_expr.bodies.map{|b| dump(b.title)}
-          result << ['"that_comes_before"', '=>', "#{type_name}#{titles}," ]
+          result << ['"that_comes_before"', '=>', "'#{type_name}#{titles}',".gsub("\"", '') ]
         else
           type_name = dump(relationship.left_expr.type_name).capitalize
           titles = relationship.left_expr.bodies.map{|b| dump(b.title)}
-          result << ['"that_requires"', '=>', "#{type_name}#{titles},"]
+          result << ['"that_requires"', '=>', "'#{type_name}#{titles}',".gsub("\"", '')]
         end
         result
       end
 
       def dump_ResourceBody o
         type_name = do_dump(o.eContainer.type_name).gsub('::', '__')
-        title = do_dump(o.title)
+        title = do_dump(o.title).inspect
+        #TODO remove the :: from the front of the title if exists
         result = ['it', :do, "is_expected.to contain_#{type_name}(#{title})"]
         # this determies if we should use the with() or not
         if o.operations.count > 0
@@ -236,8 +242,10 @@ module Retrospec
           o.operations.each do |p|
             result << [do_dump(p), :break]
           end
-          result << dump_Resource_Relationship(o) if o.eContainer.eContainer.class != ::Puppet::Pops::Model::BlockExpression
-          result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
+          unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
+            result << dump_Resource_Relationship(o)
+            result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
+          end
         end
         result << [:end, :break]
         result
@@ -250,7 +258,7 @@ module Retrospec
 
       # Interpolated strings are shown as (cat seg0 seg1 ... segN)
       def dump_ConcatenatedString o
-        o.segments.collect {|x| do_dump(x)}
+        o.segments.collect {|x| do_dump(x)}.join
       end
 
       # Interpolation (to string) shown as (str expr)
@@ -265,7 +273,7 @@ module Retrospec
           value  # return the looked up value
         elsif [::Puppet::Pops::Model::AttributeOperation,
            ::Puppet::Pops::Model::AssignmentExpression].include?(o.eContainer.class)
-          dump(o.expr)
+          "$#{dump(o.expr)}"
         else
           # when doing things like Puppet::Pops::Model::ComparisonExpression
           add_var_to_store(key, "$#{dump(o.expr)}", false, :top_scope)
@@ -324,7 +332,12 @@ module Retrospec
       def dump_AttributeOperation o
         key = o.attribute_name
         value = do_dump(o.value_expr) || nil
-        [key.inspect, o.operator, "#{value},"]
+        [key.inspect, o.operator, value.inspect + ',']
+      end
+
+      # x[y] prints as (slice x y)
+      def dump_AccessExpression o
+        "#{do_dump(o.left_expr).capitalize}" + do_dump(o.keys).to_s.gsub("\"",'')
       end
 
       def dump_LiteralFloat o
@@ -345,7 +358,7 @@ module Retrospec
       end
 
       def dump_LiteralValue o
-        o.value.to_s
+        o.value
       end
 
       def dump_LiteralList o
@@ -358,7 +371,7 @@ module Retrospec
       end
 
       def dump_LiteralString o
-        "'#{o.value}'"
+        "#{o.value}"
       end
 
       def dump_LiteralDefault o
@@ -366,7 +379,7 @@ module Retrospec
       end
 
       def dump_LiteralUndef o
-        ":undef"
+        :undef
       end
 
       def dump_LiteralRegularExpression o
@@ -378,7 +391,7 @@ module Retrospec
       end
 
       def dump_NilClass o
-        ":undef"
+        :undef
       end
 
       def dump_NotExpression o

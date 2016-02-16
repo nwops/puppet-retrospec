@@ -79,7 +79,7 @@ module Retrospec
         def generate_content
           class_def = ast.body
           parameters = class_def.parameters
-          dumper = Retrospec::Puppet::RspecDumper.new
+          dumper = Retrospec::Puppet::RspecDumperFull.new
           content = dumper.dump(ast)
         end
 

@@ -9,9 +9,11 @@ class sql(
   String $instance_name          = 'MSSQLSERVER',
   Hash   $ssdt_install_options   = {}
 ) {
-    if $::kernel == 'linux' {
-      $value = 'linux'
+    if true {
+      $value = "${::kernel} ${::operatingsystem} value1"
     }
+    notify{$value:}
+
     case $install_type {
       'custom': {
         if empty($install_options) {
