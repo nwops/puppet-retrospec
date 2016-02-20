@@ -51,7 +51,7 @@ def retrospec_templates_path
   # I like to develop the templates at the same time as this gem
   # but I keep the templates in another repo
   # as a side effect, puppet retrospec will pick up this environment variable as well
-  ENV['RETROSPEC_TEMPLATES_DIR'] ||= File.join(ENV['HOME'], 'github', 'retrospec-templates')
+  ENV['RETROSPEC_TEMPLATES_DIR'] || File.expand_path(File.join(ENV['HOME'], '.retrospec','repos', 'retrospec-puppet-templates'))
 end
 
 def install_module(module_name)
