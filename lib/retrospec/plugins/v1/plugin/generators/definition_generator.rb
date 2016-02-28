@@ -16,7 +16,7 @@ module Retrospec
         end
 
         def spec_template_file
-          'definition.rb.retrospec.erb'
+          'definition_spec.rb.retrospec.erb'
         end
 
         def self.generate_spec_files(module_path)
