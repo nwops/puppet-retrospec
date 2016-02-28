@@ -1,10 +1,5 @@
-require_relative 'generators/fact_generator'
-require_relative 'generators/module_generator'
-require_relative 'generators/function_generator'
-require_relative 'generators/type_generator'
-require_relative 'generators/provider_generator'
-require_relative 'generators/schema_generator'
-require_relative 'generators/report_generator'
-require_relative 'generators/hostclass_generator'
-require_relative 'generators/definition_generator'
 require_relative 'exceptions'
+# load all the generators found in the generators directory
+Dir.glob(File.join(File.dirname(__FILE__),'generators', '*.rb')).each do |file|
+  require_relative File.join('generators', File.basename(file, '.rb'))
+end
