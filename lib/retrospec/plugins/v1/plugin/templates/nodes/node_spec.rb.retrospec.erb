@@ -9,7 +9,8 @@ describe '<%= type_name -%>' do
   # rspec-puppet does not allow you to swap out hiera data on a per test block
   #include_context :hiera
 
-  let(:title) { 'XXreplace_meXX' }
+  # the node name you want to test for in the site.pp classification
+  let(:node) { '<%= type_name %>' }
 
   # below is the facts hash that gives you the ability to mock
   # facts on a per describe/context block.  If you use a fact in your

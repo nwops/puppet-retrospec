@@ -1,5 +1,5 @@
 define one_resource::one_define(
-  $one = 'one'
+  $one = 'one_value'
 ) {
 
   notify{'hello':}

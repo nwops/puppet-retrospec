@@ -69,6 +69,7 @@ module Retrospec
           context.content = generate_content
           context.parameters = parameters
           context.type_name = type_name
+          context.resources = resources
           context.resource_type = resource_type
           context.resource_type_name = resource_type_name
           context
