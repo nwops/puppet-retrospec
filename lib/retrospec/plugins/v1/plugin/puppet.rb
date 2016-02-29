@@ -7,13 +7,11 @@ require_relative 'spec_object'
 require 'erb'
 require_relative 'template_helpers'
 require 'fileutils'
-require_relative 'resource'
-require_relative 'conditional'
-require_relative 'variable_store'
 require_relative 'puppet_module'
 require 'retrospec/exceptions'
 require_relative 'version'
 require 'find'
+require 'logger'
 require 'puppet'
 
 module Retrospec
@@ -258,7 +256,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
 
         # this is the method that performs all the magic and creates all the files
         def create_files
-          types = context.types
           safe_create_module_files
           fact(module_path, config_data)
           type_spec_files(module_path, config_data)
@@ -267,10 +264,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
           new_schema(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path)
-          # types.each do |type|
-          #   safe_create_resource_spec_files(type)
-          #   safe_create_acceptance_tests(type) if context.enable_beaker_tests?
-          # end
           Utilities::PuppetModule.clean_tmp_modules_dir
           true
         end
@@ -305,20 +298,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
               end
             end
           end
-        end
-
-        # Creates an associated spec file for each type and even creates the subfolders for nested classes one::two::three
-        def safe_create_resource_spec_files(type, template = File.join(template_dir, 'resource_spec_file.retrospec.erb'))
-          context.parameters = type.arguments
-          context.type = type
-          VariableStore.populate(type)
-          context.resources = Resource.all(type)
-          # pass the type to the variable store and it will discover all the variables and try to resolve them.
-          # this does not get deep nested conditional blocks
-          context.resources += Conditional.all(type)
-          dest = File.join(module_path, generate_file_path(type, false))
-          safe_create_template_file(dest, template, context)
-          dest
         end
 
         def safe_create_acceptance_tests(type, template = File.join(template_dir, 'acceptance_spec_test.retrospec.erb'))
