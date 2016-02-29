@@ -29,9 +29,6 @@ describe '<%= type_name -%>' do
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
   <%- resources.each do |res| -%>
-  it do
-    is_expected.to contain_<%= res.type.gsub('::', '__')%>('<%= res.title %>')
-      .with(<%= res.parameters.ai({:indent => -8, :plain => true, :sort_keys => true}).gsub(/^\{/,'').gsub(/\}$/, '').tr('"', "'")%>      )
-  end
+  <%= res %>
   <%- end -%>
 end

@@ -87,12 +87,23 @@ module Retrospec
           context.manifest_file
         end
 
+        def manifest_body
+          ast.body.body
+        end
+
+        def find_all_resources
+          res = manifest_body.eAllContents.find_all do |p|
+            p.class.to_s == 'Puppet::Pops::Model::ResourceExpression'
+          end
+        end
+
+        # returns all the found resources
         def resources
-          []
+          @resources ||= find_all_resources.map {|p| dumper.dump(p)}
         end
 
         def dumper
-          @dumper ||= Retrospec::Puppet::RspecDumperFull.new
+          @dumper ||= Retrospec::Puppet::RspecDumper.new
         end
 
         # this produces the content that will later be rendered in the template

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'shared_contexts'
 
-describe '<%= type_name -%>' do
+describe 'one_resource::inherits_params' do
   # by default the hiera integration uses hiera data from the shared_contexts.rb file
   # but basically to mock hiera you first need to add a key/value pair
   # to the specific context in the spec/shared_contexts.rb file
@@ -20,13 +20,11 @@ describe '<%= type_name -%>' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
-    <%= parameters %>
+      #:some_var => "$one_resource::params::var1",
+
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  <%- resources.each do |res| -%>
-  <%= res %>
-  <%- end -%>
 end

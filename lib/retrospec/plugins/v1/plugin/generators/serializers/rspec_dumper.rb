@@ -313,7 +313,6 @@ module Retrospec
 
       # this is the beginning of the resource not the body itself
       def dump_ResourceExpression o
-        #form = o.form == :regular ? '' : o.form.to_s + "-"
         result = []
         o.bodies.each do |b|
           result << :break << do_dump(b)

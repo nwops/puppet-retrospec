@@ -30,6 +30,14 @@ describe 'HostClassGenerator' do
     Retrospec::Puppet::Generators::HostClassGenerator.new(module_path, generator_opts)
   end
 
+  let(:context) do
+    generator.load_context_data
+  end
+
+  let(:spec_file_contents) do
+    File.read(generator.generate_spec_file)
+  end
+
   it 'should create spec file' do
     expect(generator.run).to eq(spec_file)
     expect(File.exists?(spec_file)).to eq(true)
@@ -40,8 +48,33 @@ describe 'HostClassGenerator' do
   end
 
   it 'should generate the content' do
-    expect(generator.generate_content).to eq('')
+    data = ''
+    expect(spec_file_contents).to eq(data)
   end
+
+  it 'should have a name' do
+    expect(context.type_name).to eq('sql')
+  end
+
+  it 'should have a resource_type_name' do
+    expect(context.resource_type_name).to eq('class')
+  end
+
+  it 'should have a type' do
+    expect(context.resource_type).to eq(Puppet::Pops::Model::HostClassDefinition)
+  end
+
+  it 'should have parameters' do
+    expect(context.parameters).to be_instance_of(String)
+    expect(context.parameters.split(',').count).to eq(9)
+    # if the test returns more than the expected count there is an extra comma
+    # although technically it doesn't matter
+  end
+
+  it 'should have resources' do
+    expect(context.resources.count).to eq(4)
+  end
+
   describe 'spec files' do
     let(:generated_files) do
       [File.join(spec_files_path, 'another_resource_spec.rb'),
