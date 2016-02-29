@@ -40,7 +40,9 @@ end
 
 def clean_up_module_dir(dir)
   #puts "removing directory #{dir}"
+  pre_commit = File.join(dir, '.git', 'hooks', 'pre-commit')
   FileUtils.rm_rf(File.join(dir, 'spec'))
+  FileUtils.rm_f(pre_commit) if File.exists?(pre_commit)
   FileUtils.rm_f(File.join(dir, 'Gemfile'))
   FileUtils.rm_f(File.join(dir, '.fixtures.yml'))
   FileUtils.rm_f(File.join(dir, 'Rakefile'))

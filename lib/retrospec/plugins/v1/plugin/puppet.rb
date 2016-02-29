@@ -308,64 +308,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
           end
         end
 
-        def safe_create_acceptance_tests(type, template = File.join(template_dir, 'acceptance_spec_test.retrospec.erb'))
-          @parameters = type.arguments
-          @type = type
-          dest = File.join(module_path, generate_file_path(type, true))
-          safe_create_template_file(dest, template, context)
-          dest
-        end
-
-        # generates a file path for spec tests based on the resource name.  An added option
-        # is to generate directory names for each parent resource as a default option
-        # at this time acceptance tests follow this same test directory layout until best
-        # practices are formed.
-        def generate_file_path(type, is_acceptance_test)
-          classes_dir = 'classes'
-          defines_dir = 'defines'
-          hosts_dir   = 'hosts'
-          acceptance_dir = 'acceptance'
-          case type.type
-          when :hostclass
-            type_dir_name = classes_dir
-          when :definition
-            type_dir_name = defines_dir
-          when :node
-            type_dir_name = hosts_dir
-          else
-            fail "#{type.type} retrospec does not support this resource type yet"
-          end
-          if is_acceptance_test
-            type_dir_name = File.join('spec', acceptance_dir, type_dir_name)
-          else
-            type_dir_name = File.join('spec', type_dir_name)
-          end
-          file_name = generate_file_name(type.name)
-          tokens = type.name.split('::')
-          # if there are only two tokens ie. tomcat::params we dont need to create a subdirectory
-          if tokens.count > 2
-            # this is a deep level resource ie. tomcat::config::server::connector
-            # however we don't need the tomcat directory so we can just remove it
-            # this should leave us with config/server/connector_spec.rb
-            tokens.delete_at(0)
-            # remove the last token since its the class name
-            tokens.pop
-            # so lets make a directory structure out of it
-            dir_name = File.join(tokens) # config/server
-            dir_name = File.join(type_dir_name, dir_name, file_name) # spec/classes/tomcat/config/server
-          else
-            dir_name = File.join(type_dir_name, file_name)
-          end
-          dir_name
-        end
-
-        # returns the filename of the type
-        def generate_file_name(type_name)
-          tokens = type_name.split('::')
-          file_name = tokens.pop
-          "#{file_name}_spec.rb"
-        end
-
         def description
           'Generates puppet rspec test code based on the classes and defines inside the manifests directory'
         end

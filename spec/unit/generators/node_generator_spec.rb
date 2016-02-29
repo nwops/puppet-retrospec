@@ -15,7 +15,7 @@ describe Retrospec::Puppet::Generators::NodeGenerator do
   end
 
   let(:spec_files_path) do
-    File.join(module_path, 'spec', 'nodes')
+    File.join(module_path, 'spec', 'hosts')
   end
 
   let(:module_path) do
@@ -23,7 +23,7 @@ describe Retrospec::Puppet::Generators::NodeGenerator do
   end
 
   let(:spec_file) do
-    path = File.join(module_path, 'spec', 'defines', 'one_define_spec.rb')
+    path = File.join(module_path, 'spec', 'hosts', 'one_define_spec.rb')
   end
 
   let(:generator) do
