@@ -1,9 +1,0 @@
----
-:hierarchy:
-  - %{test_suite}
-  - spec_hiera
-:backends:
-  - yaml
-  - puppet
-:yaml:
-  :datadir: './spec/fixtures'

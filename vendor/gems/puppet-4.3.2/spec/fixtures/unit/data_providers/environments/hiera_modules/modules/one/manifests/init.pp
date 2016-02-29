@@ -1,2 +1,0 @@
-class one($local={}) {
-}

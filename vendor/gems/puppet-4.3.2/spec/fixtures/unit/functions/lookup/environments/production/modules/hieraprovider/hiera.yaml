@@ -1,8 +1,0 @@
----
-:version: 4
-:hierarchy:
-  - :name: "two paths"
-    :backend: json
-    :paths:
-      - "first"
-      - "second_not_present"

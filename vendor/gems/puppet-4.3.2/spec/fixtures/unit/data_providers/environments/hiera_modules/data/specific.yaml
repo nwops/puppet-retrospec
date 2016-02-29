@@ -1,4 +1,0 @@
----
-one::local:
-  bob:
-    shell: /bin/zsh
