@@ -1,5 +1,5 @@
 module Retrospec
   module Puppet
-    VERSION = '0.12.2'
+    VERSION = '0.13.0beta'
   end
 end

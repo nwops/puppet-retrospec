@@ -16,7 +16,11 @@ module Retrospec
         end
 
         def spec_template_file
-          'acceptance_spec_test.rb.retrospec.erb'
+          File.join('acceptance_spec_test.rb.retrospec.erb')
+        end
+
+        def spec_path
+          File.join(module_path, 'spec', plural_name, 'classes')
         end
 
         def self.generate_spec_files(module_path)

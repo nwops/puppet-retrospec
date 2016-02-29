@@ -11,10 +11,13 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 begin
+require_relative 'lib/retrospec/plugins/v1/plugin/version'
 require 'jeweler'
+plugin_version = "#{Retrospec::Puppet::VERSION}"
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = 'puppet-retrospec'
+  gem.version = "#{plugin_version}"
   gem.homepage = 'http://github.com/nwops/puppet-retrospec'
   gem.license = 'MIT'
   gem.summary = %(Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns.)
