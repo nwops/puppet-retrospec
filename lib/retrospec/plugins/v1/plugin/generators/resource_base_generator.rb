@@ -65,9 +65,19 @@ module Retrospec
           files.flatten
         end
 
+        def load_context_data
+          context.content = generate_content
+          context.parameters = parameters
+          context.type_name = type_name
+          context.resource_type = resource_type
+          context.resource_type_name = resource_type_name
+          context
+        end
+
         def generate_spec_file
           template_file = File.join(template_dir,spec_template_file )
-          context.content = generate_content
+          context = load_context_data
+          logger.debug("\nUsing template #{template_file}\n")
           safe_create_template_file(item_spec_path, template_file, context)
           item_spec_path
         end
@@ -76,11 +86,24 @@ module Retrospec
           context.manifest_file
         end
 
+        def resources
+          []
+        end
+
+        def dumper
+          @dumper ||= Retrospec::Puppet::RspecDumperFull.new
+        end
+
+        # this produces the content that will later be rendered in the template
         def generate_content
-          class_def = ast.body
-          parameters = class_def.parameters
-          dumper = Retrospec::Puppet::RspecDumperFull.new
           content = dumper.dump(ast)
+        end
+
+        def parameters
+          # ast.body.parameters.each_with_object({}) do |parameter, obj|
+          #   obj[parameter.name] = dumper.dump(parameter)
+          # end
+          dumper.dump(ast.body.parameters)
         end
 
         # run is the main method that gets called automatically
@@ -103,6 +126,17 @@ module Retrospec
         def resource_type
           ast.eContents.first.class
         end
+
+        # returns the type of resource either the define, type, or class
+        def resource_type_name
+          case resource_type.to_s
+          when 'Puppet::Pops::Model::HostClassDefinition'
+            'class'
+          else
+            type_name
+          end
+        end
+
         # returns the name of the first time found in the file
         # for files that have multiple types, we just don't care since it doesn't
         # follow the style guide
