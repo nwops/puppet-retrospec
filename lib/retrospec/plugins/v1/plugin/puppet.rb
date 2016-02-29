@@ -30,6 +30,14 @@ module Retrospec
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])
         end
 
+        def self.logger
+          unless @logger
+            @logger = Logger.new(STDOUT)
+            logger.level = ENV['RETRSPEC_LOG_LEVEL'].to_i || Logger::INFO
+          end
+          @logger
+        end
+
         def post_init
           # before we validate the module directory we should ensure the module exists by creating it
           # validation also occurs when setting the module path

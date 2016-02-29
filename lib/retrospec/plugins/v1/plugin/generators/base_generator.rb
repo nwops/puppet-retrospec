@@ -13,6 +13,11 @@ module Retrospec
           # the SpecObject can be customized to your liking as its different for every plugin gem.
           @context = OpenStruct.new(spec_object)
         end
+
+        def logger
+          Retrospec::Plugins::V1::Puppet.logger
+        end
+        
         # used to display subcommand options to the cli
         # the global options are passed in for your usage
         # http://trollop.rubyforge.org
