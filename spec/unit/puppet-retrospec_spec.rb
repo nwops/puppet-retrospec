@@ -127,62 +127,71 @@ describe 'puppet-retrospec' do
   end
 
   describe 'acceptance tests' do
-    let(:plugin_config) do
-      {
-         :enable_beaker_tests => true
-      }
+    context 'should' do
+      let(:plugin_config) do
+        {
+           :enable_beaker_tests => true
+        }
+      end
+      it 'create acceptance test files' do
+        opts[:enable_beaker_tests] = true
+        tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
+        tomcat.post_init
+        spec_path = File.expand_path(File.join(module_path, 'spec'))
+        tomcat.create_files
+        expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(true)
+        expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
+        expect(File.exist?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(true)
+        expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets'))).to eq(true)
+        expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(true)
+      end
+
+      it 'create 15 nodesets' do
+        tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
+        tomcat.post_init
+        filepath = File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
+        tomcat.safe_create_module_files
+        expect(File.exist?(filepath)).to eq(true)
+        expect(Dir.glob(File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', '*.yml'))).length).to eq 15
+      end
     end
-    it 'should create acceptance test files' do
-      opts[:enable_beaker_tests] = true
-      tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
-      tomcat.post_init
-      spec_path = File.expand_path(File.join(module_path, 'spec'))
-      tomcat.create_files
-      expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(true)
-      expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
-      expect(File.exist?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(true)
-      expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets'))).to eq(true)
-      expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(true)
+    context 'should not' do
+      let(:plugin_config) do
+        {
+           :enable_beaker_tests => false
+        }
+      end
+
+      it 'create acceptance test files' do
+        clean_up_spec_dir(module_path)
+        opts[:enable_beaker_tests] = false
+        tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
+        tomcat.post_init
+        spec_path = File.expand_path(File.join(module_path, 'spec'))
+        tomcat.create_files
+        expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(false)
+        expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
+        expect(File.exist?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(false)
+        expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets'))).to eq(false)
+        expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(false)
+      end
+
+      it 'create acceptance spec helper file' do
+        tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
+        tomcat.post_init
+        filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper_acceptance.rb'))
+        tomcat.safe_create_module_files
+        expect(File.exist?(filepath)).to eq(true)
+      end
+      it 'create acceptance spec helper file' do
+        filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper_acceptance.rb'))
+        tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
+        tomcat.post_init
+        tomcat.safe_create_module_files
+        expect(File.exist?(filepath)).to eq(false)
+      end
     end
 
-    it 'should not create acceptance test files' do
-      clean_up_spec_dir(module_path)
-      opts[:enable_beaker_tests] = false
-      tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
-      tomcat.post_init
-      spec_path = File.expand_path(File.join(module_path, 'spec'))
-      tomcat.create_files
-      expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(false)
-      expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
-      expect(File.exist?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(false)
-      expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets'))).to eq(false)
-      expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(false)
-    end
-
-    it 'should create acceptance spec helper file' do
-      tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
-      tomcat.post_init
-      filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper_acceptance.rb'))
-      tomcat.safe_create_module_files
-      expect(File.exist?(filepath)).to eq(true)
-    end
-
-    it 'should not create acceptance spec helper file' do
-      filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper_acceptance.rb'))
-      tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
-      tomcat.post_init
-      tomcat.safe_create_module_files
-      expect(File.exist?(filepath)).to eq(false)
-    end
-
-    it 'should create 15 nodesets' do
-      tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
-      tomcat.post_init
-      filepath = File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
-      tomcat.safe_create_module_files
-      expect(File.exist?(filepath)).to eq(true)
-      expect(Dir.glob(File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', '*.yml'))).length).to eq 15
-    end
   end
 
   it 'should create proper spec helper file' do

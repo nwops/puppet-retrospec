@@ -32,8 +32,13 @@ module Retrospec
 
         def self.logger
           unless @logger
+            require 'logger'
             @logger = Logger.new(STDOUT)
-            logger.level = ENV['RETRSPEC_LOG_LEVEL'].to_i || Logger::INFO
+            if ENV['RETROSPEC_LOGGER_LEVEL'] == 'debug'
+              @logger.level = Logger::DEBUG
+            else
+              @logger.level = Logger::INFO
+            end
           end
           @logger
         end

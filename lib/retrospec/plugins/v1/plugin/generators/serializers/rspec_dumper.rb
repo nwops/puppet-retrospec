@@ -219,14 +219,18 @@ module Retrospec
         result = []
         id = o.eContainer.object_id # the id of this container
         relationship = o.eContainer.eContainer.eContainer.eContents.first
-        if relationship.left_expr.object_id == id
-          type_name = dump(relationship.right_expr.type_name).capitalize
-          titles = relationship.right_expr.bodies.map{|b| dump(b.title)}
-          result << ['"that_comes_before"', '=>', "'#{type_name}#{titles}',".gsub("\"", '') ]
-        else
-          type_name = dump(relationship.left_expr.type_name).capitalize
-          titles = relationship.left_expr.bodies.map{|b| dump(b.title)}
-          result << ['"that_requires"', '=>', "'#{type_name}#{titles}',".gsub("\"", '')]
+        if relationship.respond_to?(:left_expr)
+          if relationship.left_expr.object_id == id
+            type_name = dump(relationship.right_expr.type_name).capitalize
+            titles = relationship.right_expr.bodies.map{|b| dump(b.title)}
+            result << ['"that_comes_before"', '=>', "'#{type_name}#{titles}',".gsub("\"", '') ]
+          else
+            if relationship.left_expr.respond_to?(:type_name)
+              type_name = dump(relationship.left_expr.type_name).capitalize
+              titles = relationship.left_expr.bodies.map{|b| dump(b.title)}
+              result << ['"that_requires"', '=>', "'#{type_name}#{titles}',".gsub("\"", '')]
+            end
+          end
         end
         result
       end
@@ -244,8 +248,8 @@ module Retrospec
           end
           unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
             result << dump_Resource_Relationship(o)
-            result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
           end
+          result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
         end
         result << [:end, :break]
         result
