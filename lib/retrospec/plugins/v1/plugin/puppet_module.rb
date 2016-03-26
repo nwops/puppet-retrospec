@@ -5,7 +5,6 @@ require_relative 'exceptions'
 module Utilities
   class PuppetModule
     attr_writer :module_path
-    attr_accessor :future_parser
 
     include Singleton
 
@@ -74,17 +73,12 @@ module Utilities
         # validate the manifest files, because if one files doesn't work it affects everything
         files.each do |file|
           begin
-            Puppet[:parser] = 'future' if future_parser
             Puppet::Face[:parser, :current].validate(file)
           rescue SystemExit => e
             puts "Manifest file: #{file} has parser errors, please fix and re-check using\n puppet parser validate #{file}".fatal
             raise Retrospec::Puppet::ParserError
           end
         end
-        # switch back to current parser, since we rely on the AST parser
-        # unless the user enabled the future parser.
-        # Note: some functionality does not currently work with future_parser
-        Puppet[:parser] = 'current' unless future_parser
       end
       dir
     end
