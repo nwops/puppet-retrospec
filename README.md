@@ -231,7 +231,6 @@ Please see #future-parser-support for why this might be required.
 plugins::puppet::templates::url: https://github.com/nwops/retrospec-templates
 plugins::puppet::templates::ref: master
 plugins::puppet::enable_beaker_tests: true
-plugins::puppet::enable_future_parser: true
 plugins::puppet::template_dir: /Users/username/.retrospec/repos/retrospec-puppet-templates
 # used when creating new modules
 plugins::puppet::namespace: organization
