@@ -144,8 +144,11 @@ Generates puppet rspec test code based on the classes and defines inside the man
             exit 1
           rescue Retrospec::Puppet::Generators::CoreTypeException => e
             puts e.message.fatal
+          rescue Errno::ENOENT => e
+            puts e.message
           rescue Exception => e
-            exit 1
+            puts e.message
+            exit 1  
           end
           plugin_data
         end
