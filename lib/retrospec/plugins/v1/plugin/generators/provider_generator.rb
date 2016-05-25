@@ -13,7 +13,9 @@ module Retrospec::Puppet::Generators
       # below is the Spec Object which serves as a context for template rendering
       # you will need to initialize this object, so the erb templates can get the binding
       # the SpecObject can be customized to your liking as its different for every plugin gem.
-      @context = OpenStruct.new(:provider_name => spec_object[:name], :type_name => spec_object[:type])
+      @context = OpenStruct.new(:provider_name => spec_object[:name],
+                                :type_name => spec_object[:type],
+                                :properties => [])
       @provider_type = context.type_name
     end
 
