@@ -47,7 +47,7 @@ Table of Contents
 TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 ## Build Status
-[![Build Status](https://travis-ci.org/logicminds/puppet-retrospec.png)](https://travis-ci.org/logicminds/puppet-retrospec)
+![Build Status](https://gitlab.com/nwops/puppet-retrospec/badges/master/build.svg)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News

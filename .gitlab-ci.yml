@@ -1,0 +1,34 @@
+variables:
+  #RETROSPEC_TEMPLATES_DIR: /root/.retrospec/repos/retrospec-puppet-templates
+before_script:
+  - bundle install
+ruby193:
+  stage: test
+  script:
+    - "bundle exec rake spec"
+  image: ruby:1.9.3
+
+ruby2.0:
+  stage: test
+  script:
+    - "bundle exec rake spec"
+  image: ruby:2.0
+
+ruby2.1:
+  stage: test
+  script:
+    - "bundle exec rake spec"
+  image: ruby:2.1
+
+stages:
+  - test
+  - deploy
+
+production:
+  before_script:
+    - gem install dpl
+  type: deploy
+  script:
+    - dpl --provider=rubygems --api-key=$RUBYGEMS_API_KEY
+  only:
+    - tags
