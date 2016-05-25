@@ -56,7 +56,7 @@ end
 
 def install_module(module_name)
   FileUtils.mkdir_p(fixture_modules_path)
-  puts `puppet module install -i #{fixture_modules_path} #{module_name}`
+  puts `bundle exec puppet module install -i #{fixture_modules_path} #{module_name}`
   Dir.glob(File.join(fixture_modules_path, '**', 'spec')).each do |dir|
     clean_up_spec_dir(dir)
   end
