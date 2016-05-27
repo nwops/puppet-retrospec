@@ -24,7 +24,7 @@ module Retrospec
           manifest_files(module_path).each do |file|
             Retrospec::Plugins::V1::Puppet.logger.debug("Looking at file: #{file}")
             hostclass = new(module_path, {:manifest_file => file})
-            next if hostclass.resource_type != ::Puppet::Pops::Model::HostClassDefinition
+            next unless hostclass.resource_type == ::Puppet::Pops::Model::HostClassDefinition
             files << hostclass.generate_spec_file
           end
           files

@@ -159,7 +159,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
             puts e.message
           rescue Exception => e
             puts e.message
-            exit 1  
+            exit 1
           end
           plugin_data
         end
@@ -277,6 +277,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           new_schema(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
           Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path)
+          Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path) if context.enable_beaker_tests?
           Utilities::PuppetModule.clean_tmp_modules_dir
           true
         end
@@ -290,7 +291,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
           templates = Find.find(File.join(template_dir, 'module_files')).sort
           templates.each do |template|
             # need to remove the erb extension and rework the destination path
-            if template =~ /nodesets|spec_helper_acceptance/ and !context.enable_beaker_tests?
+            if template =~ /nodesets|acceptance|spec_helper_acceptance/ and !context.enable_beaker_tests?
               next
             else
               dest = template.gsub(File.join(template_dir, 'module_files'), module_path)

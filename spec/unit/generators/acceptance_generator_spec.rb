@@ -11,7 +11,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
   end
 
   let(:spec_files_path) do
-    File.join(module_path, 'spec', 'acceptance')
+    File.join(module_path, 'spec', 'acceptance', 'classes')
   end
 
   let(:module_path) do
@@ -31,7 +31,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
 
     describe 'define' do
       let(:spec_file) do
-        path = File.join(module_path, 'spec', 'acceptance', 'one_define_spec.rb')
+        path = File.join(module_path, 'spec', 'acceptance', 'classes','one_define_spec.rb')
       end
 
       let(:sample_file) do
@@ -55,7 +55,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
 
       it 'should have parameters' do
         expect(context.parameters).to be_instance_of(String)
-        expect(context.parameters.split(',').count).to eq(1)
+        expect(context.parameters.rstrip.chomp.split(',').count).to eq(1)
         # if the test returns more than the expected count there is an extra comma
         # although technically it doesn't matter
       end
@@ -70,14 +70,14 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
       end
 
       it 'should generate the content' do
-        data = "require 'spec_helper_acceptance'\n\ndescribe 'one_resource::one_define' do\n  describe 'running puppet code' do\n    it 'should work with no errors' do\n      pp = <<-EOS\n      one_resource::one_define{'one_resource::one_define':\n        #:one => \"one_value\"\n  \n      }\n      EOS\n\n    # Run it twice and test for idempotency\n      apply_manifest(pp, :catch_failures => true)\n      apply_manifest(pp, :catch_changes => true)\n    end\n\n  end\nend\n"
+        data = "require 'spec_helper_acceptance'\n\ndescribe 'one_resource::one_define one_resource::one_define' do\n  describe 'running puppet code' do\n    it 'should work with no errors' do\n      pp = <<-EOS\n      one_resource::one_define{'some_value':\n        #:one => \"one_value\",\n  \n      }\n      EOS\n\n    # Run it twice and test for idempotency\n      apply_manifest(pp, :catch_failures => true)\n      apply_manifest(pp, :catch_changes => true)\n    end\n\n  end\nend\n"
         expect(spec_file_contents).to eq(data)
       end
 
     end
     describe 'class' do
       let(:spec_file) do
-        path = File.join(module_path, 'spec', 'acceptance', 'another_resource_spec.rb')
+        path = File.join(module_path, 'spec', 'acceptance', 'classes','another_resource_spec.rb')
       end
 
       let(:sample_file) do
@@ -101,7 +101,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
 
       it 'should have parameters' do
         expect(context.parameters).to be_instance_of(String)
-        expect(context.parameters.split(',').count).to eq(5)
+        expect(context.parameters.split("\n").count).to eq(5)
       end
 
       it 'should create spec file' do
@@ -134,7 +134,9 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
     end
     it 'should generate a bunch of files' do
       files = Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path)
-      expect(files).to eq(generated_files)
+      generated_files.each do |file|
+        expect(files.include?(file)).to eq(true)
+      end
     end
   end
 end
