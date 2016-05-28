@@ -79,8 +79,6 @@ module Retrospec
           template_file = File.join(template_dir,spec_template_file )
           context = load_context_data
           logger.debug("\nUsing template #{template_file}\n")
-          require 'pry'
-          binding.pry
           safe_create_template_file(item_spec_path, template_file, context)
           item_spec_path
         end

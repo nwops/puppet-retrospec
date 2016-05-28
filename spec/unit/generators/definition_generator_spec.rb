@@ -61,26 +61,25 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
 
   it 'should have parameters' do
     expect(context.parameters).to be_instance_of(String)
-    expect(context.parameters.split(',').count).to eq(1)
+    expect(context.parameters.strip.chomp.split("\n").count).to eq(1)
     # if the test returns more than the expected count there is an extra comma
     # although technically it doesn't matter
   end
 
   it 'should have resources' do
-    resources = ['one']
+    resources = ["\n  it do\n    is_expected.to contain_notify(\"hello\")\n  end\n  "]
     expect(context.resources).to eq(resources)
   end
 
   describe 'content' do
     let(:data) do
-      "require 'spec_helper'\nrequire 'shared_contexts'\n\ndescribe 'one_resource::one_define' do\n  # by default the hiera integration uses hiera data from the shared_contexts.rb file\n  # but basically to mock hiera you first need to add a key/value pair\n  # to the specific context in the spec/shared_contexts.rb file\n  # Note: you can only use a single hiera context per describe/context block\n  # rspec-puppet does not allow you to swap out hiera data on a per test block\n  #include_context :hiera\n\n  let(:title) { 'XXreplace_meXX' }\n\n  # below is the facts hash that gives you the ability to mock\n  # facts on a per describe/context block.  If you use a fact in your\n  # manifest you should mock the facts below.\n  let(:facts) do\n    {}\n  end\n  # below is a list of the resource parameters that you can override.\n  # By default all non-required parameters are commented out,\n  # while all required parameters will require you to add a value\n  let(:params) do\n    {\n      #:one => \"one_value\"\n  \n    }\n  end\n  # add these two lines in a single test block to enable puppet and hiera debug mode\n  # Puppet::Util::Log.level = :debug\n  # Puppet::Util::Log.newdestination(:console)\nend\n"
+      /contain_notify\("hello"\)/
     end
     it 'should generate the content' do
-      expect(spec_file_contents).to eq(data)
+      expect(spec_file_contents).to match(data)
+      expect(spec_file_contents).to match(/#:one => "one_value",/)
     end
-    it 'should generate the content' do
-      expect(spec_file_contents).to eq('')
-    end
+
   end
 
 
