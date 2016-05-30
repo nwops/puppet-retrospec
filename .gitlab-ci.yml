@@ -1,7 +1,7 @@
 variables:
   #RETROSPEC_TEMPLATES_DIR: /root/.retrospec/repos/retrospec-puppet-templates
 before_script:
-  - bundle install
+  - bundle install --without development build
 ruby193:
   stage: test
   script:

@@ -1,7 +1,6 @@
 require 'retrospec-puppet'
 require 'rspec'
 require 'puppet'
-require 'pry'
 
 def fixture_modules_path
   @fixture_module_path ||= File.expand_path(File.join(fixtures_path, 'modules'))
@@ -61,7 +60,7 @@ def retrospec_templates_path
   elsif ENV['RETROSPEC_TEMPLATES_DIR']
     ENV['RETROSPEC_TEMPLATES_DIR']
   else
-    dir = File.expand_path(File.join(ENV['HOME'], 'retrospec-templates'))
+    dir = File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))
     FileUtils.mkdir_p(dir) unless File.exists?(dir)
     dir
   end
