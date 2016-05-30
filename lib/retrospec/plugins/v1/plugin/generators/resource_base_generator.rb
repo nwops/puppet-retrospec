@@ -113,10 +113,12 @@ module Retrospec
         end
 
         def parameters
-          # ast.body.parameters.each_with_object({}) do |parameter, obj|
-          #   obj[parameter.name] = dumper.dump(parameter)
-          # end
-          dumper.dump(ast.body.parameters)
+          if ast.body.respond_to?(:parameters)
+            args = ast.body.parameters || []
+            dumper.dump(args)
+          else
+            []
+          end
         end
 
         # run is the main method that gets called automatically
@@ -150,7 +152,7 @@ module Retrospec
           end
         end
 
-        # returns the name of the first time found in the file
+        # returns the name of the first type found in the file
         # for files that have multiple types, we just don't care since it doesn't
         # follow the style guide
         def type_name

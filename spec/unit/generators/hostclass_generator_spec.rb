@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'HostClassGenerator' do
 
-  after(:each) do
+  before(:each) do
     FileUtils.rm(spec_file) if File.exists?(spec_file)
   end
 
@@ -47,11 +47,6 @@ describe 'HostClassGenerator' do
     expect(generator.item_spec_path).to eq(spec_file)
   end
 
-  it 'should generate the content' do
-    data = ''
-    expect(spec_file_contents).to eq(data)
-  end
-
   it 'should have a name' do
     expect(context.type_name).to eq('sql')
   end
@@ -66,7 +61,7 @@ describe 'HostClassGenerator' do
 
   it 'should have parameters' do
     expect(context.parameters).to be_instance_of(String)
-    expect(context.parameters.split(',').count).to eq(9)
+    expect(context.parameters.strip.chomp.split("\n").count).to eq(9)
     # if the test returns more than the expected count there is an extra comma
     # although technically it doesn't matter
   end
@@ -76,6 +71,7 @@ describe 'HostClassGenerator' do
   end
 
   describe 'spec files' do
+
     let(:generated_files) do
       [File.join(spec_files_path, 'another_resource_spec.rb'),
         File.join(spec_files_path, 'inherits_params_spec.rb'),
@@ -94,7 +90,8 @@ describe 'HostClassGenerator' do
       File.join(fixtures_path, 'manifests', 'apache.pp')
     end
     it 'should generate test for apache' do
-      expect(generator.generate_content).to eq('')
+      data = /contain_concat\("\$::apache::params::ports_file"\)/
+      expect(generator.generate_content).to match(data)
     end
   end
 
