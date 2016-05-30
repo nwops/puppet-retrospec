@@ -13,7 +13,7 @@ describe 'resource' do
   end
 
   before :each do
-    clean_up_spec_dir(@path)
+    clean_up_module_dir(@path)
   end
 
   describe 'one resource module' do

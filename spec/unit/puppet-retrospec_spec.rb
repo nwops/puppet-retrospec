@@ -35,16 +35,19 @@ describe 'puppet-retrospec' do
     {}
   end
 
+  let(:path) do
+    File.join(fixture_modules_path, 'tomcat')
+  end
+
   before :all do
     # enabling the removal of real modules slows down tests, but from time to time we may need to
     FileUtils.rm_rf(fixture_modules_path) if ENV['RETROSPEC_CLEAN_UP_TEST_MODULES'] =~ /true/
     install_module('puppetlabs-tomcat')
-    @path = File.join(fixture_modules_path, 'tomcat')
   end
 
   before :each do
-    clean_up_spec_dir(@path)
-    @opts = { :module_path => @path, :enable_beaker_tests => false, :name => 'name-test123',
+    clean_up_module_dir(path)
+    @opts = { :module_path => path, :enable_beaker_tests => false, :name => 'name-test123',
               :enable_user_templates => false, :template_dir => template_dir }
   end
 
@@ -54,7 +57,7 @@ describe 'puppet-retrospec' do
   end
 
   it 'should set the parser to future' do
-    opts = { :module_path => @path, :enable_beaker_tests => false,
+    opts = { :module_path => path, :enable_beaker_tests => false,
              :enable_user_templates => false, :template_dir => nil, :enable_future_parser => true }
     tomcat = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
     tomcat.post_init
@@ -65,20 +68,20 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
     tomcat.create_files
-    expect(File.exist?(File.join(@path, 'Gemfile'))).to eq(true)
-    expect(File.exist?(File.join(@path, 'Rakefile'))).to eq(true)
-    expect(File.exist?(File.join(@path, 'spec', 'spec_helper.rb'))).to eq(true)
-    expect(File.exist?(File.join(@path, '.travis.yml'))).to eq(true)
-    expect(File.exist?(File.join(@path, 'spec', 'shared_contexts.rb'))).to eq(true)
-    expect(File.exist?(File.join(@path, '.fixtures.yml'))).to eq(true)
-    expect(File.exist?(File.join(@path, 'spec', 'classes', 'tomcat_spec.rb'))).to eq(true)
+    expect(File.exist?(File.join(path, 'Gemfile'))).to eq(true)
+    expect(File.exist?(File.join(path, 'Rakefile'))).to eq(true)
+    expect(File.exist?(File.join(path, 'spec', 'spec_helper.rb'))).to eq(true)
+    expect(File.exist?(File.join(path, '.travis.yml'))).to eq(true)
+    expect(File.exist?(File.join(path, 'spec', 'shared_contexts.rb'))).to eq(true)
+    expect(File.exist?(File.join(path, '.fixtures.yml'))).to eq(true)
+    expect(File.exist?(File.join(path, 'spec', 'classes', 'tomcat_spec.rb'))).to eq(true)
   end
 
   it 'should create acceptance test files' do
     @opts[:enable_beaker_tests] = true
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    spec_path = File.expand_path(File.join(@path, 'spec'))
+    spec_path = File.expand_path(File.join(path, 'spec'))
     tomcat.create_files
     expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(true)
     expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
@@ -88,11 +91,11 @@ describe 'puppet-retrospec' do
   end
 
   it 'should not create acceptance test files' do
-    clean_up_spec_dir(@path)
+    clean_up_module_dir(path)
     @opts[:enable_beaker_tests] = false
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    spec_path = File.expand_path(File.join(@path, 'spec'))
+    spec_path = File.expand_path(File.join(path, 'spec'))
     tomcat.create_files
     expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(false)
     expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
@@ -104,7 +107,7 @@ describe 'puppet-retrospec' do
   it 'should create proper spec helper file' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper.rb'))
+    filepath = File.expand_path(File.join(path, 'spec', 'spec_helper.rb'))
     tomcat.safe_create_module_files
     path = tomcat.module_path
     expect(File.exist?(filepath)).to eq(true)
@@ -113,7 +116,7 @@ describe 'puppet-retrospec' do
   it 'should create proper shared context file' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'spec', 'shared_contexts.rb'))
+    filepath = File.expand_path(File.join(path, 'spec', 'shared_contexts.rb'))
     tomcat.safe_create_module_files
     expect(File.exist?(filepath)).to eq(true)
   end
@@ -121,7 +124,7 @@ describe 'puppet-retrospec' do
   it 'should produce hiera data' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'spec', 'shared_contexts.rb'))
+    filepath = File.expand_path(File.join(path, 'spec', 'shared_contexts.rb'))
     tomcat.safe_create_module_files
     path = tomcat.module_path
     expect(tomcat.context.all_hiera_data).to eq('tomcat::catalina_home' => nil,
@@ -138,19 +141,19 @@ describe 'puppet-retrospec' do
   end
 
   it 'should create acceptance spec helper file' do
-    opts = { :module_path => @path, :enable_beaker_tests => true,
+    opts = { :module_path => path, :enable_beaker_tests => true,
              :template_dir => template_dir }
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper_acceptance.rb'))
+    filepath = File.expand_path(File.join(path, 'spec', 'spec_helper_acceptance.rb'))
     tomcat.safe_create_module_files
     expect(File.exist?(filepath)).to eq(true)
   end
 
   it 'should not create acceptance spec helper file' do
-    opts = { :module_path => @path, :enable_beaker_tests => false,
+    opts = { :module_path => path, :enable_beaker_tests => false,
              :template_dir => template_dir }
-    filepath = File.expand_path(File.join(@path, 'spec', 'spec_helper_acceptance.rb'))
+    filepath = File.expand_path(File.join(path, 'spec', 'spec_helper_acceptance.rb'))
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
     tomcat.safe_create_module_files
@@ -158,20 +161,20 @@ describe 'puppet-retrospec' do
   end
 
   it 'should create 15 nodesets' do
-    opts = { :module_path => @path, :enable_beaker_tests => true,
+    opts = { :module_path => path, :enable_beaker_tests => true,
              :template_dir => template_dir }
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
+    filepath = File.expand_path(File.join(path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
     tomcat.safe_create_module_files
     expect(File.exist?(filepath)).to eq(true)
-    expect(Dir.glob(File.expand_path(File.join(@path, 'spec', 'acceptance', 'nodesets', '*.yml'))).length).to eq 15
+    expect(Dir.glob(File.expand_path(File.join(path, 'spec', 'acceptance', 'nodesets', '*.yml'))).length).to eq 15
   end
 
   it 'should create Gemfile file' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'Gemfile'))
+    filepath = File.expand_path(File.join(path, 'Gemfile'))
     tomcat.safe_create_module_files
     expect(File.exist?(filepath)).to eq(true)
   end
@@ -179,13 +182,13 @@ describe 'puppet-retrospec' do
   it 'should create Rakefile file' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    filepath = File.expand_path(File.join(@path, 'Rakefile'))
+    filepath = File.expand_path(File.join(path, 'Rakefile'))
     tomcat.safe_create_module_files
     expect(File.exist?(filepath)).to eq(true)
   end
 
   it 'should create proper fixtures file' do
-    filepath = File.expand_path(File.join(@path, '.fixtures.yml'))
+    filepath = File.expand_path(File.join(path, '.fixtures.yml'))
     FileUtils.rm_f(filepath) # ensure we have a clean state
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
@@ -202,7 +205,7 @@ describe 'puppet-retrospec' do
   it 'should create a file from a template' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
-    file_path = File.join(@path, '.fixtures.yml')
+    file_path = File.join(path, '.fixtures.yml')
     template_file = File.join(tomcat.template_dir, 'module_files', '.fixtures.yml.retrospec.erb')
     tomcat.safe_create_template_file(file_path, template_file, tomcat.context)
     expect(File.exist?(file_path)).to eq(true)

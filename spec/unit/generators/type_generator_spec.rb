@@ -10,6 +10,10 @@ describe 'type generator' do
     FileUtils.rm_rf(File.dirname(generator.type_spec_dir))
   end
 
+  before :all do
+    initialize_templates
+  end
+
   let(:type_name) do
     'vhost'
   end
@@ -64,7 +68,8 @@ describe 'type generator' do
     end
 
     it 'can generate a type file' do
-      expect(generator.generate_type_files).to eq('/Users/cosman/github/puppet-retrospec/spec/fixtures/modules/tomcat/lib/puppet/type/vhost.rb')
+      file_path = File.join(fixtures_path, 'modules', 'tomcat', 'lib', 'puppet', 'type', 'vhost.rb')
+      expect(generator.generate_type_files).to eq(file_path)
       expect(File.exist?(File.join(generator.type_dir, "#{generator.type_name}.rb")))
     end
 

@@ -7,6 +7,10 @@ describe 'function_generator' do
     FileUtils.rm_rf(function_path)
   end
 
+  before :all do
+    initialize_templates
+  end
+
   let(:function_path) do
     File.join(module_path, 'lib', 'puppet', 'parser', 'functions', "#{function_name}.rb")
   end

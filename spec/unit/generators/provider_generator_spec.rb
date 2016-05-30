@@ -18,6 +18,10 @@ describe 'provider_generator' do
     'default'
   end
 
+  before :all do
+    initialize_templates
+  end
+
   let(:provider_spec_dir) do
     File.join(module_path, 'spec', 'unit', 'puppet', 'provider')
   end

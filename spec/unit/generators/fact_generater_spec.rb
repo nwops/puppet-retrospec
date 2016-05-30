@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe "fact generator" do
 
+  before :all do
+    initialize_templates
+  end
+
   before :each do
     FileUtils.rm_rf(facter_spec_dir)
   end

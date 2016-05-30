@@ -39,12 +39,17 @@ def fixtures_functions_path
   @fixtures_functions_path ||= File.expand_path(File.join(fixtures_path, 'functions'))
 end
 
-def clean_up_spec_dir(dir)
-  # puts "removing directory #{dir}"
+def clean_up_module_dir(dir)
+  #puts "removing directory #{dir}"
   FileUtils.rm_rf(File.join(dir, 'spec'))
   FileUtils.rm_f(File.join(dir, 'Gemfile'))
   FileUtils.rm_f(File.join(dir, '.fixtures.yml'))
   FileUtils.rm_f(File.join(dir, 'Rakefile'))
+  FileUtils.rm_f(File.join(dir, '.git', 'hooks','pre-commit'))
+end
+
+def initialize_templates
+  Retrospec::Plugins::V1::Puppet.new(File.join(fixture_modules_path, 'tomcat')).run_pre_hook
 end
 
 def retrospec_templates_path
@@ -66,6 +71,6 @@ def install_module(module_name)
   FileUtils.mkdir_p(fixture_modules_path)
   puts `bundle exec puppet module install -i #{fixture_modules_path} #{module_name}`
   Dir.glob(File.join(fixture_modules_path, '**', 'spec')).each do |dir|
-    clean_up_spec_dir(dir)
+    clean_up_module_dir(File.dirname(dir))
   end
 end
