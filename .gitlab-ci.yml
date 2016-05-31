@@ -5,6 +5,7 @@ before_script:
 ruby193:
   stage: test
   script:
+    - 'gem install bundler'
     - "bundle exec rake spec"
   image: ruby:1.9.3
 
