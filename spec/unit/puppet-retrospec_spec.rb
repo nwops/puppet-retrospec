@@ -82,7 +82,7 @@ describe 'puppet-retrospec' do
   it 'should create files without error' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
-    tomcat.create_files
+    tomcat.run
     expect(File.exist?(File.join(path, 'Gemfile'))).to eq(true)
     expect(File.exist?(File.join(path, 'Rakefile'))).to eq(true)
     expect(File.exist?(File.join(path, 'spec', 'spec_helper.rb'))).to eq(true)
@@ -97,7 +97,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
     spec_path = File.expand_path(File.join(path, 'spec'))
-    tomcat.create_files
+    tomcat.run
     expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(true)
     expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
     expect(File.exist?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(true)
@@ -111,9 +111,9 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], @opts)
     tomcat.post_init
     spec_path = File.expand_path(File.join(path, 'spec'))
-    tomcat.create_files
+    tomcat.run
     expect(File.exist?(File.join(spec_path, 'spec_helper_acceptance.rb'))).to eq(false)
-    expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(true)
+    expect(File.exist?(File.join(spec_path, 'acceptance'))).to eq(false)
     expect(File.exist?(File.join(spec_path, 'acceptance', 'classes', 'tomcat_spec.rb'))).to eq(false)
     expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets'))).to eq(false)
     expect(File.exist?(File.join(spec_path, 'acceptance', 'nodesets', 'default.yml'))).to eq(false)
@@ -166,7 +166,6 @@ describe 'puppet-retrospec' do
       end
 
       it 'create acceptance test files' do
-        clean_up_spec_dir(module_path)
         opts[:enable_beaker_tests] = false
         rs.post_init
         rs.run
@@ -185,7 +184,7 @@ describe 'puppet-retrospec' do
         filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper_acceptance.rb'))
         expect(File.exist?(filepath)).to eq(false)
       end
-      
+
       it 'create acceptance spec helper file' do
         filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper_acceptance.rb'))
         rs.post_init
