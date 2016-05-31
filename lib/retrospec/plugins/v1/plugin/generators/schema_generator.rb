@@ -1,4 +1,5 @@
 require 'yaml'
+require_relative 'serializers/schema_dumper'
 
 module Retrospec
   module Puppet
@@ -93,6 +94,10 @@ Generates a kwalify schema based off class parameters.
 
         private
 
+        def dumper
+          @dumper || Retrospec::Puppet::SchemaDumper.new
+        end
+
         # generates a class or defination map
         def generate_type_map(puppet_type)
           type_name = puppet_type.type.to_s
@@ -100,7 +105,7 @@ Generates a kwalify schema based off class parameters.
           #arg_map = {'mapping' => {}, 'required' => false, 'type' => 'map' }
           puppet_type.arguments.each do |k, _v|
             key = "#{puppet_type.name}::#{k}"
-            kwalify_type = type_map(_v.class)
+            kwalify_type = dumper.to_kwalify_type(_v)
             @parameter_count = @parameter_count + 1
             arg_map.deep_merge!(generate_map(key, _v, kwalify_type))
           end
