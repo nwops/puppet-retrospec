@@ -23,10 +23,22 @@ module Retrospec
           File.join(module_path, 'spec', plural_name, 'classes')
         end
 
+        def self.supported_types
+          unless @supported_types
+            @supported_types =
+            [
+              ::Puppet::Pops::Model::HostClassDefinition,
+              ::Puppet::Pops::Model::ResourceTypeDefinition
+            ]
+          end
+          @supported_types
+        end
+
         def self.generate_spec_files(module_path)
           files = []
           manifest_files(module_path).each do |file|
             acceptance = new(module_path, {:manifest_file => file})
+            next unless supported_types.include?(acceptance.resource_type)
             files << acceptance.generate_spec_file
           end
           files

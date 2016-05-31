@@ -144,11 +144,13 @@ module Retrospec
 
         # returns the type of resource either the define, type, or class
         def resource_type_name
-          case resource_type.to_s
-          when 'Puppet::Pops::Model::HostClassDefinition'
+          case ast.eContents.first
+          when ::Puppet::Pops::Model::HostClassDefinition
             'class'
-          else
+          when ::Puppet::Pops::Model::ResourceTypeDefinition
             type_name
+          else
+            resource_type
           end
         end
 
@@ -156,7 +158,11 @@ module Retrospec
         # for files that have multiple types, we just don't care since it doesn't
         # follow the style guide
         def type_name
-          ast.eContents.first.name
+          if ast.eContents.first.respond_to?(:name)
+            ast.eContents.first.name
+          else
+            ''
+          end
         end
 
         # returns the filename of the type

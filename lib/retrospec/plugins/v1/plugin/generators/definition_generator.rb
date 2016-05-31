@@ -23,7 +23,7 @@ module Retrospec
           files = []
           manifest_files(module_path).each do |file|
             definition = new(module_path, {:manifest_file => file})
-            next if definition.resource_type != ::Puppet::Pops::Model::ResourceTypeDefinition
+            next unless definition.resource_type == ::Puppet::Pops::Model::ResourceTypeDefinition
             files << definition.generate_spec_file
           end
           files
