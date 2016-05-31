@@ -121,7 +121,7 @@ Generates a new function with the given name.
         # returns the path to the v3 spec directory if using using rspec test type
         # the spec/functions is returned
         def v3_spec_dir
-          if context[:test_type] == 'ruby'
+          if context.test_type == 'ruby'
             File.join(module_path, 'spec', 'unit', 'puppet', 'parser', 'functions')
           else
             File.join(module_path, 'spec', 'functions')
@@ -131,7 +131,7 @@ Generates a new function with the given name.
         # returns the path to the v4 spec directory if using using rspec test type
         # the spec/functions is returned
         def v4_spec_dir
-          if context[:test_type] == 'ruby'
+          if context.test_type == 'ruby'
             File.join(module_path, 'spec', 'unit', 'puppet', 'functions')
           else
             File.join(module_path, 'spec', 'functions')
@@ -149,7 +149,7 @@ Generates a new function with the given name.
 
         # returns the template file name based on the test type
         def template_file
-          if context[:test_type] == 'rspec'
+          if context.test_type == 'rspec'
             'function_rspec_template.retrospec.erb'
           else
             'function_ruby_template.retrospec.erb'

@@ -13,7 +13,8 @@ module Retrospec
           # below is the Spec Object which serves as a context for template rendering
           # you will need to initialize this object, so the erb templates can get the binding
           # the SpecObject can be customized to your liking as its different for every plugin gem.
-          @context = OpenStruct.new(:puppet_context => spec_object[:puppet_context])
+          @context = OpenStruct.new(:puppet_context => spec_object[:puppet_context], :map_content => '',
+          :raw_maps => '',:parameter_count => '',:schema_path => '', :schema_name => '')
           @schema = base_schema
           @parameter_count = 0
         end
@@ -67,11 +68,11 @@ Generates a kwalify schema based off class parameters.
         # generates the schema file, using a template
         def generate_schema_file
           map_content = create_map_content
-          context[:map_content] = map_content.to_yaml
-          context[:raw_maps] = map_content
-          context[:parameter_count] = @parameter_count
-          context[:schema_path] = schema_path
-          context[:schema_name] = schema_name
+          context.map_content = map_content.to_yaml
+          context.raw_maps = map_content
+          context.parameter_count = @parameter_count
+          context.schema_path = schema_path
+          context.schema_name = schema_name
           template_file = File.join(template_dir, 'schema_file.yaml.retrospec.erb')
           safe_create_template_file(schema_path, template_file, context)
           schema_path
@@ -218,4 +219,3 @@ Generates a kwalify schema based off class parameters.
     end
   end
 end
-

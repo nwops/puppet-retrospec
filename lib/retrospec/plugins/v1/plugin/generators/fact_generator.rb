@@ -38,7 +38,7 @@ Generates a new fact with the given name
         end
 
         def fact_name
-          context[:fact_name]
+          context.fact_name
         end
 
         def facter_dir

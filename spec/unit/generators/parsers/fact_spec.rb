@@ -29,7 +29,7 @@ describe "facter" do
     end
 
     it 'can eval code with multiple facts' do
-      global_used_facts = model[:global_used_facts]
+      global_used_facts = model.global_used_facts
       fact_name = model.facts.keys.first
       fact_data = model.facts[fact_name]
       confines = fact_data.confines
