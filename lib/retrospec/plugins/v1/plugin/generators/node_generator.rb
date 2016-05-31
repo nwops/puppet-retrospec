@@ -11,7 +11,7 @@ module Retrospec
         def initialize(module_path, spec_object = {})
           super
           @singular_name = 'node'
-          @plural_name = 'hosts'
+          @plural_name = 'nodes'
         end
 
         def spec_template_file
