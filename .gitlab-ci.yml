@@ -25,6 +25,7 @@ stages:
   - deploy
 
 production:
+  image: ruby:2.1
   before_script:
     - gem install dpl
   type: deploy
