@@ -1,3 +1,9 @@
+## 0.12.2
+ * fixes issue with ruby193 and openstruct
+ * fix unit tests from failing on missing hook file
+ * group gems more intelligently for ci testing
+ * add better exception handling
+ * adds a default properties for the provider context
 ## 0.12.0
  * fix an annoying issue when creating new modules and current directory
  * gh-38 - added ability to create new types and type unit tests
@@ -8,7 +14,7 @@
 ## 0.11.0
  * gh-31 - add ability to generate new fact and spec tests
  * add awesome_print gem
- * gh-37 - move new module functionality to its own generator class 
+ * gh-37 - move new module functionality to its own generator class
 ## 0.10.0
  * refactor cli options to use retrospec 0.4.0 specifications
  * gh-32 - add ability to create new module
@@ -17,7 +23,7 @@
 ## 0.9.0
  * convert to retrospec plugin
  This is a big change in how you run puppet-retrospec please see the readme for changes.
- 
+
 ## 0.8.1
  * gh-30 - add support for host resource types
 ## 0.8.0
@@ -27,7 +33,7 @@
  * added support for running a hook to clone external templates
  * externalized the templates into their own repo gh-26
  * handle symlinks in the templates directory correctly gh-28
- 
+
 ## 0.7.3
  * added hiera data helper to fill in all the auto bindable class params in shared_contexts
  * updated hiera data gem to newer fork that works with puppet 3.5+
@@ -36,18 +42,16 @@
 
 ## 0.7.2
  * vendor the puppet gem
-    
+
 ## 0.7.0
  * gh-18 puppet 4 code syntax does not work
  * gh-10 safe file creation should use colors
 
 ## 0.6.1
  * gh-12 - allow new templates to be easily added without changing code
- * gh-8 - tests are not created when manifest is invalid 
+ * gh-8 - tests are not created when manifest is invalid
  * updated README based on apache example
  * updated templates to fix minor errors
 
 ## 0.6.0
 Initial release that was deemed worthy.
-
-
