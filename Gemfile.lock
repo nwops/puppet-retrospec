@@ -99,10 +99,13 @@ DEPENDENCIES
   fakefs
   jeweler
   pry
-  rake
   puppet (= 4.3.2)!
+  rake
   rdoc (~> 3.12)
   retrospec (~> 0.4)
   rspec (~> 3.2)
   trollop
   yard (~> 0.7)
+
+BUNDLED WITH
+   1.12.4
