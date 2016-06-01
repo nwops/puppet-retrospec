@@ -18,12 +18,12 @@ module Retrospec
           'node_spec.rb.retrospec.erb'
         end
 
-        def self.generate_spec_files(module_path)
+        def self.generate_spec_files(module_path, config_data)
           files = []
           manifest_files(module_path).each do |file|
-            definition = new(module_path, {:manifest_file => file})
-            next unless definition.resource_type == ::Puppet::Pops::Model::NodeDefinition
-            files << definition.generate_spec_file
+            nodedef = new(module_path, config_data.merge({:manifest_file => file}))
+            next unless nodedef.resource_type == ::Puppet::Pops::Model::NodeDefinition
+            files << nodedef.generate_spec_file
           end
           files
         end

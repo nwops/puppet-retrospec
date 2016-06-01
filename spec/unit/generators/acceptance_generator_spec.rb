@@ -6,6 +6,10 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
     FileUtils.rm_rf(spec_files_path) if File.exists?(spec_files_path)
   end
 
+  let(:sample_file) do
+    File.join(module_path, 'manifests','one_define.pp')
+  end
+
   let(:generator_opts) do
     {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
   end
@@ -132,7 +136,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
       ]
     end
     it 'should generate a bunch of files' do
-      expect(Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path))
+      expect(Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path, generator_opts))
         .to match_array(generated_files)
     end
   end

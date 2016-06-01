@@ -19,11 +19,10 @@ module Retrospec
           'hostclass_spec.rb.retrospec.erb'
         end
 
-        def self.generate_spec_files(module_path)
+        def self.generate_spec_files(module_path, config_data)
           files = []
           manifest_files(module_path).each do |file|
-            Retrospec::Plugins::V1::Puppet.logger.debug("Looking at file: #{file}")
-            hostclass = new(module_path, {:manifest_file => file})
+            hostclass = new(module_path, config_data.merge({:manifest_file => file}))
             next unless hostclass.resource_type == ::Puppet::Pops::Model::HostClassDefinition
             files << hostclass.generate_spec_file
           end

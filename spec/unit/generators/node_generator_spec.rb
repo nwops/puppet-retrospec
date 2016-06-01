@@ -54,7 +54,7 @@ describe Retrospec::Puppet::Generators::NodeGenerator do
       [File.join(spec_files_path, 'site_spec.rb')]
     end
     xit 'should generate a bunch of files' do
-      files = Retrospec::Puppet::Generators::NodeGenerator.generate_spec_files(module_path)
+      files = Retrospec::Puppet::Generators::NodeGenerator.generate_spec_files(module_path, generator_opts)
       expect(files).to eq(generated_files)
     end
   end

@@ -58,10 +58,10 @@ module Retrospec
           Dir.glob(File.join(module_path, 'manifests', '*.pp'))
         end
 
-        def self.generate_spec_files(module_path)
+        def self.generate_spec_files(module_path, config_data)
           manifests = manifest_files(module_path)
-          files = Retrospec::Puppet::Generators::HostClassGenerator.generate_spec_files(module_path)
-          files << Retrospec::Puppet::Generators::DefinitionGenerator.generate_spec_files(module_path)
+          files = Retrospec::Puppet::Generators::HostClassGenerator.generate_spec_files(module_path, config_data)
+          files << Retrospec::Puppet::Generators::DefinitionGenerator.generate_spec_files(module_path, config_data)
           files.flatten
         end
 
@@ -161,7 +161,7 @@ module Retrospec
           if ast.eContents.first.respond_to?(:name)
             ast.eContents.first.name
           else
-            ''
+            #ast.eContents.first.host_matches.first
           end
         end
 

@@ -72,7 +72,7 @@ describe 'puppet-retrospec' do
 
   it 'should set the parser to future' do
     opts = { :module_path => path, :enable_beaker_tests => false,
-             :enable_user_templates => false, :template_dir => nil, :enable_future_parser => true }
+             :enable_user_templates => false, :template_dir => template_dir, :enable_future_parser => true }
     tomcat = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
     tomcat.post_init
     expect(tomcat.context.instance.future_parser).to eq(true)

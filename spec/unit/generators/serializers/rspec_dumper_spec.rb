@@ -22,28 +22,27 @@ describe 'rspec_serializer' do
   end
 
   let(:store) do
-    {"$sql2014::features_location"=>"()",
-      "$features_location"=>"()",
-      "$sql2014::source"=>"()",
-      "$source"=>"()",
-      "$sql2014::backup_root_dir"=>"'c:\\backup'",
-      "$backup_root_dir"=>"'c:\\backup'",
-      "$sql2014::install_type"=>"'default'",
-      "$install_type"=>"'default'",
-      "$sql2014::install_options"=>["{}"],
-      "$install_options"=>["{}"],
-      "$sql2014::install_accounts"=>["{}"],
-      "$install_accounts"=>["{}"],
-      "$sql2014::install_account_passwords"=>["{}"],
-      "$install_account_passwords"=>["{}"],
-      "$sql2014::instance_name"=>"'MSSQLSERVER'",
-      "$instance_name"=>"'MSSQLSERVER'",
-      "$sql2014::ssdt_install_options"=>["{}"],
-      "$ssdt_install_options"=>["{}"],
-      "$merged_options"=>"$merged_options",
-      "$install_flags"=>"$install_flags",
-      "$merged_ssdt_install_options"=>"$merged_ssdt_install_options",
-      "$'MSSQLSERVER'"=>"'MSSQLSERVER'"}
+    {
+      "$backup_root_dir" => {:value=>"c:\\backup", :type=>:parameter},
+       "$features_location" => {:value=>:undef, :type=>:parameter},
+       "$install_account_passwords" => {:value=>{}, :type=>:parameter},
+       "$install_accounts" => {:value=>{}, :type=>:parameter},
+       "$install_options" => {:value=>{}, :type=>:parameter},
+       "$install_type" => {:value=>"default", :type=>:parameter},
+       "$instance_name" => {:value=>"MSSQLSERVER", :type=>:parameter},
+       "$source" => {:value=>:undef, :type=>:parameter},
+       "$sql::backup_root_dir" => {:value=>"c:\\backup", :type=>:parameter},
+       "$sql::features_location" => {:value=>:undef, :type=>:parameter},
+       "$sql::install_account_passwords" => {:value=>{}, :type=>:parameter},
+       "$sql::install_accounts" => {:value=>{}, :type=>:parameter},
+       "$sql::install_options" => {:value=>{}, :type=>:parameter},
+       "$sql::install_type" => {:value=>"default", :type=>:parameter},
+       "$sql::instance_name" => {:value=>"MSSQLSERVER", :type=>:parameter},
+       "$sql::source" => {:value=>:undef, :type=>:parameter},
+       "$sql::ssdt_install_options" => {:value=>{}, :type=>:parameter},
+       "$ssdt_install_options" => {:value=>{}, :type=>:parameter},
+       "$value" => {:value=>"$value", :type=>:top_scope}
+    }
   end
   let(:hostclass_body) do
     hostclass.body
@@ -88,7 +87,7 @@ describe 'rspec_serializer' do
   end
 
   let(:parameter_data) do
-    ":features_location => \n:source => \n#:backup_root_dir => 'c:\\backup'\n#:install_type => 'default'\n#:install_options => {}\n#:install_accounts => {}\n#:install_account_passwords => {}\n#:instance_name => 'MSSQLSERVER'\n#:ssdt_install_options => {}\n"
+    "  :features_location => ,\n  :source => ,\n  #:backup_root_dir => \"c:\\\\backup\",\n  #:install_type => \"default\",\n  #:install_options => {},\n  #:install_accounts => {},\n  #:install_account_passwords => {},\n  #:instance_name => \"MSSQLSERVER\",\n  #:ssdt_install_options => {},\n"
   end
 
   let(:rel_data) do
@@ -120,14 +119,16 @@ describe 'rspec_serializer' do
     end
 
     it 'should generate the content for an ast' do
-      expect(serializer.dump(ast)).to eq('')
+      content = File.read(File.join(fixtures_path, 'spec_test_file.rb'))
+      expect(serializer.dump(ast)).to eq(content)
     end
     # it 'should generate the content for a host class' do
     #   expect(serializer.dump(hostclass)).to eq('')
     # end
 
     it 'host class' do
-      expect(serializer.dump(hostclass_body)).to eq('')
+      content = File.read(File.join(fixtures_path, 'host_class_test.rb'))
+      expect(serializer.dump(hostclass_body)).to eq(content)
     end
     #
     it 'case option' do

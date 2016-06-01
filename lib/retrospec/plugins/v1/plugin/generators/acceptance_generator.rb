@@ -34,10 +34,10 @@ module Retrospec
           @supported_types
         end
 
-        def self.generate_spec_files(module_path)
+        def self.generate_spec_files(module_path, config_data)
           files = []
           manifest_files(module_path).each do |file|
-            acceptance = new(module_path, {:manifest_file => file})
+            acceptance = new(module_path, config_data.merge({:manifest_file => file}))
             next unless supported_types.include?(acceptance.resource_type)
             files << acceptance.generate_spec_file
           end

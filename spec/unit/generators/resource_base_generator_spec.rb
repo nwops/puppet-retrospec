@@ -10,6 +10,10 @@ describe Retrospec::Puppet::Generators::ResourceBaseGenerator do
     {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
   end
 
+  let(:sample_file) do
+    File.join(module_path, 'manifests','one_define.pp')
+  end
+  
   let(:spec_files_path) do
     File.join(module_path, 'spec')
   end
@@ -31,7 +35,7 @@ describe Retrospec::Puppet::Generators::ResourceBaseGenerator do
   end
 
   it 'should generate a bunch of files' do
-    files = Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path)
+    files = Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path, generator_opts)
     expect(files).to eq(generated_files)
   end
 

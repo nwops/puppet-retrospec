@@ -276,8 +276,8 @@ Generates puppet rspec test code based on the classes and defines inside the man
           function_spec_files(module_path, config_data)
           new_schema(module_path, config_data)
           Retrospec::Puppet::Generators::ModuleGenerator.generate_metadata_file(context.module_name, config_data)
-          Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path)
-          Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path) if context.enable_beaker_tests?
+          Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path, config_data)
+          Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path, config_data) if context.enable_beaker_tests?
           Utilities::PuppetModule.clean_tmp_modules_dir
           true
         end
