@@ -1,4 +1,8 @@
-describe "sql" do
+describe "define_test" do
+  let(:title) do
+    "XXreplace_meXX"
+  end
+
   let(:params) do
     {
       :features_location => nil,
@@ -21,7 +25,7 @@ describe "sql" do
   it do
     is_expected.to contain_notify("$value")
   end
-  
+
   it do
     is_expected.to contain_class("sql::install")
       .with({

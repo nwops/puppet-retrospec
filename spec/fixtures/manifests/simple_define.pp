@@ -1,4 +1,4 @@
-class sql(
+define define_test(
   String $features_location,
   String $source,                 # this is the source of the install media
   String $backup_root_dir        = 'c:\backup',
@@ -8,7 +8,7 @@ class sql(
   Hash   $install_account_passwords = {}, # a hash of account names and passwords
   String $instance_name          = 'MSSQLSERVER',
   Hash   $ssdt_install_options   = {}
-) {
+  ) {
     if true {
       $value = $::kernel
     }
@@ -86,5 +86,4 @@ class sql(
     backup_root_dir => $backup_root_dir
   } ->
   class{'sql::login':}
-
-}
+  }

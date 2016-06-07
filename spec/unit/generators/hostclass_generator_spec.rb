@@ -65,9 +65,10 @@ describe 'HostClassGenerator' do
     # if the test returns more than the expected count there is an extra comma
     # although technically it doesn't matter
   end
-
   it 'should have resources' do
-    expect(context.resources.count).to eq(4)
+    resources = "  it do\n    is_expected.to contain_class(\"sql::install\")\n    .with({\n      \"sql_install_flags\" => \"$merged_options\",\n      \"instance_name\" => \"MSSQLSERVER\",\n      \"installer_source\" => :undef,\n      \"features_location\" => :undef,\n      \"that_comes_before\" => 'Sql::backup[MSSQLSERVER]',\n    })\n  end\n"
+    expect(context.resources[1]).to eq(resources)
+    expect(context.resources[0]).to eq( "  it do\n    is_expected.to contain_notify(\"$value\")\n  end\n  ")
   end
 
   describe 'spec files' do
@@ -91,7 +92,8 @@ describe 'HostClassGenerator' do
     end
     it 'should generate test for apache' do
       data = /contain_concat\("\$::apache::params::ports_file"\)/
-      expect(generator.generate_content).to match(data)
+      data = ''
+      expect(generator.generate_content).to eq(data)
     end
   end
 
