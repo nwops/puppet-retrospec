@@ -207,7 +207,7 @@ module Retrospec
           value = {:type => data_type, :name => name_part, :default_value => '', :required => true}
         end
         if value[:required]
-          ['  ', "#{value[:name].to_sym.inspect}", '=>', ',', :break]
+          ['  ', "#{value[:name].to_sym.inspect}", '=>', 'nil,', :break]
         else
           ['  ', "##{value[:name].to_sym.inspect}", '=>', value[:default_value].inspect + ',', :break]
         end
