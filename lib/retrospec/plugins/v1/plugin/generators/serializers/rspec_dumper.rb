@@ -271,16 +271,17 @@ module Retrospec
       end
 
       # outputs the value of the variable
+      # @param VariableExpression
+      # @return String the value of the variable or the name if value is not found
       def dump_VariableExpression o
         key = dump(o.expr)
-        if value = lookup_var(dump(o.expr))
+        if value = lookup_var(key)
           value  # return the looked up value
         elsif [::Puppet::Pops::Model::AttributeOperation,
            ::Puppet::Pops::Model::AssignmentExpression].include?(o.eContainer.class)
-          "$#{dump(o.expr)}"
+          "$#{key}"
         else
-          # when doing things like Puppet::Pops::Model::ComparisonExpression
-          add_var_to_store(key, "$#{dump(o.expr)}", false, :top_scope)
+          add_var_to_store(key, "$#{key}", false, :class_scope)
         end
       end
 
