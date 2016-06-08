@@ -38,6 +38,26 @@ module Retrospec
         result
       end
 
+      def dump_ResourceBody o
+        type_name = do_dump(o.eContainer.type_name).gsub('::', '__')
+        title = do_dump(o.title).inspect
+        #TODO remove the :: from the front of the title if exists
+        result = ['it', :do, "is_expected.to contain_#{type_name}(#{title})"]
+        # this determies if we should use the with() or not
+        if o.operations.count > 0
+          result << [ :indent, :break,'.with({', :indent, :break]
+          o.operations.each do |p|
+            result << [do_dump(p), :break]
+          end
+          unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
+            result << dump_Resource_Relationship(o)
+          end
+          result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
+        end
+        result << [:end, :break]
+        result
+      end
+
       def dump_IfExpression o
         # this should be a test becuase if its function
         #Puppet::Pops::Model::CallNamedFunctionExpression
