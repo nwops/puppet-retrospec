@@ -20,6 +20,10 @@ module Utilities
       Utilities::PuppetModule.instance.module_path
     end
 
+    def self.base_environment_path
+      Utilities::PuppetModule.instance.base_environment_path
+    end
+
     def self.module_name
       Utilities::PuppetModule.instance.module_name
     end
@@ -106,6 +110,10 @@ module Utilities
       @tmp_module_path ||= File.join(tmp_modules_dir, module_dir_name)
     end
 
+    def default_puppet_env_name
+      'retrospec'
+    end
+
     # the directory name of the module
     # usually this is the same as the module name but it can be namespaced sometimes
     def module_dir_name
@@ -135,31 +143,45 @@ module Utilities
     # creates a tmp module directory so puppet can work correctly
     def tmp_modules_dir
       if @tmp_modules_dir.nil? || !File.exist?(@tmp_modules_dir)
-        dir = Dir.mktmpdir
-        tmp_path = File.expand_path(File.join(dir, 'modules'))
+        tmp_path = File.expand_path(File.join(temporary_environment_path, 'modules'))
         FileUtils.mkdir_p(tmp_path)
         @tmp_modules_dir = tmp_path
       end
       @tmp_modules_dir
     end
 
+    def base_environment_path
+      @base_environment_path ||= Dir.mktmpdir
+    end
+
+    def default_modules_paths
+      [tmp_modules_dir]
+    end
+
+    def temporary_environment_path
+      @temporary_environment_path ||= File.join(base_environment_path,default_puppet_env_name)
+    end
+
     # creates a puppet environment given a module path and environment name
     def puppet_environment
-      @puppet_environment ||= Puppet::Node::Environment.create('production', [tmp_modules_dir])
+      @puppet_environment ||= ::Puppet::Node::Environment.create(
+          default_puppet_env_name,
+          default_modules_paths,
+        )
     end
 
     # creates a puppet resource request to be used indirectly
     def request(key, method)
-      instance = Puppet::Indirector::Indirection.instance(:resource_type)
+      instance = ::Puppet::Indirector::Indirection.instance(:resource_type)
       indirection_name = 'test'
-      @request = Puppet::Indirector::Request.new(indirection_name, method, key, instance)
+      @request = ::Puppet::Indirector::Request.new(indirection_name, method, key, instance)
       @request.environment = puppet_environment
       @request
     end
 
     # creates an instance of the resource type parser
     def resource_type_parser
-      @resource_type_parser ||= Puppet::Indirector::ResourceType::Parser.new
+      @resource_type_parser ||= ::Puppet::Indirector::ResourceType::Parser.new
     end
 
     # returns the resource type object given a resource name ie. tomcat::connector

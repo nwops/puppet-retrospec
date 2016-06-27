@@ -24,6 +24,8 @@ module Retrospec
 
         def initialize(supplied_module_path = nil, config = {})
           super
+          ::Puppet[:environment] = 'retrospec'
+          ::Puppet[:environmentpath] = Utilities::PuppetModule.base_environment_path
           @manifest_dir = File.join(supplied_module_path, 'manifests')
           # user supplied a template path or user wants to use local templates
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])

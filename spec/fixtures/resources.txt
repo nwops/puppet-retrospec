@@ -1,0 +1,10 @@
+ it do
+    is_expected.to contain_class("sql::install")
+        .with({
+          "sql_install_flags" => "$merged_options",
+          "instance_name" => "MSSQLSERVER",
+          "installer_source" => :undef,
+          "features_location" => :undef,
+          "that_comes_before" => 'Sql::backup[MSSQLSERVER]',
+          })
+  end
