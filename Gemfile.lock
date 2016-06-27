@@ -1,7 +1,7 @@
 PATH
-  remote: vendor/gems/puppet-4.3.2
+  remote: vendor/gems/puppet-4.5.2
   specs:
-    puppet (4.3.2)
+    puppet (4.5.2)
       facter (> 2.0, < 4)
       hiera (>= 2.0, < 4)
       json_pure
@@ -33,7 +33,7 @@ GEM
       nokogiri (~> 1.6.6)
       oauth2
     hashie (3.4.2)
-    hiera (3.0.6)
+    hiera (3.1.2)
       json_pure
     highline (1.7.8)
     jeweler (2.0.1)
@@ -99,7 +99,7 @@ DEPENDENCIES
   fakefs
   jeweler
   pry
-  puppet (= 4.3.2)!
+  puppet (= 4.5.2)!
   rake
   rdoc (~> 3.12)
   retrospec (~> 0.4)
@@ -108,4 +108,4 @@ DEPENDENCIES
   yard (~> 0.7)
 
 BUNDLED WITH
-   1.12.4
+   1.12.5

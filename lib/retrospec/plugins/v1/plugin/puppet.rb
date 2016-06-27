@@ -25,7 +25,6 @@ module Retrospec
         def initialize(supplied_module_path = nil, config = {})
           super
           @manifest_dir = File.join(supplied_module_path, 'manifests')
-          Utilities::PuppetModule.instance.future_parser = config_data[:enable_future_parser]
           # user supplied a template path or user wants to use local templates
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])
         end
@@ -89,7 +88,6 @@ module Retrospec
           template_dir = ENV['RETROSPEC_TEMPLATES_DIR'] || plugin_config['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
           scm_url = ENV['RETROSPEC_PUPPET_SCM_URL'] || plugin_config['plugins::puppet::templates::url']
           scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
-          future_parser = plugin_config['plugins::puppet::enable_future_parser'] || false
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
           sub_commands  = %w(new_module new_fact new_type new_provider new_function new_report)
@@ -112,7 +110,6 @@ Generates puppet rspec test code based on the classes and defines inside the man
             opt :branch, 'Branch you want to use for the retrospec template repo', :type => :string, :required => false,
                 :default => scm_branch
             opt :enable_beaker_tests, 'Enable the creation of beaker tests', :require => false, :type => :boolean, :default => beaker_tests
-            opt :enable_future_parser, 'Enables the future parser only during validation', :default => future_parser, :require => false, :type => :boolean
             stop_on sub_commands
           end
           # the passed in options will always override the config file

@@ -20,7 +20,6 @@ describe 'puppet-retrospec' do
       # 'plugins::puppet::template_dir' => '/Users',
       # 'plugins::puppet::templates::url' => '',
       # 'plugins::puppet::templates::ref'  => '',
-      # 'plugins::puppet::enable_future_parser' => '',
       # 'plugins::puppet::enable_beaker_tests' => '',
       # 'plugins::puppet::namespace' => '',
       # 'plugins::puppet::auto_create' => '',
@@ -69,15 +68,6 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     expect(tomcat).to be_instance_of(Retrospec::Plugins::V1::Puppet)
   end
-
-  it 'should set the parser to future' do
-    opts = { :module_path => path, :enable_beaker_tests => false,
-             :enable_user_templates => false, :template_dir => template_dir, :enable_future_parser => true }
-    tomcat = Retrospec::Plugins::V1::Puppet.new(opts[:module_path], opts)
-    tomcat.post_init
-    expect(tomcat.context.instance.future_parser).to eq(true)
-  end
-
 
   it 'should create files without error' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
