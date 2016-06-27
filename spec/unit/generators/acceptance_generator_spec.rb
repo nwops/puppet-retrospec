@@ -73,7 +73,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
       end
 
       it 'should generate the content' do
-        data = "require 'spec_helper_acceptance'\n\ndescribe 'one_resource::one_define one_resource::one_define' do\n  describe 'running puppet code' do\n    it 'should work with no errors' do\n      pp = <<-EOS\n      one_resource::one_define{'some_value':\n        #:one => \"one_value\",\n        \n      }\n      EOS\n\n    # Run it twice and test for idempotency\n      apply_manifest(pp, :catch_failures => true)\n      apply_manifest(pp, :catch_changes => true)\n    end\n\n  end\nend\n"
+        data = "require 'spec_helper_acceptance'\n\ndescribe 'one_resource::one_define one_resource::one_define' do\n  describe 'running puppet code' do\n    it 'should work with no errors' do\n      pp = <<-EOS\n      one_resource::one_define{'some_value':\n        #:one => \"one_value\",\n\n      }\n      EOS\n\n    # Run it twice and test for idempotency\n      apply_manifest(pp, :catch_failures => true)\n      apply_manifest(pp, :catch_changes => true)\n    end\n\n  end\nend\n"
         expect(spec_file_contents).to eq(data)
       end
 

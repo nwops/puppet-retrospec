@@ -104,14 +104,18 @@ module Retrospec
         case x
         when :break
           result << "\n" + indent
+        when :indent_break
+          result << indent + "\n"
         when :indent
           @indent_count += 1
         when :dedent
           @indent_count -= 1
         when :do
-          result << format_r([x.to_s, :indent, :break])
+          result << format_r([' ', x.to_s, :indent, :break])
+        when :indent_end
+          result << format_r([:indent, :break, 'end', :dedent])
         when :end
-          result << format_r([:dedent, :break,x.to_s])
+          result << format_r([:dedent, :break, x.to_s])
         when Array
           #result << '('
           result += x.collect {|a| format_r(a) }.flatten
@@ -126,11 +130,11 @@ module Retrospec
 
       def dump_ResourceTypeDefinition o
         result = ["describe #{o.name.inspect}", :do]
-        result << ['let(:title) do',:indent, :break, 'XXreplace_meXX'.inspect, :break]
-        result << [:end, :dedent, :break]
+        result << ['let(:title)', :do, 'XXreplace_meXX'.inspect, :break, :end]
+        result << [:dedent, :break]
         result << [:indent, :break,'let(:params)', :do, '{', :break]
         result << o.parameters.collect {|k| do_dump(k)}
-        result << ['}', 'end']
+        result << ['}', :end]
         # result << ["inherits", o.parent_class] if o.parent_class
         # we need to process the body so that we can relize which facts are used
         body_result = []
@@ -141,7 +145,7 @@ module Retrospec
         end
         result << [:break,:break,'let(:facts)', :do, '{',:break]
         result << dump_top_scope_vars
-        result << ['}',:end]
+        result << ['}', :end]
         result << body_result
         result << [:end]
         result
@@ -239,19 +243,23 @@ module Retrospec
         type_name = do_dump(o.eContainer.type_name).gsub('::', '__')
         title = do_dump(o.title).inspect
         #TODO remove the :: from the front of the title if exists
-        result = ['it', :do, "is_expected.to contain_#{type_name}(#{title})"]
+        result = ['  ', :indent, :it, :do, :indent, "is_expected.to contain_#{type_name}(#{title})"]
         # this determies if we should use the with() or not
         if o.operations.count > 0
           result << [ :indent, :break,'.with({', :indent, :break]
           o.operations.each do |p|
             result << [do_dump(p), :break]
           end
+          result.pop  # remove last line break
           unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
             result << dump_Resource_Relationship(o)
           end
-          result << [ :dedent, :break, '})', :indent, :dedent, :dedent]
+          result << [:dedent, :dedent, '})', :dedent, :indent]
+          result << [:dedent,:end, :break]
+          result << [:dedent]
+        else
+          result << [:dedent,:dedent, :break,'end',:dedent, :break, '  ']
         end
-        result << [:end, :break]
         result
       end
 
@@ -322,7 +330,6 @@ module Retrospec
         o.bodies.each do |b|
           result << :break << do_dump(b)
         end
-        #result << :dedent
         result
       end
 
