@@ -38,5 +38,21 @@ describe 'package' do
     end
   end
 
+  describe 'escape characters' do
+    let(:input_resource) do
+      <<-EOF
+      $greylist_dsn = 'hello'
+      file{'/tmp/test':
+        ensure => present,
+        content => "GREYLIST_DSN = ${greylist_dsn}\n",
+      }
+      EOF
+    end
+    it 'should create test case' do
+      output = "\n\n  it do\n    is_expected.to contain_file(\"/tmp/test\")\n        .with({\n          \"ensure\" => \"present\",\n          \"content\" => \"GREYLIST_DSN = hello\\n\",\n          })\n  end\n  "
+      expect(dumper.dump(ast_obj.body.body)).to eq(output)
+    end
 
+
+  end
 end
