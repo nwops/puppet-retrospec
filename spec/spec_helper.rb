@@ -75,3 +75,27 @@ def install_module(module_name)
     clean_up_module_dir(File.dirname(dir))
   end
 end
+
+def ast(opts = {:file => nil, :content => nil})
+  if opts[:file]
+    result = Utilities::PuppetModule.parser.parse_file(opts[:file])
+  else
+    result = Utilities::PuppetModule.parser.parse_string(opts[:content])
+  end
+  result.current
+end
+
+# return a manifest body object
+def manifest_body(ast)
+  ast.body.body || ast.body
+end
+
+def find_all_resources(manifest_body)
+  res = manifest_body.eAllContents.find_all do |p|
+    p.class.to_s == 'Puppet::Pops::Model::ResourceExpression'
+  end
+end
+
+def dumper
+  @dumper ||= Retrospec::Puppet::RspecDumper.new
+end
