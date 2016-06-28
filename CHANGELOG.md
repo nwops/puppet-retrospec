@@ -1,3 +1,14 @@
+## 1.0.0
+ This is a major release which vendors the latest puppet version.  The core parser
+ was rewritten to use the new puppet parser and opens up a bunch of new possibilities
+ for generating more test coverage.
+ This release is a breaking release which requires your puppet code to adhere
+ to the new parser rules.  If you are not able update your puppet code you should use the pre 1.x releases of retrospec puppet.
+
+ * Fixes gh-56 - variable_value: rendering values with escapes creates invalid tests
+ * Fixes gh-15 - nested conditionals are not discovered
+ * Fixes gh-54 - Vendored puppet 3.7 doesn't work on newer rubies
+ 
 ## 0.12.2
  * fixes issue with ruby193 and openstruct
  * fix unit tests from failing on missing hook file

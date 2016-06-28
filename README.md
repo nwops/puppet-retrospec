@@ -51,6 +51,8 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News
+### 6-28-16
+Version 1.0.0 is release with full support for puppet 4.x code.  
 ### 1-18-16
 A slew of new features has been added with the 0.12 update. If you already use retrospec to retrofit your modules, now you can use retrospec to generate some of the more advanced puppet module customizations such as:
 
@@ -107,7 +109,6 @@ new_function
   -b, --branch=<s>              Branch you want to use for the retrospec template repo (default: master)
   -a, --namespace=<s>           The namespace to use only when creating a new module (default: namespace)
   -e, --enable-beaker-tests     Enable the creation of beaker tests
-  -l, --enable-future-parser    Enables the future parser only during validation
   -v, --version                 Print version and exit
   -h, --help                    Show this message  -h, --help                    Show this message
 ```
@@ -115,7 +116,7 @@ new_function
 ## Design Goals
 One of the design goals of this plugin is to try to introspect as much information as possible so we don't need input from the user. If you are not sure what default values are used, use the `-h` option and the defaults will be revealed. Most of the defaults are dynamic.  
 
-Another design goal is to allow the user to configure every option, so that passing
+Another design goal is to allow the user to configure every option so that passing
 additional options is not required when configured correctly.  Please see the [Configuration Section](#configuration) for setting a config file.
 
 ## Using the Generators
@@ -555,21 +556,15 @@ Because the code does not rely on catalog compilation we have to build our own s
 3. Anything contained in a block of code is currently ignored, until later refinement.
 
 ##Future Parser Support
-Currently Retrospec uses the old/current AST parser for code parsing.  If your code contains future parser syntax the current parser will fail to render some resource definitions but will still render the spec file template without parameters
-and resource tests that are contained in your manifest. Retrospec is still extremely useful with Puppet 4.
+As of 1.0.0 Retrospec Puppet provides full support for code written against the 4.x/future parser.
+If you have 3.x code the 4.x parser may throw errors instead of deprecation warnings.
+If you do not wish to convert your 3.x to 4.x code yet, you will need to use the puppet-retrospec
+version < 1.0.0
 
-Since Puppet 4 introduces many new things and breaks many other things  I am not sure
-which side of the grass is greener at this time.  What I do know is that most people are using Puppet 3 and it may take time to move to Puppet 4.  I would suspect Retrospec would be more valuable for those moving to Puppet 4 who don't have unit tests that currently have Puppet 3 codebases.  For those with a clean slate and start directly in Puppet 4, Retrospec will still be able to produce the templates but some of the test cases will be missing if the old AST parser cannot read future code syntax.  If your puppet 4 codebase is compatible with puppet 3 syntax there should not be an issue.
-
-In order to allow future parser validation please run retrospec with the following option.
-
- ```shell
-    retrospec puppet --enable-future-parser
-
- ```
 
 ##Ruby Support
-Currently this library only supports ruby >= 1.9.3.  It might work on 1.8.7 but I won't support if it fails.
+Currently this library only supports ruby >= 1.9.3.  Since we vendor Puppet 4.5.x you need to have
+a supported ruby version that puppet 4.5 supports which.  
 
 ##Paid Support
 Want to see new features developed much faster?  Contact me about a support contract so I can develop this tool during

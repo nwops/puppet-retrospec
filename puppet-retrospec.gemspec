@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Corey Osman"]
-  s.date = "2016-06-27"
+  s.date = "2016-06-28"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@logicminds.biz"
   s.extra_rdoc_files = [
@@ -73,10 +73,6 @@ Gem::Specification.new do |s|
     "spec/fixtures/fixture_modules/one_resource_module/manifests/one_define.pp",
     "spec/fixtures/fixture_modules/one_resource_module/manifests/one_resource_class.pp",
     "spec/fixtures/fixture_modules/one_resource_module/manifests/params.pp",
-    "spec/fixtures/fixture_modules/one_resource_module/spec/classes/another_resource_spec.rb",
-    "spec/fixtures/fixture_modules/one_resource_module/spec/classes/inherits_params_spec.rb",
-    "spec/fixtures/fixture_modules/one_resource_module/spec/classes/one_resource_spec.rb",
-    "spec/fixtures/fixture_modules/one_resource_module/spec/classes/params_spec.rb",
     "spec/fixtures/fixture_modules/required_parameters/manifests/init.pp",
     "spec/fixtures/fixture_modules/sample_module/lib/facter/fix_installed.rb",
     "spec/fixtures/fixture_modules/sample_module/lib/puppet/functions/awesome_parser.rb",
@@ -314,6 +310,7 @@ Gem::Specification.new do |s|
     "spec/fixtures/parameters.txt",
     "spec/fixtures/providers/bmc/ipmitool.rb",
     "spec/fixtures/providers/bmcuser/ipmitool.rb",
+    "spec/fixtures/resources.txt",
     "spec/fixtures/spec_test_file.txt",
     "spec/fixtures/types/bmc.rb",
     "spec/fixtures/types/bmcuser.rb",
