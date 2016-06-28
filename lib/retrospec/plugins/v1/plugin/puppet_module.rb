@@ -8,6 +8,10 @@ module Utilities
 
     include Singleton
 
+    def self.parser
+      Utilities::PuppetModule.instance.parser
+    end
+
     def self.tmp_module_path
       Utilities::PuppetModule.instance.tmp_module_path
     end

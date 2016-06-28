@@ -248,9 +248,9 @@ module Retrospec
         if o.operations.count > 0
           result << [ :indent, :break,'.with({', :indent, :break]
           o.operations.each do |p|
-            result << [do_dump(p), :break]
+            result << do_dump(p) << :break
           end
-          result.pop  # remove last line break
+          #result.pop  # remove last line break which is easier than using conditional in loop
           unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
             result << dump_Resource_Relationship(o)
           end
