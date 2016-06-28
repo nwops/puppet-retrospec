@@ -86,7 +86,7 @@ describe 'HostClassGenerator' do
 
     it 'should generate a bunch of files' do
       files = Retrospec::Puppet::Generators::HostClassGenerator.generate_spec_files(module_path, generator_opts)
-      expect(files).to eq(generated_files)
+      expect(files).to match_array(generated_files)
     end
   end
 

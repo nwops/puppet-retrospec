@@ -18,7 +18,7 @@ describe 'provider' do
   end
 
   it 'contains class methods' do
-    expect(models.class_methods).to eq([:ipmitoolcmd, :instances, :prefetch, :laninfo,
+    expect(models.class_methods).to match_array([:ipmitoolcmd, :instances, :prefetch, :laninfo,
                                         :convert_vlanid, :convert_ip_source])
   end
 
@@ -27,7 +27,7 @@ describe 'provider' do
   end
 
   it 'contains instance methods' do
-    expect(models.instance_methods).to eq([:ipmitoolcmd, :ensure, :ensure=, :ipsource,
+    expect(models.instance_methods).to match_array([:ipmitoolcmd, :ensure, :ensure=, :ipsource,
                                            :ipsource=, :ip, :ip=, :netmask, :netmask=,
                                            :gateway, :gateway=, :vlanid, :vlanid=,
                                            :provider, :provider=, :flush, :install,
@@ -35,10 +35,10 @@ describe 'provider' do
   end
 
   it 'contains properties' do
-    expect(models.properties).to eq([:ensure, :ipsource, :ip, :netmask, :gateway, :vlanid])
+    expect(models.properties).to match_array([:ensure, :ipsource, :ip, :netmask, :gateway, :vlanid])
   end
 
   it 'contains parameters' do
-    expect(models.parameters).to eq([:name, :provider])
+    expect(models.parameters).to match_array([:name, :provider])
   end
 end
