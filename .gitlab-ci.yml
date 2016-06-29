@@ -1,12 +1,13 @@
 variables:
   #RETROSPEC_TEMPLATES_DIR: /root/.retrospec/repos/retrospec-puppet-templates
 before_script:
+  - gem install bundler
   - bundle install --without development build
   - bundle exec ruby lib/retrospec/plugins/v1/plugin/templates/clone-hook
+
 ruby193:
   stage: test
   script:
-    - 'gem install bundler'
     - "bundle exec rake spec"
   image: ruby:1.9.3
 
@@ -32,7 +33,7 @@ ruby2.3:
   stage: test
   script:
     - "bundle exec rake spec"
-  image: ruby:2.3  
+  image: ruby:2.3
 
 stages:
   - test
