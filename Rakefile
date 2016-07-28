@@ -2,34 +2,16 @@
 
 require 'rubygems'
 require 'bundler'
+require "bundler/gem_tasks"
+require "rake/testtask"
 begin
-  Bundler.setup(:default, :development)
+  Bundler.setup(:default, :development, :test)
 rescue Bundler::BundlerError => e
   $stderr.puts e.message
   $stderr.puts 'Run `bundle install` to install missing gems'
   exit e.status_code
 end
 require 'rake'
-begin
-require_relative 'lib/retrospec/plugins/v1/plugin/version'
-require 'jeweler'
-plugin_version = "#{Retrospec::Puppet::VERSION}"
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = 'puppet-retrospec'
-  gem.version = "#{plugin_version}"
-  gem.homepage = 'http://github.com/nwops/puppet-retrospec'
-  gem.license = 'MIT'
-  gem.summary = %(Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns.)
-  gem.description = %(Retrofits and generates valid puppet rspec test code to existing modules)
-  gem.email = 'corey@logicminds.biz'
-  gem.authors = ['Corey Osman']
-  # dependencies defined in Gemfile
-end
-Jeweler::RubygemsDotOrgTasks.new
-rescue LoadError
-  # do need jeweler for all tasks
-end
 require 'rspec/core'
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|

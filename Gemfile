@@ -20,7 +20,3 @@ group :test do
   gem 'fakefs', :require => 'fakefs/safe'
   gem 'rspec', '~> 3.2'
 end
-
-group :build do
-  gem 'jeweler'
-end
