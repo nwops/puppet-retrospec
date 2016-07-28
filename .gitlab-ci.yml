@@ -10,6 +10,7 @@ ruby193:
   script:
     - "bundle exec rake spec"
   image: ruby:1.9.3
+  allow_failure: true
 
 ruby2.0:
   stage: test
