@@ -1,3 +1,5 @@
+## 1.1.0
+ * fixes gh-62 - add support for creating native puppet fuctions
 ## 1.0.0
  This is a major release which vendors the latest puppet version.  The core parser
  was rewritten to use the new puppet parser and opens up a bunch of new possibilities
@@ -8,7 +10,7 @@
  * Fixes gh-56 - variable_value: rendering values with escapes creates invalid tests
  * Fixes gh-15 - nested conditionals are not discovered
  * Fixes gh-54 - Vendored puppet 3.7 doesn't work on newer rubies
- 
+
 ## 0.12.2
  * fixes issue with ruby193 and openstruct
  * fix unit tests from failing on missing hook file
