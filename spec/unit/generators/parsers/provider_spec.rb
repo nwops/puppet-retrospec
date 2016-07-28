@@ -19,7 +19,7 @@ describe 'provider' do
 
   it 'contains class methods' do
     expect(models.class_methods).to match_array([:ipmitoolcmd, :instances, :prefetch, :laninfo,
-                                        :convert_vlanid, :convert_ip_source])
+                                                 :convert_vlanid, :convert_ip_source])
   end
 
   it 'contains a file' do
@@ -28,10 +28,10 @@ describe 'provider' do
 
   it 'contains instance methods' do
     expect(models.instance_methods).to match_array([:ipmitoolcmd, :ensure, :ensure=, :ipsource,
-                                           :ipsource=, :ip, :ip=, :netmask, :netmask=,
-                                           :gateway, :gateway=, :vlanid, :vlanid=,
-                                           :provider, :provider=, :flush, :install,
-                                           :remove, :exists?])
+                                                    :ipsource=, :ip, :ip=, :netmask, :netmask=,
+                                                    :gateway, :gateway=, :vlanid, :vlanid=,
+                                                    :provider, :provider=, :flush, :install,
+                                                    :remove, :exists?])
   end
 
   it 'contains properties' do

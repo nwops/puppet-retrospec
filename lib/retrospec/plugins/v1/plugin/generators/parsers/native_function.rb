@@ -2,7 +2,6 @@ require_relative '../serializers/rspec_dumper'
 require 'ostruct'
 module Parsers
   class NativeFunction
-
     attr_reader :manifest_file
 
     def initialize(file)
@@ -14,14 +13,14 @@ module Parsers
     def self.load_function(file)
       f = new(file)
       @model = OpenStruct.new(:name => f.definition.name,
-       :parameters => f.parameter_list,
-       :parameter_names => f.parameter_list.keys)
+                              :parameters => f.parameter_list,
+                              :parameter_names => f.parameter_list.keys)
       @model
     end
 
     def ast
       unless @ast
-        raise ArgumentError.new("please set the manifest file") if manifest_file.nil?
+        raise ArgumentError, 'please set the manifest file' if manifest_file.nil?
         parser = ::Puppet::Pops::Parser::EvaluatingParser.new
         result = parser.parse_file(manifest_file)
         @ast = result.current

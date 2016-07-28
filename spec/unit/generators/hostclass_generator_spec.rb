@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe 'HostClassGenerator' do
-
   before(:each) do
-    FileUtils.rm(spec_file) if File.exists?(spec_file)
+    FileUtils.rm(spec_file) if File.exist?(spec_file)
   end
 
   let(:spec_files_path) do
@@ -11,7 +10,7 @@ describe 'HostClassGenerator' do
   end
 
   let(:generator_opts) do
-    {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
+    { :manifest_file => sample_file, :template_dir => retrospec_templates_path }
   end
 
   let(:sample_file) do
@@ -40,7 +39,7 @@ describe 'HostClassGenerator' do
 
   it 'should create spec file' do
     expect(generator.run).to eq(spec_file)
-    expect(File.exists?(spec_file)).to eq(true)
+    expect(File.exist?(spec_file)).to eq(true)
   end
 
   it 'should produce correct file name' do
@@ -72,16 +71,15 @@ describe 'HostClassGenerator' do
     resources = ''
 
     expect(context.resources[1]).to eq(resources)
-    expect(context.resources[0]).to eq( "  it do\n    is_expected.to contain_notify(\"$value\")\n  end\n  ")
+    expect(context.resources[0]).to eq("  it do\n    is_expected.to contain_notify(\"$value\")\n  end\n  ")
   end
 
   describe 'spec files' do
-
     let(:generated_files) do
       [File.join(spec_files_path, 'another_resource_spec.rb'),
-        File.join(spec_files_path, 'inherits_params_spec.rb'),
-        File.join(spec_files_path, 'one_resource_spec.rb'),
-        File.join(spec_files_path, 'params_spec.rb')]
+       File.join(spec_files_path, 'inherits_params_spec.rb'),
+       File.join(spec_files_path, 'one_resource_spec.rb'),
+       File.join(spec_files_path, 'params_spec.rb')]
     end
 
     it 'should generate a bunch of files' do
@@ -100,5 +98,4 @@ describe 'HostClassGenerator' do
       expect(generator.generate_content).to eq(data)
     end
   end
-
 end

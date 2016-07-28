@@ -1,17 +1,16 @@
 require 'spec_helper'
 
 describe Retrospec::Puppet::Generators::NodeGenerator do
-
   after(:each) do
-    FileUtils.rm(spec_file) if File.exists?(spec_file)
+    FileUtils.rm(spec_file) if File.exist?(spec_file)
   end
 
   let(:generator_opts) do
-    {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
+    { :manifest_file => sample_file, :template_dir => retrospec_templates_path }
   end
 
   let(:sample_file) do
-    File.join(module_path, 'manifests','node_file.pp')
+    File.join(module_path, 'manifests', 'node_file.pp')
   end
 
   let(:spec_files_path) do
@@ -36,7 +35,7 @@ describe Retrospec::Puppet::Generators::NodeGenerator do
 
   xit 'should create spec file' do
     expect(generator.run).to eq(spec_file)
-    expect(File.exists?(spec_file)).to eq(true)
+    expect(File.exist?(spec_file)).to eq(true)
   end
 
   xit 'should produce correct file name' do
@@ -48,7 +47,6 @@ describe Retrospec::Puppet::Generators::NodeGenerator do
     expect(spec_file_contents).to eq(data)
   end
 
-
   describe 'spec files' do
     let(:generated_files) do
       [File.join(spec_files_path, 'site_spec.rb')]
@@ -58,5 +56,4 @@ describe Retrospec::Puppet::Generators::NodeGenerator do
       expect(files).to eq(generated_files)
     end
   end
-
 end

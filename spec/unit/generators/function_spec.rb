@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'function' do
-
   describe 'v3 function' do
     let(:function_file) do
       File.join(sample_module_path, 'lib', 'puppet', 'parser', 'functions', 'sha1.rb')
@@ -23,7 +22,7 @@ describe 'function' do
         File.join(sample_module_path, 'lib', 'puppet', 'parser', 'functions', 'bad_sha1.rb')
       end
       it 'should raise error' do
-        expect{models.name}.to raise_error SyntaxError
+        expect { models.name }.to raise_error SyntaxError
       end
     end
   end
@@ -62,6 +61,5 @@ describe 'function' do
     it 'returns required methods' do
       expect(Retrospec::Puppet::Functions.find_required_methods(:reduce)).to eq([:reduce])
     end
-
   end
 end

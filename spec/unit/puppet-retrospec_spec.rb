@@ -120,7 +120,7 @@ describe 'puppet-retrospec' do
     context 'should' do
       let(:plugin_config) do
         {
-           :enable_beaker_tests => true
+          :enable_beaker_tests => true
         }
       end
       it 'create acceptance test files' do
@@ -148,7 +148,7 @@ describe 'puppet-retrospec' do
     context 'should not' do
       let(:plugin_config) do
         {
-           :enable_beaker_tests => false
+          :enable_beaker_tests => false
         }
       end
       let(:rs) do
@@ -182,7 +182,6 @@ describe 'puppet-retrospec' do
         expect(File.exist?(filepath)).to eq(false)
       end
     end
-
   end
 
   it 'should create proper spec helper file' do
@@ -215,8 +214,7 @@ describe 'puppet-retrospec' do
                                                 'tomcat::purge_connectors' => nil,
                                                 'tomcat::purge_realms' => nil,
                                                 'tomcat::manage_user' => nil,
-                                                'tomcat::manage_group' => nil
-                                               )
+                                                'tomcat::manage_group' => nil)
 
     expect(File.read(filepath)).to include('#"tomcat::catalina_home" => \'\',')
   end

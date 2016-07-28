@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'retrospec/plugins/v1/plugin/generators/serializers/rspec_dumper'
 
 describe 'rspec_serializer' do
-
   let(:sample_file) do
     File.join(fixtures_path, 'manifests', 'sql.pp')
   end
@@ -30,25 +29,25 @@ describe 'rspec_serializer' do
 
   let(:store) do
     {
-      "$backup_root_dir" => {:value=>"c:\\backup", :type=>:parameter},
-       "$features_location" => {:value=>:undef, :type=>:parameter},
-       "$install_account_passwords" => {:value=>{}, :type=>:parameter},
-       "$install_accounts" => {:value=>{}, :type=>:parameter},
-       "$install_options" => {:value=>{}, :type=>:parameter},
-       "$install_type" => {:value=>"default", :type=>:parameter},
-       "$instance_name" => {:value=>"MSSQLSERVER", :type=>:parameter},
-       "$source" => {:value=>:undef, :type=>:parameter},
-       "$sql::backup_root_dir" => {:value=>"c:\\backup", :type=>:parameter},
-       "$sql::features_location" => {:value=>:undef, :type=>:parameter},
-       "$sql::install_account_passwords" => {:value=>{}, :type=>:parameter},
-       "$sql::install_accounts" => {:value=>{}, :type=>:parameter},
-       "$sql::install_options" => {:value=>{}, :type=>:parameter},
-       "$sql::install_type" => {:value=>"default", :type=>:parameter},
-       "$sql::instance_name" => {:value=>"MSSQLSERVER", :type=>:parameter},
-       "$sql::source" => {:value=>:undef, :type=>:parameter},
-       "$sql::ssdt_install_options" => {:value=>{}, :type=>:parameter},
-       "$ssdt_install_options" => {:value=>{}, :type=>:parameter},
-       "$value" => {:value=>"$value", :type=>:class_scope}
+      '$backup_root_dir' => { :value => 'c:\\backup', :type => :parameter },
+      '$features_location' => { :value => :undef, :type => :parameter },
+      '$install_account_passwords' => { :value => {}, :type => :parameter },
+      '$install_accounts' => { :value => {}, :type => :parameter },
+      '$install_options' => { :value => {}, :type => :parameter },
+      '$install_type' => { :value => 'default', :type => :parameter },
+      '$instance_name' => { :value => 'MSSQLSERVER', :type => :parameter },
+      '$source' => { :value => :undef, :type => :parameter },
+      '$sql::backup_root_dir' => { :value => 'c:\\backup', :type => :parameter },
+      '$sql::features_location' => { :value => :undef, :type => :parameter },
+      '$sql::install_account_passwords' => { :value => {}, :type => :parameter },
+      '$sql::install_accounts' => { :value => {}, :type => :parameter },
+      '$sql::install_options' => { :value => {}, :type => :parameter },
+      '$sql::install_type' => { :value => 'default', :type => :parameter },
+      '$sql::instance_name' => { :value => 'MSSQLSERVER', :type => :parameter },
+      '$sql::source' => { :value => :undef, :type => :parameter },
+      '$sql::ssdt_install_options' => { :value => {}, :type => :parameter },
+      '$ssdt_install_options' => { :value => {}, :type => :parameter },
+      '$value' => { :value => '$value', :type => :class_scope }
     }
   end
   let(:hostclass_body) do
@@ -68,7 +67,7 @@ describe 'rspec_serializer' do
   end
 
   let(:case_exp) do
-    hostclass_body.statements.find {|s| s.class == Puppet::Pops::Model::CaseExpression}
+    hostclass_body.statements.find { |s| s.class == Puppet::Pops::Model::CaseExpression }
   end
 
   let(:case_opt) do
@@ -76,7 +75,7 @@ describe 'rspec_serializer' do
   end
 
   let(:resource_exp) do
-     relationship_exp.eContents.last
+    relationship_exp.eContents.last
   end
 
   let(:relationship_exp) do
@@ -151,18 +150,18 @@ describe 'rspec_serializer' do
 
     #
     # not supported
-#     it 'case option' do
-#       # test = serializer.dump(case_exp.test)
-#       # ls, exp = case_exp.options.first.eContents
-#       # case_exp.options.first.eContents
-#       # options = case_exp.options
-# #      data = "context 'custom' do\n  context blah do\n    it { is_expected.to call(fail).with('Install type: default specified but no install options given')} \n  end\nend"
-#       require 'pry'
-#       binding.pry
-#       data = ''
-#       expect(serializer.dump(case_opt)).to match(/context\ 'custom'\ do\n/)
-#       expect(serializer.dump(case_opt)).to eq(data)
-#     end
+    #     it 'case option' do
+    #       # test = serializer.dump(case_exp.test)
+    #       # ls, exp = case_exp.options.first.eContents
+    #       # case_exp.options.first.eContents
+    #       # options = case_exp.options
+    # #      data = "context 'custom' do\n  context blah do\n    it { is_expected.to call(fail).with('Install type: default specified but no install options given')} \n  end\nend"
+    #       require 'pry'
+    #       binding.pry
+    #       data = ''
+    #       expect(serializer.dump(case_opt)).to match(/context\ 'custom'\ do\n/)
+    #       expect(serializer.dump(case_opt)).to eq(data)
+    #     end
 
     # it 'if_expr' do
     #   if_expr = case_opt.then_expr.statements.first
@@ -239,7 +238,7 @@ describe 'rspec_serializer' do
 
     it 'values should not contain a $' do
       expect(serializer.add_var_to_store('class_a::master_type', 'value1')).to eq('value1')
-      serializer.var_store.each do |key, value|
+      serializer.var_store.each do |_key, value|
         expect(value).to_not match(/^\$'.*/)
       end
     end
@@ -260,7 +259,7 @@ describe 'rspec_serializer' do
 
       it 'values should not contain a $' do
         expect(serializer.add_var_to_store('$master_type', 'value1')).to eq('value1')
-        serializer.var_store.each do |key, value|
+        serializer.var_store.each do |_key, value|
           expect(value).to_not match(/^\$'.*/)
         end
       end
@@ -274,7 +273,6 @@ describe 'rspec_serializer' do
         expect(serializer.add_var_to_store('$class_a::master_type', 'value1')).to eq('value1')
         expect(serializer.lookup_var('$class_a::master_type')).to eq('value1')
         expect(serializer.lookup_var('$master_type')).to eq('value1')
-
       end
 
       it 'should not add a variable when it already exists' do
@@ -292,7 +290,6 @@ describe 'rspec_serializer' do
       expect(serializer.add_var_to_store('$class_a::master_type', 'value1')).to eq('value1')
       expect(serializer.lookup_var('$class_a::master_type')).to eq('value1')
       expect(serializer.lookup_var('$master_type')).to eq('value1')
-
     end
 
     it 'should not add a variable when it already exists' do

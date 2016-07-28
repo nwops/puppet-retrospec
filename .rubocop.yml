@@ -1,16 +1,30 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
+  TargetRubyVersion: 1.9
+  DisplayCopNames: true
+  # Style guide URLs are not displayed in offense messages by default. Change
+  # behavior by overriding DisplayStyleGuide, or by giving the
+  # -S/--display-style-guide option.
+  DisplayStyleGuide: true
+  # Extra details are not displayed in offense messages by default. Change
+  # behavior by overriding ExtraDetails, or by giving the
+  # -E/--extra-details option.
+  ExtraDetails: true
   Exclude:
+    - bundle/**/*
+    - .bundle/**/*
     - vendor/**/*
     - pkg/**/*
     - spec/fixtures/**/*
-
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 128
+  Enabled: false
 
 # dealbreaker:
-Style/TrailingComma:
-  Enabled: false
+#Style/TrailingComma:
+#  Enabled: false
 
 # we still support ruby 1.8
 Style/HashSyntax:

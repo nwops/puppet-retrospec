@@ -13,7 +13,7 @@ module Retrospec
           # you will need to initialize this object, so the erb templates can get the binding
           # the SpecObject can be customized to your liking as its different for every plugin gem.
           @context = OpenStruct.new(:name => spec_object[:name], :return_type => spec_object[:return_type],
-                                    :function_type => spec_object[:type], 
+                                    :function_type => spec_object[:type],
                                     :test_type => spec_object[:test_type])
         end
 
@@ -25,7 +25,7 @@ module Retrospec
         # false returns the template directory inside the gem location which is mainly used for development only.
         def template_dir
           external_templates = File.expand_path(File.join(config_data[:template_dir], 'functions',
-           function_type, "function_template#{function_ext}.retrospec.erb"))
+                                                          function_type, "function_template#{function_ext}.retrospec.erb"))
           if File.exist?(external_templates)
             File.join(config_data[:template_dir], 'functions', function_type)
           else
@@ -101,7 +101,7 @@ Generates a new function with the given name.
 
         # returns the path to the function using the function directory
         def function_path
-          path = File.join(function_dir, "#{function_name}")
+          path = File.join(function_dir, function_name.to_s)
           path + function_ext
         end
 
@@ -165,15 +165,14 @@ Generates a new function with the given name.
         # @return [Array] an array of functions found in either the v3,v4, native directories
         def discovered_functions
           Dir.glob([File.join(v3_function_dir, '*.rb'),
-            File.join(v4_function_dir, '*.rb'), File.join(native_function_dir, '*.pp')
-            ]).sort
+                    File.join(v4_function_dir, '*.rb'), File.join(native_function_dir, '*.pp')]).sort
         end
 
         # @return [Boolean] true if the function file is a native function
         def native_function?(function_file)
           # mod_name/functions
           File.basename(Pathname.new(function_file).parent) == 'functions' &&
-          File.extname(function_file) == '.pp'
+            File.extname(function_file) == '.pp'
         end
 
         # @return [Boolean] true if the function file is a v4 function

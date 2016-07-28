@@ -87,11 +87,11 @@ Generates a new fact with the given name
         def template_dir
           unless @template_dir
             external_templates = File.expand_path(File.join(config_data[:template_dir], 'facts', 'fact.rb.retrospec.erb'))
-            if File.exist?(external_templates)
-              @template_dir = File.join(config_data[:template_dir], 'facts')
-            else
-              @template_dir = File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'facts'))
-            end
+            @template_dir = if File.exist?(external_templates)
+                              File.join(config_data[:template_dir], 'facts')
+                            else
+                              File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'facts'))
+                            end
           end
           @template_dir
         end

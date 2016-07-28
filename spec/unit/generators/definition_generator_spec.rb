@@ -1,17 +1,16 @@
 require 'spec_helper'
 
 describe Retrospec::Puppet::Generators::DefinitionGenerator do
-
   after(:each) do
-    FileUtils.rm(spec_file) if File.exists?(spec_file)
+    FileUtils.rm(spec_file) if File.exist?(spec_file)
   end
 
   let(:generator_opts) do
-    {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
+    { :manifest_file => sample_file, :template_dir => retrospec_templates_path }
   end
 
   let(:sample_file) do
-    File.join(module_path, 'manifests','one_define.pp')
+    File.join(module_path, 'manifests', 'one_define.pp')
   end
 
   let(:context) do
@@ -40,7 +39,7 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
 
   it 'should create spec file' do
     expect(generator.run).to eq(spec_file)
-    expect(File.exists?(spec_file)).to eq(true)
+    expect(File.exist?(spec_file)).to eq(true)
   end
 
   it 'should produce correct file name' do
@@ -79,9 +78,7 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
       expect(spec_file_contents).to match(data)
       expect(spec_file_contents).to match(/#:one => "one_value",/)
     end
-
   end
-
 
   describe 'spec files' do
     let(:generated_files) do
@@ -92,5 +89,4 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
       expect(files).to eq(generated_files)
     end
   end
-
 end

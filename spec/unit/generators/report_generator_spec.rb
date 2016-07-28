@@ -1,14 +1,13 @@
 require 'spec_helper'
 
 describe 'report_generator' do
-
   after(:each) do
-    FileUtils.rm(report_file) if File.exists?(report_file)
-    FileUtils.rm(report_spec_file) if File.exists?(report_spec_file)
+    FileUtils.rm(report_file) if File.exist?(report_file)
+    FileUtils.rm(report_spec_file) if File.exist?(report_spec_file)
   end
 
   let(:generator_opts) do
-    {:name => 'test',  :template_dir => retrospec_templates_path}
+    { :name => 'test', :template_dir => retrospec_templates_path }
   end
 
   let(:module_path) do
@@ -30,9 +29,9 @@ describe 'report_generator' do
   it 'should create files without error' do
     files = generator.run
     expect(files.include?(report_file)).to eq(true)
-    expect(File.exists?(report_file)).to eq(true)
+    expect(File.exist?(report_file)).to eq(true)
     expect(files.include?(report_spec_file)).to eq(true)
-    expect(File.exists?(report_spec_file)).to eq(true)
+    expect(File.exist?(report_spec_file)).to eq(true)
   end
 
   it 'should produce correct file name' do
@@ -42,5 +41,4 @@ describe 'report_generator' do
   it 'should produce correct spec file path' do
     expect(generator.item_spec_path).to eq(report_spec_file)
   end
-
 end
