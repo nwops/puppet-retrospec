@@ -28,6 +28,10 @@ describe 'function_generator' do
     retrospec_templates_path
   end
 
+  let(:native_function_file) do
+    File.join(fixtures_path, 'functions', 'abs.pp')
+  end
+
   let(:function_name) do
     'awesome_parser'
   end
@@ -63,11 +67,9 @@ describe 'function_generator' do
 
     it 'generate spec files' do
       files = [File.join(generator.v3_spec_dir, 'defined_spec.rb'),
-        File.join(generator.v3_spec_dir, 'sha1_spec.rb'),
-        File.join(generator.v4_spec_dir, 'reduce_spec.rb'),
-        File.join(generator.v4_spec_dir, 'awesome_parser_spec.rb')
-
-      ]
+               File.join(generator.v3_spec_dir, 'sha1_spec.rb'),
+               File.join(generator.v4_spec_dir, 'reduce_spec.rb'),
+               File.join(generator.v4_spec_dir, 'awesome_parser_spec.rb')]
       expect(generator.generate_spec_files).to match_array(files)
     end
 
@@ -77,7 +79,7 @@ describe 'function_generator' do
         File.join(module_path, 'lib', 'puppet', 'functions', 'reduce.rb'),
         File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'bad_sha1.rb'),
         File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'defined.rb'),
-        File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'sha1.rb'),
+        File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'sha1.rb')
       ]
       expect(generator.discovered_functions).to match_array(files)
     end
@@ -118,14 +120,19 @@ describe 'function_generator' do
 
       it 'return true when v3 function' do
         path = File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'bad_sha1.rb')
-        expect(generator.is_v3_function?(path)).to eq (true)
+        expect(generator.v3_function?(path)).to eq true
       end
 
       it 'return v3 template path when context is changed' do
         generator.template_dir  # uses v4
         generator.context.function_type = 'v3'
         expect(generator.template_dir).to match(/functions\/v3/)
+      end
 
+      it 'return false when v3 function' do
+        path = File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'reduce.rb')
+        expect(generator.v4_function?(path)).to eq false
+        expect(generator.native_function?(path)).to eq false
       end
     end
 
@@ -140,7 +147,8 @@ describe 'function_generator' do
 
       it 'return false when v4 function' do
         path = File.join(module_path, 'lib', 'puppet', 'functions', 'reduce.rb')
-        expect(generator.is_v3_function?(path)).to eq (false)
+        expect(generator.v3_function?(path)).to eq false
+        expect(generator.native_function?(path)).to eq false
       end
 
       it 'return v4 template path' do
@@ -175,6 +183,8 @@ describe 'function_generator' do
     end
   end
 
+
+
   describe 'rspec unit tests' do
     let(:opts) do
       ['-n', function_name, '-r', 'return_type', '-t', type_name, '-u', 'rspec']
@@ -190,11 +200,9 @@ describe 'function_generator' do
 
     it 'generate spec files' do
       files = [File.join(generator.v3_spec_dir, 'defined_spec.rb'),
-        File.join(generator.v3_spec_dir, 'sha1_spec.rb'),
-        File.join(generator.v4_spec_dir, 'reduce_spec.rb'),
-        File.join(generator.v4_spec_dir, 'awesome_parser_spec.rb')
-
-      ]
+               File.join(generator.v3_spec_dir, 'sha1_spec.rb'),
+               File.join(generator.v4_spec_dir, 'reduce_spec.rb'),
+               File.join(generator.v4_spec_dir, 'awesome_parser_spec.rb')]
       expect(generator.generate_spec_files).to match_array(files)
     end
 
@@ -204,7 +212,7 @@ describe 'function_generator' do
         File.join(module_path, 'lib', 'puppet', 'functions', 'reduce.rb'),
         File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'bad_sha1.rb'),
         File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'defined.rb'),
-        File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'sha1.rb'),
+        File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'sha1.rb')
       ]
       expect(generator.discovered_functions).to match_array(files)
     end
@@ -245,7 +253,7 @@ describe 'function_generator' do
 
       it 'return true when v3 function' do
         path = File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'bad_sha1.rb')
-        expect(generator.is_v3_function?(path)).to eq (true)
+        expect(generator.v3_function?(path)).to eq true
       end
 
       it 'return v3 template path when context is changed' do
@@ -266,7 +274,7 @@ describe 'function_generator' do
 
       it 'return false when v4 function' do
         path = File.join(module_path, 'lib', 'puppet', 'functions', 'reduce.rb')
-        expect(generator.is_v3_function?(path)).to eq (false)
+        expect(generator.v3_function?(path)).to eq false
       end
 
       it 'return v4 template path' do
@@ -299,7 +307,67 @@ describe 'function_generator' do
         expect(generator.generate_function_file).to eq(function_path)
       end
     end
-  end
 
+    describe 'native' do
+      let(:type_name) do
+        'native'
+      end
 
+      let(:function_path) do
+        File.join(module_path, 'functions', "#{function_name}.pp")
+      end
+
+      it 'return false when native function' do
+        path = File.join(module_path, 'functions', 'reduce.pp')
+        expect(generator.v3_function?(path)).to eq false
+        expect(generator.v4_function?(path)).to eq false
+      end
+
+      it 'return native template path' do
+        allow(generator).to receive(:function_type).and_return('native')
+        expect(generator.template_dir).to match(/functions\/native/)
+      end
+
+      it 'return v4 template path when context is changed' do
+        generator.template_dir
+        generator.context.function_type = 'native'
+        expect(generator.template_dir).to match(/functions\/native/)
+      end
+
+      it 'returns function path' do
+        path = File.join(module_path, 'functions', "#{function_name}.pp")
+        expect(generator.function_path).to eq(path)
+      end
+
+      it 'returns spec file directory' do
+        path = File.join(module_path, 'spec', 'functions')
+        expect(generator.spec_file_dir).to eq(path)
+      end
+
+      it 'returns function directory' do
+        path = File.join(module_path, 'functions')
+        expect(generator.function_dir).to eq(path)
+      end
+
+      it 'generate spec file' do
+        allow(generator).to receive(:discovered_functions).and_return([native_function_file])
+        path = File.join(generator.module_path, 'spec', 'functions', 'abs_spec.rb')
+        expect(generator.generate_spec_files).to eq([path])
+      end
+
+      it 'generate spec file content' do
+        allow(generator).to receive(:discovered_functions).and_return([native_function_file])
+        path = File.join(generator.module_path, 'spec', 'functions', 'abs_spec.rb')
+        expect(generator.generate_spec_files).to eq([path])
+        test_file_content = File.read(path)
+        result = "require 'spec_helper'\n\nlet(:x) do\n  'some_value_goes_here'\nend\n\ndescribe 'abs' do\n  it { is_expected.to run.with_params(x).and_return('some_value') }\nend\n"
+        expect(test_file_content).to eq(result)
+      end
+
+      it 'generate function file path' do
+        file = File.join(generator.template_dir, 'function_template.pp.retrospec.erb')
+        expect(generator.function_file_path).to eq file
+      end
+    end
   end
+end

@@ -52,14 +52,14 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 ## News
 ### 6-28-16
-Version 1.0.0 is release with full support for puppet 4.x code.  
+Version 1.0.0 is released with full support for puppet 4.x code.  
 ### 1-18-16
 A slew of new features has been added with the 0.12 update. If you already use retrospec to retrofit your modules, now you can use retrospec to generate some of the more advanced puppet module customizations such as:
 
 - custom facts
 - providers
 - custom types
-- functions (v3 and v4)
+- functions (v3,v4, and native)
 - parameter schemas  
 
 This has been a feature in the making since Puppetconf 2015.  I would have finished this sooner but was sucked in
