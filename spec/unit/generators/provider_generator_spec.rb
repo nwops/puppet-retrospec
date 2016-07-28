@@ -90,7 +90,6 @@ describe 'provider_generator' do
     it 'return path of core type' do
       expect(generator.type_file('package')).to eq('puppet/type/package.rb')
     end
-
   end
   describe 'cli' do
     it 'can run the cli options' do
@@ -111,7 +110,7 @@ describe 'provider_generator' do
 
       it 'can generate a spec file' do
         generator.generate_provider_files
-        files = [File.join(provider_spec_dir, "#{type_name}", "#{provider_name}_spec.rb")]
+        files = [File.join(provider_spec_dir, type_name.to_s, "#{provider_name}_spec.rb")]
         expect(generator.generate_provider_spec_files).to eq(files)
       end
 

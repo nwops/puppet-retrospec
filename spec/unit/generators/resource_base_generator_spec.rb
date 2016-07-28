@@ -1,17 +1,16 @@
 require 'spec_helper'
 
 describe Retrospec::Puppet::Generators::ResourceBaseGenerator do
-
   after(:each) do
-    FileUtils.rm_rf(spec_files_path) if File.exists?(spec_files_path)
+    FileUtils.rm_rf(spec_files_path) if File.exist?(spec_files_path)
   end
 
   let(:generator_opts) do
-    {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
+    { :manifest_file => sample_file, :template_dir => retrospec_templates_path }
   end
 
   let(:sample_file) do
-    File.join(module_path, 'manifests','one_define.pp')
+    File.join(module_path, 'manifests', 'one_define.pp')
   end
 
   let(:spec_files_path) do
@@ -38,5 +37,4 @@ describe Retrospec::Puppet::Generators::ResourceBaseGenerator do
     files = Retrospec::Puppet::Generators::ResourceBaseGenerator.generate_spec_files(module_path, generator_opts)
     expect(files).to match_array(generated_files)
   end
-
 end

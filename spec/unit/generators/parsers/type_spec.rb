@@ -75,19 +75,18 @@ describe 'type' do
 
     it 'has correct amount of parameters' do
       expect(models.parameters).to eq([:name,
-                                        :patch_id,
-                                        :os_user,
-                                        :oracle_product_home_dir,
-                                        :orainst_dir,
-                                        :extracted_patch_dir,
-                                        :ocmrf_file,
-                                        :opatch_auto,
-                                        :bundle_sub_patch_id])
+                                       :patch_id,
+                                       :os_user,
+                                       :oracle_product_home_dir,
+                                       :orainst_dir,
+                                       :extracted_patch_dir,
+                                       :ocmrf_file,
+                                       :opatch_auto,
+                                       :bundle_sub_patch_id])
     end
 
     it 'has the correct number of instance methods' do
       expect(models.instance_methods).to eq([])
     end
-
   end
 end

@@ -1,17 +1,16 @@
 require 'spec_helper'
 
 describe Retrospec::Puppet::Generators::AcceptanceGenerator do
-
   after(:each) do
-    FileUtils.rm_rf(spec_files_path) if File.exists?(spec_files_path)
+    FileUtils.rm_rf(spec_files_path) if File.exist?(spec_files_path)
   end
 
   let(:sample_file) do
-    File.join(module_path, 'manifests','one_define.pp')
+    File.join(module_path, 'manifests', 'one_define.pp')
   end
 
   let(:generator_opts) do
-    {:manifest_file => sample_file, :template_dir => retrospec_templates_path}
+    { :manifest_file => sample_file, :template_dir => retrospec_templates_path }
   end
 
   let(:spec_files_path) do
@@ -31,14 +30,13 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
   end
 
   describe 'valid context' do
-
     describe 'define' do
       let(:spec_file) do
-        path = File.join(module_path, 'spec', 'acceptance', 'classes','one_define_spec.rb')
+        path = File.join(module_path, 'spec', 'acceptance', 'classes', 'one_define_spec.rb')
       end
 
       let(:sample_file) do
-        File.join(module_path, 'manifests','one_define.pp')
+        File.join(module_path, 'manifests', 'one_define.pp')
       end
       let(:context) do
         generator.load_context_data
@@ -65,7 +63,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
 
       it 'should create spec file' do
         expect(generator.run).to eq(spec_file)
-        expect(File.exists?(spec_file)).to eq(true)
+        expect(File.exist?(spec_file)).to eq(true)
       end
 
       it 'should produce correct file name' do
@@ -76,15 +74,14 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
         data = "require 'spec_helper_acceptance'\n\ndescribe 'one_resource::one_define one_resource::one_define' do\n  describe 'running puppet code' do\n    it 'should work with no errors' do\n      pp = <<-EOS\n      one_resource::one_define{'some_value':\n        #:one => \"one_value\",\n\n      }\n      EOS\n\n    # Run it twice and test for idempotency\n      apply_manifest(pp, :catch_failures => true)\n      apply_manifest(pp, :catch_changes => true)\n    end\n\n  end\nend\n"
         expect(spec_file_contents).to eq(data)
       end
-
     end
     describe 'class' do
       let(:spec_file) do
-        path = File.join(module_path, 'spec', 'acceptance', 'classes','another_resource_spec.rb')
+        path = File.join(module_path, 'spec', 'acceptance', 'classes', 'another_resource_spec.rb')
       end
 
       let(:sample_file) do
-        File.join(module_path, 'manifests','another_resource.pp')
+        File.join(module_path, 'manifests', 'another_resource.pp')
       end
       let(:context) do
         generator.load_context_data
@@ -109,7 +106,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
 
       it 'should create spec file' do
         expect(generator.run).to eq(spec_file)
-        expect(File.exists?(spec_file)).to eq(true)
+        expect(File.exist?(spec_file)).to eq(true)
       end
 
       it 'should produce correct file name' do
@@ -121,7 +118,6 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
         expect(spec_file_contents).to eq(data)
       end
     end
-
   end
 
   describe 'spec files' do
@@ -131,7 +127,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
         File.join(spec_files_path, 'inherits_params_spec.rb'),
         File.join(spec_files_path, 'one_define_spec.rb'),
         File.join(spec_files_path, 'one_resource_spec.rb'),
-        File.join(spec_files_path, 'params_spec.rb'),
+        File.join(spec_files_path, 'params_spec.rb')
 
       ]
     end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'spec_object' do
-
   let(:path) do
     File.join(fixture_modules_path, 'tomcat')
   end
@@ -21,26 +20,24 @@ describe 'spec_object' do
   end
 
   it 'should get all hiera data' do
-    expect(puppet_context.class_hiera_data('tomcat')).to eq({"tomcat::catalina_home" => nil,
-                                                             "tomcat::group" => nil,
-                                                             "tomcat::install_from_source" => nil,
-                                                             "tomcat::manage_group" => nil,
-                                                             "tomcat::manage_user" => nil,
-                                                             "tomcat::purge_connectors" => nil,
-                                                             "tomcat::purge_realms" => nil,
-                                                             "tomcat::user" => nil,
-                                                            })
+    expect(puppet_context.class_hiera_data('tomcat')).to eq('tomcat::catalina_home' => nil,
+                                                            'tomcat::group' => nil,
+                                                            'tomcat::install_from_source' => nil,
+                                                            'tomcat::manage_group' => nil,
+                                                            'tomcat::manage_user' => nil,
+                                                            'tomcat::purge_connectors' => nil,
+                                                            'tomcat::purge_realms' => nil,
+                                                            'tomcat::user' => nil)
   end
 
   it 'should get all hiera data' do
-    expect(puppet_context.all_hiera_data).to eq({"tomcat::catalina_home" => nil,
-                                                             "tomcat::group" => nil,
-                                                             "tomcat::install_from_source" => nil,
-                                                             "tomcat::manage_group" => nil,
-                                                             "tomcat::manage_user" => nil,
-                                                             "tomcat::purge_connectors" => nil,
-                                                             "tomcat::purge_realms" => nil,
-                                                             "tomcat::user" => nil,
-                                                            })
+    expect(puppet_context.all_hiera_data).to eq('tomcat::catalina_home' => nil,
+                                                'tomcat::group' => nil,
+                                                'tomcat::install_from_source' => nil,
+                                                'tomcat::manage_group' => nil,
+                                                'tomcat::manage_user' => nil,
+                                                'tomcat::purge_connectors' => nil,
+                                                'tomcat::purge_realms' => nil,
+                                                'tomcat::user' => nil)
   end
 end

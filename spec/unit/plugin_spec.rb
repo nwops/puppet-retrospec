@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'retrospec'
 
 describe 'puppet' do
-
   it 'can show the version' do
     expect(Retrospec::Puppet::VERSION).to be_instance_of(String)
   end
@@ -27,7 +26,6 @@ describe 'puppet' do
   end
 
   describe 'new_module' do
-
     let(:module_path) do
       '/tmp/testabc123'
     end
@@ -44,7 +42,6 @@ describe 'puppet' do
       }
     end
 
-
     describe 'without module path' do
       before(:each) do
         FileUtils.rm_rf('/tmp/testabc123')
@@ -55,7 +52,7 @@ describe 'puppet' do
       end
 
       let(:global_opts) do
-        {:module_path => module_path }
+        { :module_path => module_path }
       end
 
       let(:args) do
@@ -66,8 +63,8 @@ describe 'puppet' do
         retrospec
         expect(File.exist?(File.join(module_path, 'testabc123', 'manifests', 'init.pp'))).to eq(true)
         expect(File.exist?(File.join(module_path, 'testabc123', 'metadata.json'))).to eq(true)
-        # FIXME temporary disabling schema
-        #expect(File.exist?(File.join(module_path, 'testabc123', 'testabc123_schema.yaml'))).to eq(true)
+        # FIXME: temporary disabling schema
+        # expect(File.exist?(File.join(module_path, 'testabc123', 'testabc123_schema.yaml'))).to eq(true)
         metadata = JSON.parse(File.read(File.join(module_path, 'testabc123', 'metadata.json')))
         expect(metadata['author']).to eq('test_name')
         expect(metadata['license']).to eq('Apache-3.0')
@@ -80,7 +77,7 @@ describe 'puppet' do
       end
 
       let(:global_opts) do
-        {:module_path => module_path }
+        { :module_path => module_path }
       end
 
       before(:all) do
@@ -95,8 +92,8 @@ describe 'puppet' do
         retrospec
         expect(File.exist?(File.join(module_path, 'manifests', 'init.pp'))).to eq(true)
         expect(File.exist?(File.join(module_path, 'metadata.json'))).to eq(true)
-        # FIXME temporary disabling schema
-        #expect(File.exist?(File.join(module_path, 'testabc124_schema.yaml'))).to eq(true)
+        # FIXME: temporary disabling schema
+        # expect(File.exist?(File.join(module_path, 'testabc124_schema.yaml'))).to eq(true)
         metadata = JSON.parse(File.read(File.join(module_path, 'metadata.json')))
         expect(metadata['author']).to eq('test_name')
         expect(metadata['license']).to eq('Apache-3.0')
@@ -121,15 +118,15 @@ describe 'puppet' do
     end
 
     let(:global_opts) do
-      {:module_path => module_path }
+      { :module_path => module_path }
     end
 
     before(:each) do
       FileUtils.rm_rf(module_path)
       # ensure the module exists
       Retrospec::Plugins::V1::Puppet.run_cli(global_opts,
-       global_config, plugin_config,
-        ['new_module', '-n', 'testabc123'])
+                                             global_config, plugin_config,
+                                             ['new_module', '-n', 'testabc123'])
     end
 
     describe 'new_report' do
@@ -138,7 +135,7 @@ describe 'puppet' do
       end
 
       it 'should create report rb file' do
-        report_file = File.join(module_path,'lib', 'puppet', 'reports', 'test_report.rb')
+        report_file = File.join(module_path, 'lib', 'puppet', 'reports', 'test_report.rb')
         retrospec
         expect(File.read(report_file)).to match(/Puppet::Reports\.register_report\(:test_report\)/)
         expect(File.exist?(report_file)).to eq(true)
@@ -146,14 +143,13 @@ describe 'puppet' do
     end
 
     describe 'new_fact' do
-
       let(:args) do
         ['new_fact', '-n', 'test_fact']
       end
 
       it 'should create spec and rb file' do
         retrospec
-        expect(File.exist?(File.join(module_path,'lib', 'facter', 'test_fact.rb'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'lib', 'facter', 'test_fact.rb'))).to eq(true)
         expect(File.exist?(File.join(module_path, 'spec', 'unit', 'facter', 'test_fact_spec.rb'))).to eq(true)
       end
     end
@@ -163,7 +159,7 @@ describe 'puppet' do
         'type_a'
       end
       let(:type_dir) do
-        File.join(module_path,'lib', 'puppet', 'type')
+        File.join(module_path, 'lib', 'puppet', 'type')
       end
 
       let(:type_spec_dir) do
@@ -193,20 +189,18 @@ describe 'puppet' do
       end
     end
     describe 'new_provider' do
-
       let(:args) do
         ['new_provider', '-n', 'pname', '--type', 'type_a']
       end
 
       it 'should create spec and rb file' do
         retrospec
-        expect(File.exist?(File.join(module_path,'lib', 'puppet', 'provider', 'type_a', 'pname.rb'))).to eq(true)
+        expect(File.exist?(File.join(module_path, 'lib', 'puppet', 'provider', 'type_a', 'pname.rb'))).to eq(true)
         expect(File.exist?(File.join(module_path, 'spec', 'unit', 'puppet', 'provider', 'type_a', 'pname_spec.rb'))).to eq(true)
       end
     end
 
     describe 'new_function' do
-
       describe 'v3' do
         let(:args) do
           ['new_function', '-n', 'test_func_v3', '--type', 'v3']
@@ -214,14 +208,13 @@ describe 'puppet' do
 
         it 'should create v3 function' do
           retrospec
-          expect(File.exist?(File.join(module_path,'lib', 'puppet','parser', 'functions', 'test_func_v3.rb'))).to eq(true)
+          expect(File.exist?(File.join(module_path, 'lib', 'puppet', 'parser', 'functions', 'test_func_v3.rb'))).to eq(true)
         end
 
         it 'should create v3 function spec file' do
           retrospec
           expect(File.exist?(File.join(module_path, 'spec', 'functions', 'test_func_v3_spec.rb'))).to eq(true)
         end
-
       end
       describe 'v4' do
         let(:args) do
@@ -230,7 +223,7 @@ describe 'puppet' do
 
         it 'should create v4 function' do
           retrospec
-          expect(File.exist?(File.join(module_path,'lib', 'puppet', 'functions', 'test_func_v4.rb'))).to eq(true)
+          expect(File.exist?(File.join(module_path, 'lib', 'puppet', 'functions', 'test_func_v4.rb'))).to eq(true)
         end
 
         it 'should create v4 function spec file' do
