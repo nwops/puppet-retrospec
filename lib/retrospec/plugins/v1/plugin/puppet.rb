@@ -146,7 +146,7 @@ Generates puppet rspec test code based on the classes and defines inside the man
               puts "The subcommand #{sub_command} is not supported or valid".fatal
               exit 1
             end
-          rescue Retrospec::Puppet::InvalidModulePathError  => e
+          rescue Retrospec::Puppet::InvalidModulePathError => e
             exit 1
           rescue Retrospec::Puppet::NoManifestDirError => e
             exit 1

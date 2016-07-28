@@ -11,6 +11,7 @@ group :development do
 end
 
 group :test do
+  gem 'rubocop'
   gem 'rspec', '~> 3.2'
   gem 'puppet', '4.5.2', :path => 'vendor/gems/puppet-4.5.2'
   gem 'rake'

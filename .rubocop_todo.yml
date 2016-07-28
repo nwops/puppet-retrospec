@@ -6,6 +6,19 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+Style/WordArray:
+  Exclude:
+    - lib/retrospec/plugins/v1/plugin/generators/type_generator.rb
+
+Lint/ShadowedException:
+  Exclude:
+    - lib/retrospec/plugins/v1/plugin/puppet.rb
+
+Style/MethodMissing:
+  Exclude:
+    - lib/retrospec/plugins/v1/plugin/generators/serializers/rspec_dumper.rb
+    - lib/retrospec/plugins/v1/plugin/generators/parsers/function.rb
+    - lib/retrospec/plugins/v1/plugin/generators/parsers/facter.rb
 # Offense count: 1
 Lint/AmbiguousOperator:
   Exclude:

@@ -183,8 +183,6 @@ describe 'function_generator' do
     end
   end
 
-
-
   describe 'rspec unit tests' do
     let(:opts) do
       ['-n', function_name, '-r', 'return_type', '-t', type_name, '-u', 'rspec']
