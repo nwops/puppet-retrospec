@@ -244,7 +244,7 @@ module Retrospec
         end
 
         def run_hook(hook_file)
-          return if File.exist?(hook_file)
+          return unless File.exist?(hook_file)
           output = `ruby #{hook_file} #{module_path}`
           if $CHILD_STATUS.success?
             puts "Successfully ran hook: #{hook_file}".info

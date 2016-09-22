@@ -63,7 +63,7 @@ module Retrospec
       # externalize them for easier management.
       def run_clone_hook(template_dir, git_url = nil, branch = nil)
         hook_file = clone_hook_file(template_dir)
-        return if File.exist?(hook_file)
+        return unless File.exist?(hook_file)
         output = `ruby #{hook_file} #{template_dir} #{git_url} #{branch}`
         puts output
         if $CHILD_STATUS.success?

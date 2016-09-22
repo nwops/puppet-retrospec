@@ -1,3 +1,5 @@
+## 1.2.1
+ * fix conditional logic preventing hooks from running
 ## 1.2.0
  * fixes gh-53 - adds windows support
 ## 1.1.0
