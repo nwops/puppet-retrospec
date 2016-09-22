@@ -1,3 +1,5 @@
+## 1.2.0
+ * fixes gh-53 - adds windows support
 ## 1.1.0
  * fixes gh-62 - add support for creating native puppet fuctions
 ## 1.0.0
