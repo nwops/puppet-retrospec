@@ -67,8 +67,8 @@ module Retrospec
           # the user passed in /tmp/test1 and the name is irrelevent
           if ! File.exists?(plugin_data[:module_path])
             plugin_data[:module_path] = File.join(plugin_data[:module_path])
-          # if the module path basename is the same as the module name
-          # this is a parent directory or the module already exists
+            # if the module path basename is the same as the module name
+            # this is a parent directory or the module already exists
           elsif File.basename(plugin_data[:module_path]) != plugin_data[:name]
             plugin_data[:module_path] = File.join(plugin_data[:module_path], plugin_data[:name])
           end
@@ -101,16 +101,16 @@ module Retrospec
           plugin_opts = Trollop.options(args) do
             version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
-Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
-#{sub_command_help}
+            Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
+            #{sub_command_help}
 
             EOS
             opt :template_dir, 'Path to templates directory (only for overriding Retrospec templates)', :type => :string,
-                :required => false, :default => template_dir
+            :required => false, :default => template_dir
             opt :scm_url, 'SCM url for retrospec templates', :type => :string, :required => false,
-                :default => scm_url
+            :default => scm_url
             opt :branch, 'Branch you want to use for the retrospec template repo', :type => :string, :required => false,
-                :default => scm_branch
+            :default => scm_branch
             opt :enable_beaker_tests, 'Enable the creation of beaker tests', :require => false, :type => :boolean, :default => beaker_tests
             stop_on sub_commands
           end
@@ -240,31 +240,25 @@ Generates puppet rspec test code based on the classes and defines inside the man
         # runs a user defined hook called pre-hook
         def run_pre_hook
           hook_file = File.join(template_dir, 'pre-hook')
-          if File.exist?(hook_file)
-            output = `#{hook_file} #{module_path}`
-            if $CHILD_STATUS.success?
-              puts "Successfully ran hook: #{hook_file}".info
-              puts output.info
-            else
-              puts "Error running hook: #{hook_file}".fatal
-              puts output.fatal
-            end
+          run_hook(hook_file)
+        end
+
+        def run_hook(hook_file)
+          return if File.exist?(hook_file)
+          output = `ruby #{hook_file} #{module_path}`
+          if $CHILD_STATUS.success?
+            puts "Successfully ran hook: #{hook_file}".info
+            puts output.info
+          else
+            puts "Error running hook: #{hook_file}".fatal
+            puts output.fatal
           end
         end
 
         # runs a user defined hook called post-hook
         def run_post_hook
           hook_file = File.join(template_dir, 'post-hook')
-          if File.exist?(hook_file)
-            output = `#{hook_file} #{module_path}`
-            if $CHILD_STATUS.success?
-              puts "Successfully ran hook: #{hook_file}".info
-              puts output.info
-            else
-              puts "Error running hook: #{hook_file}".fatal
-              puts output.fatal
-            end
-          end
+          run_hook(hook_file)
         end
 
         # this is the method that performs all the magic and creates all the files

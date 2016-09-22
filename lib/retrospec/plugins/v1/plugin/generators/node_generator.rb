@@ -1,4 +1,5 @@
 require_relative 'serializers/rspec_dumper'
+require_relative 'resource_base_generator'
 require 'puppet'
 require 'puppet/pops'
 

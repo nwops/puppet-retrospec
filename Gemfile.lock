@@ -17,13 +17,12 @@ GEM
     facets (3.1.0)
     facter (2.4.6)
       CFPropertyList (~> 2.2.6)
-    fakefs (0.9.0)
-    hiera (3.2.0)
-      json_pure
+    fakefs (0.9.1)
+    hiera (3.2.1)
     json (1.8.3)
-    json_pure (2.0.2)
+    json_pure (2.0.1)
     method_source (0.8.2)
-    parser (2.3.1.2)
+    parser (2.3.1.4)
       ast (~> 2.2)
     powerpack (0.1.1)
     pry (0.10.4)
@@ -31,7 +30,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     rainbow (2.1.0)
-    rake (11.2.2)
+    rake (11.3.0)
     rdoc (3.12.2)
       json (~> 1.4)
     retrospec (0.4.0)
@@ -40,7 +39,7 @@ GEM
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.1)
+    rspec-core (3.5.3)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -49,7 +48,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
-    rubocop (0.42.0)
+    rubocop (0.43.0)
       parser (>= 2.3.1.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
@@ -58,7 +57,7 @@ GEM
     ruby-progressbar (1.8.1)
     slop (3.6.0)
     trollop (2.1.2)
-    unicode-display_width (1.1.0)
+    unicode-display_width (1.1.1)
     yard (0.9.5)
 
 PLATFORMS
@@ -69,6 +68,7 @@ DEPENDENCIES
   bundler (~> 1.0)
   facets
   fakefs
+  json_pure (= 2.0.1)
   pry
   puppet (= 4.5.2)!
   rake
@@ -80,4 +80,4 @@ DEPENDENCIES
   yard (~> 0.7)
 
 BUNDLED WITH
-   1.12.5
+   1.13.1
