@@ -29,6 +29,7 @@ end
 
 def update_templates(git_url, dest, branch = 'master')
   create_repo(dest, git_url, branch)
+  puts "Attempting to connect to #{@template_repo}"
   puts `git --git-dir #{dest}/.git --work-tree #{dest} pull`
   dest
 end
@@ -38,7 +39,7 @@ def connected?(url)
     # if the user wants internet but doesn't want cloning, allow them to set this variable
     return false
   end
-  open('http://www.google.com/') rescue false
+  true
 end
 
 # sometimes I work on an airplane and don't care to clone everything all the time
