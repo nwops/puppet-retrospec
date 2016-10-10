@@ -105,7 +105,13 @@ module Utilities
       path = File.join(tmp_modules_dir, module_dir_name)
       unless File.exist?(path) # only create if it doesn't already exist
         # create a link where source is the current repo and dest is /tmp/modules/module_name
-        FileUtils.ln_s(module_path, path)
+        begin
+          FileUtils.ln_s(module_path, path)
+        rescue NotImplementedError => e
+          # while windows users can create sylinks they must be adminstrators to do so
+          # this hopefully gets around that issue by using mklink instead
+          `cmd.exe \c "mklink /J #{path} #{module_path}"`
+        end
       end
       path
     end

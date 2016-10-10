@@ -291,7 +291,11 @@ module Retrospec
             else
               dest = template.gsub(File.join(template_dir, 'module_files'), module_path)
               if File.symlink?(template)
-                safe_create_symlink(template, dest)
+                begin
+                  safe_create_symlink(template, dest)
+                rescue NotImplementedError => e
+                  puts "Symlinks are not supported on this platform or you do not have privileges, skipping #{dest}".warning
+                end
               elsif File.directory?(template)
                 safe_mkdir(dest)
               else
