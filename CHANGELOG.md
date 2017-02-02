@@ -1,3 +1,8 @@
+## 1.3.0
+ * fixes gh-68 - add ability to overwrite generated files
+ * updates README
+ * removes old rakefile code
+ * bumps retrospec gem to 0.5
 ## 1.2.1
  * fix conditional logic preventing hooks from running
 ## 1.2.0

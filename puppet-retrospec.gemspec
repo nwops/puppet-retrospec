@@ -23,31 +23,11 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.rubygems_version = "2.4.5.1"
   s.summary = "Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns."
+  s.add_runtime_dependency(%q<trollop>, [">= 0"])
+  s.add_runtime_dependency(%q<retrospec>, ["~> 0.5"])
+  s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
+  s.add_runtime_dependency(%q<facets>, [">= 0"])
+  s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+  s.add_development_dependency(%q<pry>, [">= 0"])
 
-  if s.respond_to? :specification_version then
-    s.specification_version = 4
-
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<trollop>, [">= 0"])
-      s.add_runtime_dependency(%q<retrospec>, ["~> 0.4"])
-      s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
-      s.add_runtime_dependency(%q<facets>, [">= 0"])
-      s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_development_dependency(%q<pry>, [">= 0"])
-    else
-      s.add_dependency(%q<trollop>, [">= 0"])
-      s.add_dependency(%q<retrospec>, ["~> 0.4"])
-      s.add_dependency(%q<awesome_print>, [">= 0"])
-      s.add_dependency(%q<facets>, [">= 0"])
-      s.add_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_dependency(%q<pry>, [">= 0"])
-    end
-  else
-    s.add_dependency(%q<trollop>, [">= 0"])
-    s.add_dependency(%q<retrospec>, ["~> 0.4"])
-    s.add_dependency(%q<awesome_print>, [">= 0"])
-    s.add_dependency(%q<facets>, [">= 0"])
-    s.add_dependency(%q<rdoc>, ["~> 3.12"])
-    s.add_dependency(%q<pry>, [">= 0"])
-  end
 end

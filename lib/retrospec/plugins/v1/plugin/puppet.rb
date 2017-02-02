@@ -94,17 +94,19 @@ module Retrospec
           # a list of subcommands for this plugin
           sub_commands  = %w(new_module new_fact new_type new_provider new_function new_report)
           if sub_commands.count > 0
-            sub_command_help = "Subcommands:\n#{sub_commands.join("\n")}\n"
+            sub_command_help = "Subcommands:\n  #{sub_commands.join("\n  ")}\n"
           else
             sub_command_help = ''
           end
           plugin_opts = Trollop.options(args) do
             version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman"
             banner <<-EOS
-            Generates puppet rspec test code based on the classes and defines inside the manifests directory.\n
-            #{sub_command_help}
+Generates puppet rspec test code and puppet module components.
+
+#{sub_command_help}
 
             EOS
+
             opt :template_dir, 'Path to templates directory (only for overriding Retrospec templates)', :type => :string,
             :required => false, :default => template_dir
             opt :scm_url, 'SCM url for retrospec templates', :type => :string, :required => false,

@@ -51,20 +51,9 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News
-### 6-28-16
-Version 1.0.0 is released with full support for puppet 4.x code.  
-### 1-18-16
-A slew of new features has been added with the 0.12 update. If you already use retrospec to retrofit your modules, now you can use retrospec to generate some of the more advanced puppet module customizations such as:
-
-- custom facts
-- providers
-- custom types
-- functions (v3,v4, and native)
-- parameter schemas  
-
-This has been a feature in the making since Puppetconf 2015.  I would have finished this sooner but was sucked in
-binge watching a bunch of Netflix shows.   Check out `retrospec puppet -h` for a list of all new subcommands.
-
+### 2/1/17
+You can now choose to overwrite files!  This is very useful when updating old module code with newer content.
+See Usage below for how to enable.
 
 ## Install
 `gem install puppet-retrospec`  
@@ -78,6 +67,31 @@ are specified.  Expect to run `retrospec puppet` multiple times throughout the d
 Retrospec will never overwrite a file, so if something already exists retrospec will
 skip the file. Many times you will find yourself deleting existing files and allowing retrospec to recreate them based on updated templates.
 
+### Overwriting files
+As stated above retrospec will not overwrite your files.  However, sometimes recreating files is desired as you change
+your code.  Before '1.3' it was not possible to overwrite files, but now we can safely specify which files should be
+overwritten.  This feature is off by default so you will need to enable it.
+
+To enable please use the global options `--enable-overwrite` or if you want everything `--enable-overwrite-all`
+
+Note: Enabling this feature will prompt you before running destructive operations like:  `y/n/a` where `a` means all.
+
+```
+retrospec -h
+A framework to automate your development workflow by generating common files and test patterns.
+
+Usage: retrospec [global options] plugin [plugin options]
+Available subcommands:
+puppet
+  -e, --enable-overwrite        Enable overwriting of files, will prompt for each file
+  -n, --enable-overwrite-all    Always overwrites files without prompting
+  -m, --module-path=<s>         The path (relative or absolute) to the module directory (default: /Users/cosman/github/puppet-retrospec)
+  -c, --config-map=<s>          The global retrospec config file (default: /Users/cosman/.retrospec/config.yaml)
+  -a, --available-plugins       Show an online list of available plugins
+  -v, --version                 Print version and exit
+  -h, --help                    Show this message
+  
+```
 ### Module Path
 By default the module path is dynamically set based on the current directory.
 If you need to point to a directory outside the current directory you can use the `--module_path` option.  This option is built into the retrospec framework
@@ -214,11 +228,6 @@ retrospec puppet
 ## Dependency
 Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into the library so there should not be conflicts with your existing puppet gem.  
 
-## Enabling the future parser
-
-`retrospec -m ~/projects/puppet_modules/apache puppet --enable-future-parser`
-
-Please see #future-parser-support for why this might be required.
 
 ## Configuration
  Below is a list of options that you can set in the config file.  Setting these options will help cut down on passing parameters. (/Users/username/.retrospec/config.yaml)  `retrospec -h`
@@ -473,7 +482,7 @@ For now you will probably want to read up on the following documentation:
 
 
 ## How Does it do this
-Basically Retrospec uses the puppet lexer and parser to scan your code in order to fill out some basic templates that will retrofit your puppet module with unit tests.  Currently I rely on the old AST parser to generate all this.  This is why puppet 3.7 is vendored into the gem.
+Basically Retrospec uses the puppet lexer and parser to scan your code in order to fill out some basic templates that will retrofit your puppet module with unit tests.
 
 ## Overriding the Templates
 There may be a time when you want to override the default templates used to generate the rspec related files. By default retrospec will clone these [templates](https://github.com/nwops/retrospec-templates) and place inside the default or specified template directory.  
@@ -555,17 +564,17 @@ Because the code does not rely on catalog compilation we have to build our own s
 2. Find all vardef objects, resolve them if possible and store the values
 3. Anything contained in a block of code is currently ignored, until later refinement.
 
-##Future Parser Support
+## Puppet 4.x Support
 As of 1.0.0 Retrospec Puppet provides full support for code written against the 4.x/future parser.
 If you have 3.x code the 4.x parser may throw errors instead of deprecation warnings.
 If you do not wish to convert your 3.x to 4.x code yet, you will need to use the puppet-retrospec
 version < 1.0.0
 
 
-##Ruby Support
+## Ruby Support
 Currently this library only supports ruby >= 1.9.3.  Since we vendor Puppet 4.5.x you need to have
 a supported ruby version that puppet 4.5 supports which.  
 
-##Paid Support
-Want to see new features developed much faster?  Contact me about a support contract so I can develop this tool during
+## Paid Support
+Want to see new features developed faster?  Contact me about a support contract so I can develop this tool during
 the day instead of after work.  contact: corey@nwops.io

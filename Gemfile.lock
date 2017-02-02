@@ -33,7 +33,7 @@ GEM
     rake (11.3.0)
     rdoc (3.12.2)
       json (~> 1.4)
-    retrospec (0.4.0)
+    retrospec (0.5.0)
       trollop
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
@@ -73,11 +73,11 @@ DEPENDENCIES
   puppet (= 4.5.2)!
   rake
   rdoc (~> 3.12)
-  retrospec (~> 0.4)
+  retrospec (~> 0.5)
   rspec (~> 3.2)
   rubocop
   trollop
   yard (~> 0.7)
 
 BUNDLED WITH
-   1.13.1
+   1.13.7
