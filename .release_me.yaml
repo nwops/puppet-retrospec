@@ -1,0 +1,11 @@
+vcs:
+  author_email: autobot@nwops.io
+  author_name: Autobot
+  provider: gitlab
+  branch_name: master
+
+adapter:
+  version_file_relative_path: 'lib/retrospec/v1/plugin/version.rb'
+  version_field: 'VERSION'
+  version_type: 'semver'
+  adapter_name: 'custom'

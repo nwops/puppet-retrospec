@@ -5,6 +5,8 @@ before_script:
   - bundle install --without development build
   - bundle exec ruby lib/retrospec/plugins/v1/plugin/templates/clone-hook
 
+image: ruby:2.1
+
 ruby193:
   stage: test
   script:
@@ -38,10 +40,34 @@ ruby2.3:
 
 stages:
   - test
+  - release
   - deploy
 
+rubocop_ruby:
+  stage: validate
+  allow_failure: true
+  only:
+    - branches
+  tags:
+    - ruby2.2
+  script:
+    - bundle install
+    - bundle exec rubocop -D
+
+bump_and_tag:
+  type: release
+  when: manual
+  tags:
+    - ruby2.2
+  only:
+    - master@puppet-debugger/puppet-debugger
+  script:
+    - gem install release_me
+    - bump_and_tag
+
 production:
-  image: ruby:2.1
+  tags:
+    - ruby2.2
   before_script:
     - gem install dpl
   type: deploy
