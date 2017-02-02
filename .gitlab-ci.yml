@@ -61,7 +61,7 @@ bump_and_tag:
   tags:
     - ruby2.2
   only:
-    - master@puppet-debugger/puppet-debugger
+    - master@nwops/puppet-retrospec
   script:
     - gem install release_me
     - bump_and_tag

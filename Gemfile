@@ -17,6 +17,6 @@ group :test do
   gem 'puppet', '4.5.2', :path => 'vendor/gems/puppet-4.5.2'
   gem 'rake'
   gem 'rspec', '~> 3.2'
-  gem 'rubocop', platforms: :ruby_20
+  gem 'rubocop'
   gem 'yard', '~> 0.7'
 end
