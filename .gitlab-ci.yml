@@ -39,6 +39,7 @@ ruby2.3:
   image: ruby:2.3
 
 stages:
+  - validate
   - test
   - release
   - deploy
