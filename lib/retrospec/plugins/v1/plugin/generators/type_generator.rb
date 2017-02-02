@@ -7,17 +7,17 @@ module Retrospec
         attr_reader :template_dir, :context
 
         # this is the list of core puppet types that cannot be recreated
-        CORE_TYPES = ["augeas", "computer", "cron", "exec", "file", "filebucket",
-           "group", "host", "interface", "k5login", "macauthorization", "mailalias",
-           "maillist", "mcx", "mount", "nagios_command", "nagios_contact",
-           "nagios_contactgroup", "nagios_host", "nagios_hostdependency",
-           "nagios_hostescalation", "nagios_hostextinfo", "nagios_hostgroup",
-           "nagios_service", "nagios_servicedependency",
-           "nagios_serviceescalation", "nagios_serviceextinfo",
-           "nagios_servicegroup", "nagios_timeperiod", "notify", "package",
-           "resources", "router", "schedule", "scheduled_task", "selboolean",
-           "selmodule", "service", "ssh_authorized_key", "sshkey", "stage",
-           "tidy", "user", "vlan", "yumrepo", "zfs", "zone", "zpool"]
+        CORE_TYPES = %w(augeas computer cron exec file filebucket
+           group host interface k5login macauthorization mailalias
+           maillist mcx mount nagios_command nagios_contact
+           nagios_contactgroup nagios_host nagios_hostdependency
+           nagios_hostescalation nagios_hostextinfo nagios_hostgroup
+           nagios_service nagios_servicedependency
+           nagios_serviceescalation nagios_serviceextinfo
+           nagios_servicegroup nagios_timeperiod notify package
+           resources router schedule scheduled_task selboolean
+           selmodule service ssh_authorized_key sshkey stage
+           tidy user vlan yumrepo zfs zone zpool)
 
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.

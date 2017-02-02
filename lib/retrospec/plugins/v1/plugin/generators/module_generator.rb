@@ -30,7 +30,6 @@ module Retrospec
           sub_command_opts = Trollop.options(args) do
             banner <<-EOS
 Generates a new module with the given name and namespace
-
             EOS
             opt :name, 'The name of the module you wish to create', :type => :string, :required => true, :short => '-n',
                                                                     :default => File.basename(global_opts[:module_path])

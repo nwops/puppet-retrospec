@@ -6,9 +6,9 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-Style/WordArray:
+Style/MultilineIfModifier:
   Exclude:
-    - lib/retrospec/plugins/v1/plugin/generators/type_generator.rb
+    - 'lib/retrospec/plugins/v1/plugin/generators/serializers/rspec_dumper_full.rb'
 
 Lint/ShadowedException:
   Exclude:
@@ -52,7 +52,7 @@ Lint/EndAlignment:
     - 'lib/retrospec/plugins/v1/plugin/generators/parsers/facter.rb'
 
 # Offense count: 5
-Lint/Eval:
+Security/Eval:
   Exclude:
     - 'lib/retrospec/plugins/v1/plugin/generators/parsers/facter.rb'
     - 'lib/retrospec/plugins/v1/plugin/generators/parsers/function.rb'
@@ -349,6 +349,7 @@ Style/GuardClause:
     - 'lib/retrospec/plugins/v1/plugin/generators/resource_base_generator.rb'
     - 'lib/retrospec/plugins/v1/plugin/puppet.rb'
     - 'lib/retrospec/plugins/v1/plugin/templates/clone-hook'
+    - 'lib/retrospec/plugins/v1/plugin/generators/module_generator.rb'
 
 # Offense count: 2
 Style/IfInsideElse:
@@ -414,7 +415,7 @@ Style/LeadingCommentSpace:
 
 # Offense count: 3
 # Cop supports --auto-correct.
-Style/MethodCallParentheses:
+Style/MethodCallWithoutArgsParentheses:
   Exclude:
     - 'lib/retrospec/plugins/v1/plugin/generators/parsers/facter.rb'
     - 'lib/retrospec/plugins/v1/plugin/generators/serializers/rspec_dumper_full.rb'

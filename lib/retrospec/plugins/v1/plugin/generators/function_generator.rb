@@ -44,7 +44,7 @@ module Retrospec
         # all options here are available in the config passed into config object
         # returns the parameters
         def self.run_cli(global_opts, args=ARGV)
-          func_types = ['v3', 'v4', 'native']
+          func_types = %w(v3 v4 native)
           func_type  = global_opts['plugins::puppet::default_function_version'] || 'v4'
           test_type  = global_opts['plugins::puppet::default_function_test_type'] || 'rspec'
           sub_command_opts = Trollop.options(args) do

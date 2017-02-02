@@ -22,6 +22,8 @@ Metrics/LineLength:
   Max: 128
   Enabled: false
 
+Metrics/BlockLength:
+  Enabled: false
 # dealbreaker:
 #Style/TrailingComma:
 #  Enabled: false
