@@ -8,6 +8,7 @@ gem 'trollop'
 group :development do
   gem 'pry'
   gem 'rdoc', '~> 3.12'
+  gem 'overcommit'
 end
 
 group :test do

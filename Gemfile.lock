@@ -12,16 +12,23 @@ GEM
     CFPropertyList (2.2.8)
     ast (2.3.0)
     awesome_print (1.7.0)
+    childprocess (0.5.9)
+      ffi (~> 1.0, >= 1.0.11)
     coderay (1.1.1)
     diff-lcs (1.2.5)
     facets (3.1.0)
     facter (2.4.6)
       CFPropertyList (~> 2.2.6)
     fakefs (0.9.1)
+    ffi (1.9.18)
     hiera (3.2.1)
+    iniparse (1.4.2)
     json (1.8.3)
     json_pure (2.0.1)
     method_source (0.8.2)
+    overcommit (0.38.0)
+      childprocess (~> 0.5.8)
+      iniparse (~> 1.4)
     parser (2.3.1.4)
       ast (~> 2.2)
     powerpack (0.1.1)
@@ -69,6 +76,7 @@ DEPENDENCIES
   facets
   fakefs
   json_pure (= 2.0.1)
+  overcommit
   pry
   puppet (= 4.5.2)!
   rake
