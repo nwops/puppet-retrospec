@@ -265,7 +265,8 @@ Generates puppet rspec test code and puppet module components.
 
         # this is the method that performs all the magic and creates all the files
         def create_files
-          safe_create_module_files
+          filter = %r{nodesets|acceptance|spec_helper_acceptance} unless context.enable_beaker_tests?
+          safe_create_module_files(template_dir, module_path, context,filter)
           fact(module_path, config_data)
           type_spec_files(module_path, config_data)
           provider_spec_files(module_path, config_data)
@@ -277,38 +278,6 @@ Generates puppet rspec test code and puppet module components.
           Retrospec::Puppet::Generators::AcceptanceGenerator.generate_spec_files(module_path, config_data) if context.enable_beaker_tests?
           Utilities::PuppetModule.clean_tmp_modules_dir
           true
-        end
-
-        # creates any file that is contained in the templates/modules_files directory structure
-        # loops through the directory looking for erb files or other files.
-        # strips the erb extension and renders the template to the current module path
-        # filenames must named how they would appear in the normal module path.  The directory
-        # structure where the file is contained
-        def safe_create_module_files
-          templates = Find.find(File.join(template_dir, 'module_files')).sort
-          templates.each do |template|
-            # need to remove the erb extension and rework the destination path
-            if template =~ /nodesets|acceptance|spec_helper_acceptance/ and !context.enable_beaker_tests?
-              next
-            else
-              dest = template.gsub(File.join(template_dir, 'module_files'), module_path)
-              if File.symlink?(template)
-                safe_create_symlink(template, dest)
-              elsif File.directory?(template)
-                safe_mkdir(dest)
-              else
-                # because some plugins contain erb files themselves any erb file will be copied only
-                # so we need to designate which files should be rendered with .retrospec.erb
-                if template =~ /\.retrospec\.erb/
-                  # render any file ending in .retrospec_erb as a template
-                  dest = dest.gsub(/\.retrospec\.erb/, '')
-                  safe_create_template_file(dest, template, context)
-                else
-                  safe_copy_file(template, dest)
-                end
-              end
-            end
-          end
         end
 
         def description

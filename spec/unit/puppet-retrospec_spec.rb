@@ -140,7 +140,7 @@ describe 'puppet-retrospec' do
         tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
         tomcat.post_init
         filepath = File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
-        tomcat.safe_create_module_files
+        tomcat.create_files
         expect(File.exist?(filepath)).to eq(true)
         expect(Dir.glob(File.expand_path(File.join(module_path, 'spec', 'acceptance', 'nodesets', '*.yml'))).length).to eq 15
       end
@@ -188,7 +188,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(module_path, 'spec', 'spec_helper.rb'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     path = tomcat.module_path
     expect(File.exist?(filepath)).to eq(true)
   end
@@ -197,7 +197,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(module_path, 'spec', 'shared_contexts.rb'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(true)
   end
 
@@ -205,7 +205,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(module_path, 'spec', 'shared_contexts.rb'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     path = tomcat.module_path
     expect(tomcat.context.all_hiera_data).to eq('tomcat::catalina_home' => nil,
                                                 'tomcat::user' => nil,
@@ -225,7 +225,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(path, 'spec', 'spec_helper_acceptance.rb'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(true)
   end
 
@@ -235,7 +235,7 @@ describe 'puppet-retrospec' do
     filepath = File.expand_path(File.join(path, 'spec', 'spec_helper_acceptance.rb'))
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(false)
   end
 
@@ -245,7 +245,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(@opts[:module_path], opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(path, 'spec', 'acceptance', 'nodesets', 'default.yml'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(true)
     expect(Dir.glob(File.expand_path(File.join(path, 'spec', 'acceptance', 'nodesets', '*.yml'))).length).to eq 15
   end
@@ -254,7 +254,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(module_path, 'Gemfile'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(true)
   end
 
@@ -262,7 +262,7 @@ describe 'puppet-retrospec' do
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
     filepath = File.expand_path(File.join(module_path, 'Rakefile'))
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(true)
   end
 
@@ -271,7 +271,7 @@ describe 'puppet-retrospec' do
     FileUtils.rm_f(filepath) # ensure we have a clean state
     tomcat = Retrospec::Plugins::V1::Puppet.new(module_path, global_opts)
     tomcat.post_init
-    tomcat.safe_create_module_files
+    tomcat.create_files
     expect(File.exist?(filepath)).to eq(true)
   end
 

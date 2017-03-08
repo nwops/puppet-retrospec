@@ -358,7 +358,7 @@ describe 'function_generator' do
         path = File.join(generator.module_path, 'spec', 'functions', 'abs_spec.rb')
         expect(generator.generate_spec_files).to eq([path])
         test_file_content = File.read(path)
-        result = "require 'spec_helper'\n\ndescribe 'abs' do\n  let(:x) do\n    'some_value_goes_here'\n  end\n  it { is_expected.to run.with_params(x).and_return('some_value') }\nend\n"
+        result = "require 'spec_helper'\ndescribe 'abs' do\n  let(:x) do\n    'some_value_goes_here'\n  end\n  it { is_expected.to run.with_params(x).and_return('some_value') }\nend\n"
         expect(test_file_content).to eq(result)
       end
 
