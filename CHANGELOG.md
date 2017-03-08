@@ -1,3 +1,5 @@
+## 1.3.1
+ * adds ability to sync files
 ## 1.3.0
  * fixes gh-68 - add ability to overwrite generated files
  * updates README

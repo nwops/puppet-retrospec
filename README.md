@@ -30,7 +30,6 @@ Table of Contents
     * [Creating a new function](#creating-a-new-function)
     * [Creating a new type](#creating-a-new-type)
     * [Creating a schema file](#creating-a-new-module-schema-file)
-  * [Dependency](#dependency)
   * [Enable Future Parser](#enabling-the-future-parser)
   * [Configuration](#configuration)
   * [Example](#example)
@@ -51,6 +50,9 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News
+### 3/7/17
+You can now sync files.  Any template file that contains a `.sync` in the file name will automatically
+be syncronized.  This is especially helpful for Gemfiles, Rakefiles and other static files that need to be updated.
 ### 2/1/17
 You can now choose to overwrite files!  This is very useful when updating old module code with newer content.
 See Usage below for how to enable.
@@ -224,10 +226,6 @@ cd testabc124
 retrospec puppet
 + /private/tmp/testabc124/testabc124_schema.yaml
 ```
-
-## Dependency
-Retrospec relies heavily on the puppet 3.7.x codebase.  Because of this hard dependency the puppet gem is vendored into the library so there should not be conflicts with your existing puppet gem.  
-
 
 ## Configuration
  Below is a list of options that you can set in the config file.  Setting these options will help cut down on passing parameters. (/Users/username/.retrospec/config.yaml)  `retrospec -h`

@@ -227,7 +227,7 @@ module Retrospec
 
       def dump_LambdaExpression o
         result = ["lambda"]
-        result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size() > 0
+        result << ["parameters"] + o.parameters.collect {|p| do_dump(p) } if o.parameters.size > 0
         if o.body
           result << do_dump(o.body)
         else

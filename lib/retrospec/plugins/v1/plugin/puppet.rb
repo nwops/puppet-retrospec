@@ -265,8 +265,8 @@ Generates puppet rspec test code and puppet module components.
 
         # this is the method that performs all the magic and creates all the files
         def create_files
-          filter = %r{nodesets|acceptance|spec_helper_acceptance} unless context.enable_beaker_tests?
-          safe_create_module_files(template_dir, module_path, context,filter)
+          filter = /nodesets|acceptance|spec_helper_acceptance/ unless context.enable_beaker_tests?
+          safe_create_module_files(template_dir, module_path, context, filter)
           fact(module_path, config_data)
           type_spec_files(module_path, config_data)
           provider_spec_files(module_path, config_data)
