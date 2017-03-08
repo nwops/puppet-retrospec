@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'awesome_print'
 gem 'facets'
-gem 'retrospec', '~> 0.5'
+gem 'retrospec', '~> 0.6'
 gem 'trollop'
 
 group :development do
