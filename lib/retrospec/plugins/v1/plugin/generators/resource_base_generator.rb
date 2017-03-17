@@ -55,7 +55,7 @@ module Retrospec
         end
 
         def self.manifest_files(module_path)
-          Dir.glob(File.join(module_path, 'manifests', '*.pp'))
+          Dir.glob(File.join(module_path, 'manifests', '**', '*.pp'))
         end
 
         def self.generate_spec_files(module_path, config_data)

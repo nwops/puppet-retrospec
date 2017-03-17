@@ -82,7 +82,8 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
 
   describe 'spec files' do
     let(:generated_files) do
-      [File.join(spec_files_path, 'one_define_spec.rb')]
+      [File.join(spec_files_path, 'one_define_spec.rb'),
+       File.join(spec_files_path, 'sub', 'settings_define_spec.rb')]
     end
     it 'should generate a bunch of files' do
       files = Retrospec::Puppet::Generators::DefinitionGenerator.generate_spec_files(module_path, generator_opts)

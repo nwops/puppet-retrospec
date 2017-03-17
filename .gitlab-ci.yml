@@ -9,6 +9,8 @@ image: ruby:2.1
 
 ruby193:
   stage: test
+  tags:
+    - ruby2.2
   script:
     - "bundle exec rake spec"
   image: ruby:1.9.3
@@ -16,24 +18,32 @@ ruby193:
 
 ruby2.0:
   stage: test
+  tags:
+    - ruby2.2
   script:
     - "bundle exec rake spec"
   image: ruby:2.0
 
 ruby2.1:
   stage: test
+  tags:
+    - ruby2.2
   script:
     - "bundle exec rake spec"
   image: ruby:2.1
 
 ruby2.2:
   stage: test
+  tags:
+    - ruby2.2
   script:
     - "bundle exec rake spec"
   image: ruby:2.2
 
 ruby2.3:
   stage: test
+  tags:
+    - ruby2.2
   script:
     - "bundle exec rake spec"
   image: ruby:2.3

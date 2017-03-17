@@ -1,3 +1,5 @@
+## 1.3.2
+ * Fixes gh-70 - Finding puppetfiles in nested folders
 ## 1.3.1
  * adds ability to sync files
 ## 1.3.0
