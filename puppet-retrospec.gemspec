@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Corey Osman"]
-  s.date = "2017-03-17"
+  s.date = "2017-04-17"
   s.description = "Retrofits and generates valid puppet rspec test code to existing modules"
   s.email = "corey@nwops.io"
   s.extra_rdoc_files = [
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = "2.4.5.1"
   s.summary = "Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns."
   s.add_runtime_dependency(%q<trollop>, [">= 0"])
-  s.add_runtime_dependency(%q<retrospec>, ["~> 0.6"])
+  s.add_runtime_dependency(%q<retrospec>, [">= 0.6.2"])
   s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
   s.add_runtime_dependency(%q<facets>, [">= 0"])
   s.add_development_dependency(%q<rdoc>, ["~> 3.12"])

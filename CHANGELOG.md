@@ -1,3 +1,6 @@
+## 1.4.0
+ * Fixes gh-67 - adds abiltity to auto generate data in a module
+ * Forces retrospec version 0.6.2 or greater
 ## 1.3.2
  * Fixes gh-70 - Finding puppetfiles in nested folders
 ## 1.3.1

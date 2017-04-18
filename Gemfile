@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'awesome_print'
 gem 'facets'
-gem 'retrospec', '~> 0.6'
+gem 'retrospec', '>= 0.6.1'
 gem 'trollop'
 
 group :development do
@@ -20,4 +20,5 @@ group :test do
   gem 'rspec', '~> 3.2'
   gem 'rubocop'
   gem 'yard', '~> 0.7'
+  gem 'puppet-retrospec', :path => './'
 end

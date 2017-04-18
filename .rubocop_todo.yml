@@ -5,7 +5,8 @@
 # one by one as the offenses are removed from the code base.
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
-
+Bundler/OrderedGems:
+  Enabled: false
 Style/MultilineIfModifier:
   Exclude:
     - 'lib/retrospec/plugins/v1/plugin/generators/serializers/rspec_dumper_full.rb'
@@ -159,6 +160,7 @@ Style/AccessorMethodName:
     - 'lib/retrospec/plugins/v1/plugin/generators/parsers/function.rb'
     - 'lib/retrospec/plugins/v1/plugin/generators/parsers/type.rb'
     - 'lib/retrospec/plugins/v1/plugin/helpers.rb'
+    - 'lib/retrospec/plugins/v1/plugin/generators/base_generator.rb'
 
 # Offense count: 14
 # Cop supports --auto-correct.

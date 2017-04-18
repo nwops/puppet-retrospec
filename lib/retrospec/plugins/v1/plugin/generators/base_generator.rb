@@ -85,6 +85,10 @@ module Retrospec
             File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', plural_name))
           end
         end
+
+        def get_binding
+          binding
+        end
       end
     end
   end

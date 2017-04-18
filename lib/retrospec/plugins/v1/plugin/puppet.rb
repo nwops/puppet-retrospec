@@ -92,7 +92,7 @@ module Retrospec
           scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = %w(new_module new_fact new_type new_provider new_function new_report)
+          sub_commands  = %w(new_module new_fact new_type new_provider new_function new_report module_data)
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n  #{sub_commands.join("\n  ")}\n"
           else
@@ -163,6 +163,12 @@ Generates puppet rspec test code and puppet module components.
             exit 1
           end
           plugin_data
+        end
+
+        def module_data(module_path, config, args=[])
+          plugin_data = Retrospec::Puppet::Generators::ModuleDataGenerator.run_cli(config, args)
+          p = Retrospec::Puppet::Generators::ModuleDataGenerator.new(module_path, plugin_data)
+          p.run
         end
 
         def new_report(module_path, config, args=[])

@@ -50,6 +50,16 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News
+### 4/20/17
+With all the changes in hiera recently and the ability to provide data in puppet modules.  I thought it would be a good 
+time to create a generator for retrospec to create hiera backends and data in module scaffolding. With the 1.6.0 release
+you are now a simple step away to retrofitting data into your module.
+
+Just run `retrospec puppet module_data` to auto create the scaffolding. 
+
+Note: You must be using puppet 4.7+ (PE 2016.4.x) to actually use data in a module, but there is nothing stopping
+you from creating the scaffolding.
+
 ### 3/7/17
 You can now sync files.  Any template file that contains a `.sync` in the file name will automatically
 be syncronized.  This is especially helpful for Gemfiles, Rakefiles and other static files that need to be updated.

@@ -12,9 +12,9 @@ module Retrospec
           # below is the Spec Object which serves as a context for template rendering
           # you will need to initialize this object, so the erb templates can get the binding
           # the SpecObject can be customized to your liking as its different for every plugin gem.
-          @context = OpenStruct.new(:name => spec_object[:name], :return_type => spec_object[:return_type],
+          @context = OpenStruct.new({ :name => spec_object[:name], :return_type => spec_object[:return_type],
                                     :function_type => spec_object[:type],
-                                    :test_type => spec_object[:test_type])
+                                    :test_type => spec_object[:test_type] }.merge(spec_object))
         end
 
         # Puppet currently has two versions of functions (v3, v4).  At the time of writing v4 is still new
@@ -111,7 +111,7 @@ Generates a new function with the given name.
 
         # returns the name of the function
         def function_name
-          context.name
+          context.name.gsub('::', '_')
         end
 
         def function_file_path
@@ -119,8 +119,9 @@ Generates a new function with the given name.
         end
 
         # generates the function file based on the template and context
-        def generate_function_file
-          safe_create_template_file(function_path, function_file_path, context)
+        def generate_function_file(template = nil)
+          template ||= function_file_path
+          safe_create_template_file(function_path, template, context)
           function_path
         end
 
