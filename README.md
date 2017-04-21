@@ -60,6 +60,8 @@ Just run `retrospec puppet module_data` to auto create the scaffolding.
 Note: You must be using puppet 4.7+ (PE 2016.4.x) to actually use data in a module, but there is nothing stopping
 you from creating the scaffolding.
 
+Note: If you are using puppet 4.7-4.8 you will need to add `data_provider: "hiera"` in your module's metadata.json file.
+
 ### 3/7/17
 You can now sync files.  Any template file that contains a `.sync` in the file name will automatically
 be syncronized.  This is especially helpful for Gemfiles, Rakefiles and other static files that need to be updated.
