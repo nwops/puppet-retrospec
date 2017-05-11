@@ -3,11 +3,25 @@ require 'spec_helper'
 describe 'ModuleDataGenerator' do
   let(:cli_opts) do
     cli_opts = Retrospec::Puppet::Generators::ModuleDataGenerator.run_cli(context, opts)
+    cli_opts[:puppet_context] = puppet_context
+    cli_opts
   end
 
   let(:context) do
     { :module_path => module_path,
       :template_dir => retrospec_templates_path }
+  end
+
+  let(:puppet_context) do
+    # before we validate the module directory we should ensure the module exists by creating it
+    # validation also occurs when setting the module path
+    # these are required because the puppet module creates a singleton with some cached values
+    Utilities::PuppetModule.instance.module_dir_name = File.basename(module_path)
+    Utilities::PuppetModule.instance.module_name = File.basename(module_path)
+    Utilities::PuppetModule.instance.module_path = module_path
+    Utilities::PuppetModule.create_tmp_module_path # this is required to finish initialization
+    # setting the context is required to make other methods below work.  #TODO lazy create the context
+    ::Retrospec::Puppet::SpecObject.new(module_path, Utilities::PuppetModule.instance, context)
   end
 
   let(:module_path) do
@@ -38,7 +52,16 @@ describe 'ModuleDataGenerator' do
       generator.run
       expect(File.exist?(File.join(module_path, 'data'))).to eq(true)
       expect(File.exist?(File.join(module_path, 'functions'))).to eq(false)
-      expect(File.exist?(File.join(module_path, 'data', 'os'))).to eq(true)
+      expect(File.exist?(File.join(module_path, 'data', 'common.yaml'))).to eq(true)
+      expect(File.exist?(File.join(module_path, 'hiera.yaml'))).to eq(true)
+    end
+
+    it 'works with hiera data' do
+      generator.run
+      output = File.read(File.join(module_path, 'data', 'common.yaml'))
+      expect(output).to match(/tomcat/)
+      expect(File.exist?(File.join(module_path, 'data'))).to eq(true)
+      expect(File.exist?(File.join(module_path, 'functions'))).to eq(false)
       expect(File.exist?(File.join(module_path, 'data', 'common.yaml'))).to eq(true)
       expect(File.exist?(File.join(module_path, 'hiera.yaml'))).to eq(true)
     end

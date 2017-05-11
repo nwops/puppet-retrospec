@@ -50,6 +50,10 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News
+### 5/10/17
+Adds ability to create module data.  With the release of puppet 4.9 we can now use module data.  
+Use the module_data generater to auto setup module data in your puppet module.  `retrospec puppet module_data`
+
 ### 4/20/17
 With all the changes in hiera recently and the ability to provide data in puppet modules.  I thought it would be a good 
 time to create a generator for retrospec to create hiera backends and data in module scaffolding. With the 1.6.0 release

@@ -167,6 +167,7 @@ Generates puppet rspec test code and puppet module components.
 
         def module_data(module_path, config, args=[])
           plugin_data = Retrospec::Puppet::Generators::ModuleDataGenerator.run_cli(config, args)
+          plugin_data[:puppet_context] = context
           p = Retrospec::Puppet::Generators::ModuleDataGenerator.new(module_path, plugin_data)
           p.run
         end

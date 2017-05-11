@@ -1,3 +1,5 @@
+## 1.4.1
+ * Adds real module data to common.yaml
 ## 1.4.0
  * Fixes gh-67 - adds abiltity to auto generate data in a module
  * Forces retrospec version 0.6.2 or greater
