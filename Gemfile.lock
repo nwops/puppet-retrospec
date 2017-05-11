@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    puppet-retrospec (1.4.0)
+    puppet-retrospec (1.4.1)
       awesome_print
       facets
       retrospec (>= 0.6.2)
