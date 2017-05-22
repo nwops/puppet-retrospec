@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Retrospec::Puppet::Generators::DefinitionGenerator do
-  after(:each) do
-    FileUtils.rm(spec_file) if File.exist?(spec_file)
+  before(:each) do
+    FileUtils.rm_rf(spec_files_path) if File.exist?(spec_files_path)
   end
 
   let(:generator_opts) do
@@ -83,11 +83,11 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
   describe 'spec files' do
     let(:generated_files) do
       [File.join(spec_files_path, 'one_define_spec.rb'),
-       File.join(spec_files_path, 'sub', 'settings_define_spec.rb')]
+       File.join(spec_files_path, 'sub', 'settings_define_spec.rb')].sort
     end
     it 'should generate a bunch of files' do
       files = Retrospec::Puppet::Generators::DefinitionGenerator.generate_spec_files(module_path, generator_opts)
-      expect(files).to eq(generated_files)
+      expect(files.sort).to eq(generated_files)
     end
   end
 end
