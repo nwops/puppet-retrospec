@@ -18,8 +18,14 @@ describe 'package' do
 
   describe 'single parameter' do
     it 'should create test case' do
-      output = "\n\n  it do\n    is_expected.to contain_package(\"httpd\")\n      .with({\n        \"ensure\" => \"installed\",\n        })\n  end\n  "
-      expect(dumper.dump(ast_obj.body.body)).to eq(output)
+      output = %r{
+        \n\n\s+it\sdo
+        \n\s+is_expected.to\scontain_package\('httpd'\).with\(
+          \n\s+ensure:\s'installed',
+        \n\s+\)
+        \n\s+end
+        }x
+      expect(dumper.dump(ast_obj.body.body)).to match(output)
     end
   end
 
@@ -33,8 +39,15 @@ describe 'package' do
       EOF
     end
     it 'should create test case' do
-      output = "\n\n  it do\n    is_expected.to contain_package(\"httpd\")\n      .with({\n        \"ensure\" => \"installed\",\n        \"require\" => \"File[/tmp/test]\",\n        })\n  end\n  "
-      expect(dumper.dump(ast_obj.body.body)).to eq(output)
+      output = %r{
+        \n\n\s+it\sdo
+        \n\s+is_expected.to\scontain_package\('httpd'\).with\(
+          \n\s+ensure:\s'installed',
+          \n\s+require:\s'File\[/tmp/test\]',
+        \n\s+\)
+        \n\s+end
+        }x
+      expect(dumper.dump(ast_obj.body.body)).to match(output)
     end
   end
 
@@ -49,8 +62,15 @@ describe 'package' do
       EOF
     end
     it 'should create test case' do
-      output = "\n\n  it do\n    is_expected.to contain_file(\"/tmp/test\")\n      .with({\n        \"ensure\" => \"present\",\n        \"content\" => \"GREYLIST_DSN = hello\\n\",\n        })\n  end\n  "
-      expect(dumper.dump(ast_obj.body.body)).to eq(output)
+      output = %r{
+        \n\n\s+it\sdo
+        \n\s+is_expected.to\scontain_file\('/tmp/test'\).with\(
+          \n\s+ensure:\s'present',
+          \n\s+content:\s'GREYLIST_DSN\s=\shello\\n',
+        \n\s+\)
+        \n\s+end
+        }x
+      expect(dumper.dump(ast_obj.body.body)).to match(output)
     end
 
 

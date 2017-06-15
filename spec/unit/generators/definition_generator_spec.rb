@@ -66,17 +66,17 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
   end
 
   it 'should have resources' do
-    resources = ["\n  it do\n    is_expected.to contain_notify(\"hello\")\n  end\n  "]
+    resources = ["\n  it do\n    is_expected.to contain_notify('hello')\n  end  "]
     expect(context.resources).to eq(resources)
   end
 
   describe 'content' do
     let(:data) do
-      /contain_notify\("hello"\)/
+      /contain_notify\('hello'\)/
     end
     it 'should generate the content' do
       expect(spec_file_contents).to match(data)
-      expect(spec_file_contents).to match(/#:one => "one_value",/)
+      expect(spec_file_contents).to match(/# one: "one_value",/)
     end
   end
 
