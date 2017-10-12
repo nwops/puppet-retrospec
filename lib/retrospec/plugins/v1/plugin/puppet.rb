@@ -92,7 +92,7 @@ module Retrospec
           scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
-          sub_commands  = %w(new_module new_fact new_type new_provider new_function new_report module_data)
+          sub_commands  = %w(new_module new_task new_fact new_type new_provider new_function new_report module_data)
           if sub_commands.count > 0
             sub_command_help = "Subcommands:\n  #{sub_commands.join("\n  ")}\n"
           else
@@ -106,7 +106,6 @@ Generates puppet rspec test code and puppet module components.
 #{sub_command_help}
 
             EOS
-
             opt :template_dir, 'Path to templates directory (only for overriding Retrospec templates)', :type => :string,
             :required => false, :default => template_dir
             opt :scm_url, 'SCM url for retrospec templates', :type => :string, :required => false,
@@ -135,6 +134,8 @@ Generates puppet rspec test code and puppet module components.
                 plugin.new_type(plugin_data, args)
               when :new_function
                 plugin.new_function(plugin_data, args)
+              when :new_task
+                plugin.new_task(plugin_data, args)
               when :new_fact
                 plugin.new_fact(plugin_data, args)
               when :new_provider
@@ -163,6 +164,14 @@ Generates puppet rspec test code and puppet module components.
             exit 1
           end
           plugin_data
+        end
+
+        def new_task(config, args)
+          plugin_data = Retrospec::Puppet::Generators::TaskGenerator.run_cli(config, args)
+          plugin_data[:puppet_context] = context
+          t = Retrospec::Puppet::Generators::TaskGenerator.new(plugin_data[:module_path], plugin_data)
+          t.run
+          post_init
         end
 
         def module_data(module_path, config, args=[])

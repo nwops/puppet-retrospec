@@ -1,3 +1,5 @@
+## Unreleased
+ * Adds ability to generate bolt tasks for puppet modules
 ## 1.4.1
  * Adds real module data to common.yaml
 ## 1.4.0
