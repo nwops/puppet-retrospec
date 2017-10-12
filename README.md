@@ -50,6 +50,14 @@ TOC Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 [![Gem Version](https://badge.fury.io/rb/puppet-retrospec.svg)](http://badge.fury.io/rb/puppet-retrospec)
 
 ## News
+### 10/11/17
+Adds the ability to generate puppet bolt tasks, parameters with some predefined language types
+
+`retrospec puppet new_task -n reboot -t bash -p "name, count, amount"`
+
+Generates the parameters file and task file.
+
+
 ### 5/10/17
 Adds ability to create module data.  With the release of puppet 4.9 we can now use module data.  
 Use the module_data generater to auto setup module data in your puppet module.  `retrospec puppet module_data`

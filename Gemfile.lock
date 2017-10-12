@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    puppet-retrospec (1.4.1)
+    puppet-retrospec (1.5.0)
       awesome_print
       facets
       retrospec (>= 0.6.2)
@@ -98,4 +98,4 @@ DEPENDENCIES
   yard (~> 0.7)
 
 BUNDLED WITH
-   1.14.6
+   1.15.4
