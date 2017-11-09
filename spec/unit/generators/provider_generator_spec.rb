@@ -100,12 +100,12 @@ describe 'provider_generator' do
     end
   end
   describe 'existing type' do
-    describe 'package' do
+    describe 'exec' do
       let(:type_name) do
-        'package'
+        'exec'
       end
       let(:provider_name) do
-        'ibm_pkg'
+        'shell'
       end
 
       it 'can generate a spec file' do
