@@ -8,17 +8,13 @@ PATH
       trollop
 
 PATH
-  remote: vendor/gems/puppet-4.5.2
+  remote: vendor/pup410
   specs:
-    puppet (4.5.2)
-      facter (> 2.0, < 4)
-      hiera (>= 2.0, < 4)
-      json_pure
+    puppet (4.10.8)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    CFPropertyList (2.2.8)
     ast (2.3.0)
     awesome_print (1.7.0)
     childprocess (0.5.9)
@@ -27,10 +23,8 @@ GEM
     diff-lcs (1.2.5)
     facets (3.1.0)
     facter (2.4.6)
-      CFPropertyList (~> 2.2.6)
     fakefs (0.9.1)
     ffi (1.9.18)
-    hiera (3.2.1)
     iniparse (1.4.2)
     json (1.8.3)
     json_pure (2.0.1)
@@ -83,11 +77,12 @@ DEPENDENCIES
   awesome_print
   bundler (~> 1.0)
   facets
+  facter
   fakefs
   json_pure (= 2.0.1)
   overcommit
   pry
-  puppet (= 4.5.2)!
+  puppet (= 4.10.8)!
   puppet-retrospec!
   rake
   rdoc (~> 3.12)

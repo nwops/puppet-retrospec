@@ -1,5 +1,10 @@
+# Retrospec Puppet Release Notes
+
 ## Unreleased
  * Fixes #77 - class requirements is not coded correctly
+ * Fixes #75 - pdk cannot include retrospec due to character limit
+ * Fixes #80 - update vendored puppet gem to v4.10.x
+
 ## 1.5.0
  * Adds ability to generate bolt tasks for puppet modules
 ## 1.4.1
