@@ -226,13 +226,17 @@ module Retrospec
         if relationship.respond_to?(:left_expr)
           if relationship.left_expr.object_id == id
             type_name = dump(relationship.right_expr.type_name).capitalize
-            titles = relationship.right_expr.bodies.map{|b| dump(b.title)}
-            result << ['"that_comes_before"', '=>', "'#{type_name}#{titles}',".gsub("\"", '') ]
+            result += relationship.right_expr.bodies.map do |b|
+              title = dump(b.title)
+              [:break,".that_comes_before('#{type_name}[#{title}]')"]
+            end.flatten
           else
             if relationship.left_expr.respond_to?(:type_name)
               type_name = dump(relationship.left_expr.type_name).capitalize
-              titles = relationship.left_expr.bodies.map{|b| dump(b.title)}
-              result << ['"that_requires"', '=>', "'#{type_name}#{titles}',".gsub("\"", '')]
+              result += relationship.left_expr.bodies.map do |b|
+                title = dump(b.title)
+                [:break, ".that_requires('#{type_name}[#{title}]')"]
+              end.flatten
             end
           end
         end
@@ -246,16 +250,16 @@ module Retrospec
         result = ['  ', :indent, :it, :do, :indent, "is_expected.to contain_#{type_name}(#{title})"]
         # this determies if we should use the with() or not
         if o.operations.count > 0
-          result << [ :indent, :break,'.with({', :indent, :break]
+          result << [ :break,'.with({', :indent, :break]
           o.operations.each do |p|
             result << do_dump(p) << :break
           end
           #result.pop  # remove last line break which is easier than using conditional in loop
+          result << [:dedent, '})']
           unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
             result << dump_Resource_Relationship(o)
           end
-          result << [:dedent, :dedent, '})', :dedent, :indent]
-          result << [:dedent,:end, :break]
+          result << [:dedent, :indent, :dedent,:end, :break]
           result << [:dedent]
         else
           result << [:dedent,:dedent, :break,'end',:dedent, :break, '  ']

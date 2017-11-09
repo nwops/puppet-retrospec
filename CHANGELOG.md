@@ -1,3 +1,5 @@
+## Unreleased
+ * Fixes #77 - class requirements is not coded correctly
 ## 1.5.0
  * Adds ability to generate bolt tasks for puppet modules
 ## 1.4.1

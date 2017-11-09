@@ -222,8 +222,8 @@ describe 'rspec_serializer' do
 
     it 'relationship_exp' do
       output = serializer.dump(relationship_exp)
-      expect(output).to include("\"that_comes_before\" => 'Sql::backup[MSSQLSERVER]'")
-      expect(output).to include("\"that_requires\" => 'Class[sql::install]'")
+      expect(output).to include(".that_comes_before('Sql::backup[MSSQLSERVER]')")
+      expect(output).to include(".that_requires('Class[sql::install]')")
     end
 
     it 'should contain correct variables' do
