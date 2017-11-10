@@ -10,7 +10,7 @@ image: ruby:2.1
 ruby193:
   stage: test
   tags:
-    - ruby2.2
+    - ruby
   script:
     - "bundle exec rake spec"
   image: ruby:1.9.3
@@ -19,7 +19,7 @@ ruby193:
 ruby2.0:
   stage: test
   tags:
-    - ruby2.2
+    - ruby
   script:
     - "bundle exec rake spec"
   image: ruby:2.0
@@ -27,7 +27,7 @@ ruby2.0:
 ruby2.1:
   stage: test
   tags:
-    - ruby2.2
+    - ruby
   script:
     - "bundle exec rake spec"
   image: ruby:2.1
@@ -35,7 +35,7 @@ ruby2.1:
 ruby2.2:
   stage: test
   tags:
-    - ruby2.2
+    - ruby
   script:
     - "bundle exec rake spec"
   image: ruby:2.2
@@ -43,7 +43,7 @@ ruby2.2:
 ruby2.3:
   stage: test
   tags:
-    - ruby2.2
+    - ruby
   script:
     - "bundle exec rake spec"
   image: ruby:2.3
@@ -60,7 +60,7 @@ rubocop_ruby:
   only:
     - branches
   tags:
-    - ruby2.2
+    - ruby
   script:
     - bundle install
     - bundle exec rubocop -D
@@ -69,7 +69,7 @@ bump_and_tag:
   type: release
   when: manual
   tags:
-    - ruby2.2
+    - ruby
   only:
     - master@nwops/puppet-retrospec
   script:
@@ -78,7 +78,7 @@ bump_and_tag:
 
 production:
   tags:
-    - ruby2.2
+    - ruby
   before_script:
     - gem install dpl
   type: deploy
