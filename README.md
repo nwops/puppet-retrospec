@@ -518,7 +518,8 @@ There may be a time when you want to override the default templates used to gene
 
 ### Environment variables to set template defaults
 RETROSPEC_PUPPET_SCM_URL  # set this to auto set your scm url to the templates
-RETROSPEC_PUPPET_SCM_BRANCH # set this to auto checkout a particular branch (only works upon initial checkout)
+RETROSPEC_PUPPET_SCM_REF (from version 1.6.0)  # set this to auto checkout a particular branch (only works upon initial checkout)
+RETROSPEC_PUPPET_SCM_BRANCH :same as RETROSPEC_PUPPET_SCM_REF. Use this in version before 1.6.0. As of this version, RETROSPEC_PUPPET_SCM_REF takes precedence.
 
 After running retrospec, retrospec will clone the templates from the default template url or from whatever you set to the templates path.  If you have already created the erb file in the templates location, then retrospec will not overwrite the file as there will be a SCM conflict. You can use multiple template paths if you use them for different projects so just be sure the set the correct template option when running retrospec.  `retrospec -t`
 

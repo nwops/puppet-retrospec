@@ -89,7 +89,9 @@ module Retrospec
         def self.run_cli(global_opts, global_config, plugin_config, args=ARGV)
           template_dir = ENV['RETROSPEC_TEMPLATES_DIR'] || plugin_config['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
           scm_url = ENV['RETROSPEC_PUPPET_SCM_URL'] || plugin_config['plugins::puppet::templates::url']
-          scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
+          #scm_branch = ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
+          # TODO next major release - remove the RETROSPEC_PUPPET_SCM_BRANCH as env setting
+          scm_ref = ENV['RETROSPEC_PUPPET_SCM_REF'] || ENV['RETROSPEC_PUPPET_SCM_BRANCH'] || plugin_config['plugins::puppet::templates::ref'] || 'master'
           beaker_tests  = plugin_config['plugins::puppet::enable_beaker_tests'] || false
           # a list of subcommands for this plugin
           sub_commands  = %w(new_module new_task new_fact new_type new_provider new_function new_report module_data)
@@ -110,8 +112,8 @@ Generates puppet rspec test code and puppet module components.
             :required => false, :default => template_dir
             opt :scm_url, 'SCM url for retrospec templates', :type => :string, :required => false,
             :default => scm_url
-            opt :branch, 'Branch you want to use for the retrospec template repo', :type => :string, :required => false,
-            :default => scm_branch
+            opt :ref, 'Branch you want to use for the retrospec template repo', :type => :string, :required => false,
+            :default => scm_ref
             opt :enable_beaker_tests, 'Enable the creation of beaker tests', :require => false, :type => :boolean, :default => beaker_tests
             stop_on sub_commands
           end
