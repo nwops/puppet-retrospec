@@ -5,13 +5,13 @@ module Retrospec
     module Generators
       class TaskGenerator < Retrospec::Puppet::Generators::BaseGenerator
         EXT_TYPES = {
-            'ruby' => 'rb',
-            'generic' => 'generic',
-            'python' => 'py',
-            'powershell' => 'ps1',
-            'bash' => 'sh',
-            'node' => 'js'
-        }
+          'ruby' => 'rb',
+          'generic' => 'generic',
+          'python' => 'py',
+          'powershell' => 'ps1',
+          'bash' => 'sh',
+          'node' => 'js'
+        }.freeze
 
         # retrospec will initilalize this class so its up to you
         # to set any additional variables you need to get the job done.
@@ -26,14 +26,14 @@ module Retrospec
         end
 
         def task_params
-          config_data[:task_params].gsub(/\s/, '').split(",")
+          config_data[:task_params].gsub(/\s/, '').split(',')
         end
 
         def task_params_output
           params = {}
           task_params.each_with_object({}) do |item, obj|
-            obj["description"] = "The description of the #{item} parameter"
-            obj["type"] = "String"
+            obj['description'] = "The description of the #{item} parameter"
+            obj['type'] = 'String'
             params[item] = obj
           end
           params
@@ -76,10 +76,9 @@ module Retrospec
           unless task_template
             task_template = Dir.glob(File.join(template_dir, 'types', 'task.retrospec.erb')).first
           end
-          files = []
-          files << safe_create_template_file(task_filepath, task_template, context)
-          files << safe_create_template_file(task_params_filepath, parameter_template, context)
-          files
+          safe_create_template_file(task_filepath, task_template, context)
+          safe_create_template_file(task_params_filepath, parameter_template, context)
+          [task_filepath, task_params_filepath]
         end
 
         # used to display subcommand options to the cli
@@ -87,7 +86,7 @@ module Retrospec
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into config object
         # returns the parameters
-        def self.run_cli(global_opts, args=ARGV)
+        def self.run_cli(global_opts, args = ARGV)
           task_types = %w(bash generic ruby python node powershell)
           task_type  = global_opts['plugins::puppet::default_task_type'] || 'bash'
           sub_command_opts = Trollop.options(args) do
@@ -97,11 +96,10 @@ Creates a new puppet bolt task for your module
 Example: retrospec puppet new_task -n reboot -p "name, ttl, message"
 
             EOS
-            opt :name, "The name of the task you wish to create", :type => :string, :required => true, :short => '-n'
-            opt :task_params, "The task parameter names separated by commas", :short => '-p', :type => :string, :required => false, default: "name"
+            opt :name, 'The name of the task you wish to create', :type => :string, :required => true, :short => '-n'
+            opt :task_params, 'The task parameter names separated by commas', :short => '-p', :type => :string, :required => false, default: 'name'
             opt :task_type, "The task type of the task (#{task_types.join(', ')})", :type => :string, :required => false, :short => '-t',
-                :default => task_type
-
+                                                                                    :default => task_type
           end
           unless sub_command_opts[:name]
             Trollop.educate
