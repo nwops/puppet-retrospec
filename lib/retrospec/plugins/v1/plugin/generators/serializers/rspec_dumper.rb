@@ -26,6 +26,32 @@ module Retrospec
         @logger
       end
 
+      # wraps Puppet::Pops::Model::TreeDumper.do_dump to return ruby 1.9 hash syntax 
+      # instead of the older < 1.9 syntax
+      #
+      # == Parameters:
+      # d::
+      #   A puppet object to dump
+      #
+      # == Return:
+      #   An array of representing the puppet object in ruby syntax
+      #
+      def dump_transform(d)
+        # This is a bit messy, ideally need to send a patch upstream to puppet
+        # https://github.com/puppetlabs/puppet/blob/master/lib/puppet/pops/visitor.rb#L34
+        # The value we get back from puppet do_dump command dumps ruby hashs using the old 
+        # ruby syntax e.g. { "key" => "value" }.  this function munges the output to use
+        # the new format e.g. { key: 'value' } 
+        dump = do_dump(d)
+        if dump.kind_of?(Array) and dump[1] == :"=>"
+          key = dump[0].tr('"','')
+          value = dump[-1].tr('"','\'')
+          [ "#{key}:", value ]
+        else
+          dump
+        end
+      end
+
       def lookup_var(key)
         # if exists, return value
         # if it doesn't exist, store and return key
@@ -79,7 +105,7 @@ module Retrospec
       end
 
       def dump_Array o
-        o.collect {|e| do_dump(e) }
+        o.collect {|e| dump_transform(e) }
       end
 
       def indent
@@ -109,7 +135,11 @@ module Retrospec
         when :indent
           @indent_count += 1
         when :dedent
-          @indent_count -= 1
+          if @indent_count == 0
+            logger.warn('tried dedent when indent_count is already 0')
+          else
+            @indent_count -= 1
+          end
         when :do
           result << format_r([' ', x.to_s, :indent, :break])
         when :indent_end
@@ -133,13 +163,13 @@ module Retrospec
         result << ['let(:title)', :do, 'XXreplace_meXX'.inspect, :break, :end]
         result << [:dedent, :break]
         result << [:indent, :break,'let(:params)', :do, '{', :break]
-        result << o.parameters.collect {|k| do_dump(k)}
+        result << o.parameters.collect {|k| dump_transform(k)}
         result << ['}', :end]
         # result << ["inherits", o.parent_class] if o.parent_class
         # we need to process the body so that we can relize which facts are used
         body_result = []
         if o.body
-          body_result << [:break, do_dump(o.body)]
+          body_result << [:break, dump_transform(o.body)]
         else
           body_result << []
         end
@@ -161,7 +191,7 @@ module Retrospec
       def dump_top_scope_vars
         result = []
         top_scope_vars.sort.each do |k, v|
-          result << ['  ',k.gsub('$::', '').inspect, '=>',v[:value].inspect + ',', :break ]
+          result << ['  ',k.gsub('$::', ''), ':' ,v[:value].inspect + ',', :break ]
         end
         result
       end
@@ -169,13 +199,13 @@ module Retrospec
       def dump_HostClassDefinition o
         result = ["describe #{o.name.inspect}", :do]
         result << ['let(:params)', :do, '{', :break]
-        result << o.parameters.collect {|k| do_dump(k)}
+        result << o.parameters.collect {|k| dump_transform(k)}
         result << ['}', :end]
         # result << ["inherits", o.parent_class] if o.parent_class
         # we need to process the body so that we can relize which facts are used
         body_result = []
         if o.body
-          body_result << [do_dump(o.body)]
+          body_result << [dump_transform(o.body)]
         else
           body_result << []
         end
@@ -191,9 +221,9 @@ module Retrospec
       def dump_Parameter o
         name_prefix = o.captures_rest ? '*' : ''
         name_part = "#{name_prefix}#{o.name}"
-        data_type = do_dump(do_dump(o.value)).first || do_dump(o.type_expr)
+        data_type = dump_transform(dump_transform(o.value)).first || dump_transform(o.type_expr)
         # records what is most likely a variable of some time and its value
-        variable_value = do_dump(o.value)
+        variable_value = dump_transform(o.value)
         # need a case for Puppet::Pops::Model::LambdaExpression
         if o.eContainer.class == ::Puppet::Pops::Model::LambdaExpression
           add_var_to_store("#{name_part}", variable_value, false, :lambda_scope)
@@ -211,9 +241,9 @@ module Retrospec
           value = {:type => data_type, :name => name_part, :default_value => '', :required => true}
         end
         if value[:required]
-          ['  ', "#{value[:name].to_sym.inspect}", '=>', 'nil,', :break]
+          ['  ', "#{value[:name]}:", 'nil,', :break]
         else
-          ['  ', "##{value[:name].to_sym.inspect}", '=>', value[:default_value].inspect + ',', :break]
+          ['  ', "# #{value[:name]}:", value[:default_value].inspect + ',', :break]
         end
       end
 
@@ -244,25 +274,27 @@ module Retrospec
       end
 
       def dump_ResourceBody o
-        type_name = do_dump(o.eContainer.type_name).gsub('::', '__')
-        title = do_dump(o.title).inspect
+        type_name = dump_transform(o.eContainer.type_name).gsub('::', '__')
+        title = dump_transform(o.title).inspect
         #TODO remove the :: from the front of the title if exists
-        result = ['  ', :indent, :it, :do, :indent, "is_expected.to contain_#{type_name}(#{title})"]
+        result = ['  ', :indent, :it, :do, :indent, "is_expected.to contain_#{type_name}(#{title})".tr('"','\'')]
         # this determies if we should use the with() or not
         if o.operations.count > 0
-          result << [ :break,'.with({', :indent, :break]
+          result[-1] += '.with('
+          result << [:break]
           o.operations.each do |p|
-            result << do_dump(p) << :break
+            # this is a bit of a hack but the correct fix is to patch puppet
+            result << dump_transform(p) << :break
           end
-          #result.pop  # remove last line break which is easier than using conditional in loop
-          result << [:dedent, '})']
+          result.pop  # remove last line break which is easier than using conditional in loop
           unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
             result << dump_Resource_Relationship(o)
           end
-          result << [:dedent, :indent, :dedent,:end, :break]
+          result << [:dedent, :break, ')']
+          result << [:end]
           result << [:dedent]
         else
-          result << [:dedent,:dedent, :break,'end',:dedent, :break, '  ']
+          result << [:dedent,:dedent, :break,'end',:dedent, '  ']
         end
         result
       end
@@ -274,12 +306,12 @@ module Retrospec
 
       # Interpolated strings are shown as (cat seg0 seg1 ... segN)
       def dump_ConcatenatedString o
-        o.segments.collect {|x| do_dump(x)}.join
+        o.segments.collect {|x| dump_transform(x)}.join
       end
 
       # Interpolation (to string) shown as (str expr)
       def dump_TextExpression o
-        [do_dump(o.expr)]
+        [dump_transform(o.expr)]
       end
 
       # outputs the value of the variable
@@ -318,13 +350,13 @@ module Retrospec
           end
           result
         else
-          [o.operator.to_s, do_dump(o.left_expr), do_dump(o.right_expr)]
+          [o.operator.to_s, dump_transform(o.left_expr), dump_transform(o.right_expr)]
         end
       end
 
       def dump_BlockExpression o
         result = [:break]
-        o.statements.each {|x| result << do_dump(x) }
+        o.statements.each {|x| result << dump_transform(x) }
         result
       end
 
@@ -332,7 +364,7 @@ module Retrospec
       def dump_ResourceExpression o
         result = []
         o.bodies.each do |b|
-          result << :break << do_dump(b)
+          result << :break << dump_transform(b)
         end
         result
       end
@@ -340,19 +372,19 @@ module Retrospec
       # defines the resource expression and outputs -> when used
       # this would be the place to insert relationsip matchers
       def dump_RelationshipExpression o
-        [do_dump(o.left_expr), do_dump(o.right_expr)]
+        [dump_transform(o.left_expr), dump_transform(o.right_expr)]
       end
 
       # Produces (name => expr) or (name +> expr)
       def dump_AttributeOperation o
         key = o.attribute_name
-        value = do_dump(o.value_expr) || nil
+        value = dump_transform(o.value_expr) || nil
         [key.inspect, o.operator, value.inspect + ',']
       end
 
       # x[y] prints as (slice x y)
       def dump_AccessExpression o
-        "#{do_dump(o.left_expr).capitalize}" + do_dump(o.keys).to_s.gsub("\"",'')
+        "#{dump_transform(o.left_expr).capitalize}" + dump_transform(o.keys).to_s.gsub("\"",'')
       end
 
       def dump_LiteralFloat o
@@ -377,11 +409,11 @@ module Retrospec
       end
 
       def dump_LiteralList o
-        o.values.collect {|x| do_dump(x)}
+        o.values.collect {|x| dump_transform(x)}
       end
 
       def dump_LiteralHash o
-        data = o.entries.collect {|x| do_dump(x)}
+        data = o.entries.collect {|x| dump_transform(x)}
         Hash[*data.flatten]
       end
 
@@ -414,11 +446,11 @@ module Retrospec
       end
 
       def dump_CapabilityMapping o
-        [o.kind, do_dump(o.component), o.capability, do_dump(o.mappings)]
+        [o.kind, dump_transform(o.component), o.capability, dump_transform(o.mappings)]
       end
 
       def dump_ParenthesizedExpression o
-        do_dump(o.expr)
+        dump_transform(o.expr)
       end
 
       # Hides that Program exists in the output (only its body is shown), the definitions are just
