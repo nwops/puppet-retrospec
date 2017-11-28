@@ -22,28 +22,32 @@ module Retrospec
         attr_reader :template_dir, :context, :manifest_files
         attr_accessor :manifest_dir
 
-        def initialize(supplied_module_path = nil, config = {})
+        # @param module_path [String] - the path to the module
+        # @param config [Hash] -  the configuration, which is passed to the parent
+        def initialize(module_path = nil, config = {})
           super
           ::Puppet[:environment] = 'retrospec'
           ::Puppet[:environmentpath] = Utilities::PuppetModule.base_environment_path
-          @manifest_dir = File.join(supplied_module_path, 'manifests')
+          @manifest_dir = File.join(module_path, 'manifests')
           # user supplied a template path or user wants to use local templates
           @template_dir = setup_user_template_dir(config_data[:template_dir], config_data[:scm_url], config_data[:ref])
         end
 
+        # @return [Logger] - instance of a logger
         def self.logger
-          unless @logger
+          @logger ||= begin
             require 'logger'
-            @logger = Logger.new(STDOUT)
+            log = Logger.new(STDOUT)
             if ENV['RETROSPEC_LOGGER_LEVEL'] == 'debug'
-              @logger.level = Logger::DEBUG
+              log.level = Logger::DEBUG
             else
-              @logger.level = Logger::INFO
+              log.level = Logger::INFO
             end
+            log
           end
-          @logger
         end
 
+        # @return [Hash] - the context generated after the module has been setup
         def post_init
           # before we validate the module directory we should ensure the module exists by creating it
           # validation also occurs when setting the module path
@@ -62,6 +66,9 @@ module Retrospec
         # anything since it is not mandatory
         # I thought about using the the module face to perform this generation but it seems like its not
         # supported at this time, and you can't specify the path to generate the module in
+        # generates a new puppet function file
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param plugin_data [Hash] - the cli args passed in for the generator
         def new_module(plugin_data, args)
           plugin_data = Retrospec::Puppet::Generators::ModuleGenerator.run_cli(plugin_data, args)
           # the user passed in /tmp/test1 and the name is irrelevent
@@ -81,11 +88,15 @@ module Retrospec
           f.run(manifest_dir)
         end
 
-        # used to display subcommand options to tglobal_confighe cli
+        # used to display subcommand options to the global_config cli
         # the global options are passed in for your usage
         # http://trollop.rubyforge.org
         # all options here are available in the config passed into the initialize code
         # this is the only entry point into the plugin
+        # @param global_opts [Hash] - the global options for retrospec supplied on the cli
+        # @param global_config [Hash] - the global config file options
+        # @param plugin_config [Hash] - the global config for the puppet plugin
+        # @param args [Array] - the args passed in on the cli through ARGV, useful for testing
         def self.run_cli(global_opts, global_config, plugin_config, args=ARGV)
           template_dir = ENV['RETROSPEC_TEMPLATES_DIR'] || plugin_config['plugins::puppet::template_dir'] || File.expand_path('~/.retrospec/repos/retrospec-puppet-templates')
           scm_url = ENV['RETROSPEC_PUPPET_SCM_URL'] || plugin_config['plugins::puppet::templates::url']
@@ -168,6 +179,10 @@ Generates puppet rspec test code and puppet module components.
           plugin_data
         end
 
+        # generates a new puppet task
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param config [Hash] - the cli args passed in for the generator
+        # @return [Array] - returns the files paths that were generated
         def new_task(config, args)
           plugin_data = Retrospec::Puppet::Generators::TaskGenerator.run_cli(config, args)
           plugin_data[:puppet_context] = context
@@ -176,6 +191,11 @@ Generates puppet rspec test code and puppet module components.
           post_init
         end
 
+        # generates module data files
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param config [Hash] - the cli args passed in for the generator
+        # @param module_path [String] - the path to the module
+        # @return [Array] - returns the files paths that were generated
         def module_data(module_path, config, args=[])
           plugin_data = Retrospec::Puppet::Generators::ModuleDataGenerator.run_cli(config, args)
           plugin_data[:puppet_context] = context
@@ -183,6 +203,11 @@ Generates puppet rspec test code and puppet module components.
           p.run
         end
 
+        # generates a new puppet report file
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param config [Hash] - the cli args passed in for the generator
+        # @param module_path [String] - the path to the module
+        # @return [Array] - returns the files paths that were generated
         def new_report(module_path, config, args=[])
           plugin_data = Retrospec::Puppet::Generators::ReportGenerator.run_cli(config, args)
           p = Retrospec::Puppet::Generators::ReportGenerator.new(module_path, plugin_data)
@@ -197,6 +222,10 @@ Generates puppet rspec test code and puppet module components.
         #   s.generate_schema_file
         # end
 
+        # generates a new puppet function file
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param config [Hash] - the cli args passed in for the generator
+        # @return [Array] - returns the files paths that were generated
         def new_function(config, args)
           plugin_data = Retrospec::Puppet::Generators::FunctionGenerator.run_cli(config, args)
           f = Retrospec::Puppet::Generators::FunctionGenerator.new(plugin_data[:module_path], plugin_data)
@@ -204,11 +233,19 @@ Generates puppet rspec test code and puppet module components.
           f.generate_function_file
         end
 
+        # generates function spec files
+        # @param module_path [String] - the path to the module
+        # @param config [Hash] - the configuration from the cli and retrospec
+        # @return [Array] - returns the files paths that were generated
         def function_spec_files(module_path, config)
           f = Retrospec::Puppet::Generators::FunctionGenerator.new(module_path, config)
           f.generate_spec_files
         end
 
+        # generates a new provider
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param config [Hash] - the cli args passed in for the generator
+        # @return [Array] - returns the files paths that were generated
         def new_provider(config, args)
           plugin_data = Retrospec::Puppet::Generators::ProviderGenerator.run_cli(config, args)
           p = Retrospec::Puppet::Generators::ProviderGenerator.new(plugin_data[:module_path], plugin_data)
@@ -216,11 +253,19 @@ Generates puppet rspec test code and puppet module components.
           p.generate_provider_files
         end
 
+        # generates provider spec files
+        # @param module_path [String] - the path to the module
+        # @param config [Hash] - the configuration from the cli and retrospec
+        # @return [Array] - returns the files paths that were generated
         def provider_spec_files(module_path, config)
           t = Retrospec::Puppet::Generators::ProviderGenerator.new(module_path, config)
           t.generate_provider_spec_files
         end
 
+        # generates a new type
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param config [Hash] - the cli args passed in for the generator
+        # @return [Array] - returns the files paths that were generated
         def new_type(config, args)
           plugin_data = Retrospec::Puppet::Generators::TypeGenerator.run_cli(config, args)
           t = Retrospec::Puppet::Generators::TypeGenerator.new(plugin_data[:module_path], plugin_data)
@@ -228,11 +273,19 @@ Generates puppet rspec test code and puppet module components.
           t.generate_type_files
         end
 
+        # generates spec files for a puppet type
+        # @param module_path [String] - the path to the module
+        # @param config [Hash] - the configuration from the cli and retrospec
+        # @return [Array] - returns the files paths that were generated
         def type_spec_files(module_path, config)
           t = Retrospec::Puppet::Generators::TypeGenerator.new(module_path, config)
           t.generate_type_spec_files
         end
 
+        # generates a new fact file
+        # @param args [Hash] - the main retrospec args from the config file or cli
+        # @param plugin_data [Hash] - the cli args passed in for the generator
+        # @return [Array] - returns the files paths that were generated
         def new_fact(plugin_data, args)
           f = Retrospec::Puppet::Generators::FactGenerator.run_cli(plugin_data, args)
           post_init # finish initialization
@@ -240,12 +293,16 @@ Generates puppet rspec test code and puppet module components.
         end
 
         # generates the fact spec files
+        # @param module_path [String] - the path to the module
+        # @param config [Hash] - the configuration from the cli and retrospec
+        # @return [Array] - returns the files paths that were generated
         def fact(module_path, config)
           f = Retrospec::Puppet::Generators::FactGenerator.new(module_path, config)
           f.generate_fact_spec_files
         end
 
         # this is the main method the starts all the magic
+        # This also represents the order in which tasks are run
         def run
           run_pre_hook
           create_files
@@ -253,6 +310,7 @@ Generates puppet rspec test code and puppet module components.
         end
 
         # the template directory located inside the retrospec gem
+        # @return [String] - the path to the template directory
         def template_dir
           @template_dir ||= File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
         end
@@ -263,6 +321,13 @@ Generates puppet rspec test code and puppet module components.
           run_hook(hook_file)
         end
 
+        # @param hook_file [String] -  the path to the hook file
+        # runs the hook file, on windows this is a bit tricky
+        # because ruby may not be in the path
+        # @note the hook file can only be a ruby script
+        # this is because windows cannot execute just any script
+        # and must be directed by prepending with the program name
+        # unlike unix shebang magic
         def run_hook(hook_file)
           return unless File.exist?(hook_file)
           output = `ruby #{hook_file} #{module_path}`
@@ -276,12 +341,14 @@ Generates puppet rspec test code and puppet module components.
         end
 
         # runs a user defined hook called post-hook
+        # if the template directory contains a post-hook file we run that
         def run_post_hook
           hook_file = File.join(template_dir, 'post-hook')
           run_hook(hook_file)
         end
 
         # this is the method that performs all the magic and creates all the files
+        # @return [Boolean] - returns true if the method completed
         def create_files
           filter = /nodesets|acceptance|spec_helper_acceptance/ unless context.enable_beaker_tests?
           safe_create_module_files(template_dir, module_path, context, filter)
@@ -298,19 +365,20 @@ Generates puppet rspec test code and puppet module components.
           true
         end
 
+        # @return [String] - the description of this project
         def description
           'Generates puppet rspec test code based on the classes and defines inside the manifests directory'
         end
 
+        # @return [String] - a list of puppet manifest files
+        # @note menomizes the files
         def manifest_files
           @manifest_files ||= Dir.glob("#{manifest_dir}/**/*.pp")
         end
-
-        def files
-          @files ||= manifest_files
-        end
+        alias :files :manifest_files
 
         # the main file type that is used to help discover what the module is
+        # @return [String] - the puppet file extension
         def self.file_type
           '.pp'
         end
