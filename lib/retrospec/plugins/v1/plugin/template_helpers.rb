@@ -2,8 +2,9 @@ require 'retrospec'
 module Retrospec
   module Puppet
     module TemplateHelpers
-      # creates the user supplied or default template directory
-      # returns: user_template_dir
+
+      # @note creates the user supplied or default template directory
+      # @return [String] - user_template_dir
       def create_user_template_dir(user_template_directory = nil)
         if user_template_directory.nil?
           user_template_directory = default_user_template_dir
@@ -15,8 +16,8 @@ module Retrospec
         user_template_directory
       end
 
-      # creates and/or copies all templates in the gem to the user templates path
-      # returns: user_template_dir
+      # @note creates and/or copies all templates in the gem to the user templates path
+      # @return [String] - user_template_dir
       def sync_user_template_dir(user_template_directory)
         Dir.glob(File.join(gem_template_dir, '**', '{*,.*}')).each do |src|
           dest = src.gsub(gem_template_dir, user_template_directory)
@@ -25,8 +26,8 @@ module Retrospec
         user_template_directory
       end
 
-      # creates and syncs the specifed user template diretory
-      # returns: user_template_dir
+      # @note creates and syncs the specifed user template diretory
+      # @return [String] - user_template_dir
       def setup_user_template_dir(user_template_directory = nil, git_url = nil, branch = nil)
         if user_template_directory.nil?
           user_template_directory = default_user_template_dir
@@ -36,10 +37,12 @@ module Retrospec
         template_dir
       end
 
+      # @return [String] - the default retrospec templates directory
       def default_user_template_dir
         File.expand_path(File.join(ENV['HOME'], '.retrospec', 'repos', 'retrospec-puppet-templates'))
       end
 
+      # @return [String] - the template directory that exists in this gem on the filesytem
       def gem_template_dir
         File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
       end
@@ -61,6 +64,9 @@ module Retrospec
       # from an external repo. Because templates are updated frequently
       # and users will sometimes have client specific templates I wanted to
       # externalize them for easier management.
+      # @param template_dir [String] - the path to the template dir
+      # @param git_url [String] - the git url of the template repository
+      # @param branch [String] - the branch or ref to use 
       def run_clone_hook(template_dir, git_url = nil, branch = nil)
         hook_file = clone_hook_file(template_dir)
         return unless File.exist?(hook_file)
