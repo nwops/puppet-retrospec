@@ -7,6 +7,8 @@
  * Fixes #72 - create spec files that conform to rubocop [@b4ldr]
  * Removes ci tags that pinned to ruby2.2 when testing
  * Fixes #81 - pass correct git ref [@witjoh]
+ * Fixes #74 - parameters with a default value of arrays cause error
+ * Adds more documentation to methods
 ## 1.5.0
  * Adds ability to generate bolt tasks for puppet modules
 ## 1.4.1

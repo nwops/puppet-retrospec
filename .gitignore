@@ -1,4 +1,5 @@
 # rcov generated
+spec/fixtures/fixture_modules/**/spec/
 bundle/
 vendor/gems/puppet-4.4.1-universal-darwin/
 *.swp
