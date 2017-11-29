@@ -30,6 +30,7 @@ describe Retrospec::Puppet::Generators::ResourceBaseGenerator do
      File.join(spec_files_path, 'classes', 'inherits_params_spec.rb'),
      File.join(spec_files_path, 'classes', 'one_resource_spec.rb'),
      File.join(spec_files_path, 'classes', 'params_spec.rb'),
+     File.join(spec_files_path, 'classes', 'array_param_spec.rb'),
      File.join(spec_files_path, 'classes', 'sub', 'settings_spec.rb'),
      File.join(spec_files_path, 'defines', 'sub', 'settings_define_spec.rb'),
      File.join(spec_files_path, 'defines', 'one_define_spec.rb')]

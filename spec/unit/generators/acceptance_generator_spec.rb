@@ -127,6 +127,7 @@ describe Retrospec::Puppet::Generators::AcceptanceGenerator do
         File.join(spec_files_path, 'inherits_params_spec.rb'),
         File.join(spec_files_path, 'one_define_spec.rb'),
         File.join(spec_files_path, 'one_resource_spec.rb'),
+        File.join(spec_files_path, 'array_param_spec.rb'),
         File.join(spec_files_path, 'sub', 'settings_spec.rb'),
         File.join(spec_files_path, 'sub', 'settings_define_spec.rb'),
         File.join(spec_files_path, 'params_spec.rb')

@@ -37,6 +37,8 @@ describe 'HostClassGenerator' do
     File.read(generator.generate_spec_file)
   end
 
+
+
   it 'should create spec file' do
     expect(generator.run).to eq(spec_file)
     expect(File.exist?(spec_file)).to eq(true)
@@ -75,12 +77,18 @@ describe 'HostClassGenerator' do
   end
 
   describe 'spec files' do
-    let(:generated_files) do
+
+    def generated_files
       [File.join(spec_files_path, 'another_resource_spec.rb'),
        File.join(spec_files_path, 'inherits_params_spec.rb'),
        File.join(spec_files_path, 'one_resource_spec.rb'),
        File.join(spec_files_path, 'params_spec.rb'),
+       File.join(spec_files_path, 'array_param_spec.rb'),
        File.join(spec_files_path, 'sub', 'settings_spec.rb')]
+    end
+
+    after(:each) do
+      generated_files.each {|file| FileUtils.rm_f(file)}
     end
 
     it 'should generate a bunch of files' do

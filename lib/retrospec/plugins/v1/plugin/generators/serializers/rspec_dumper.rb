@@ -26,7 +26,7 @@ module Retrospec
         @logger
       end
 
-      # wraps Puppet::Pops::Model::TreeDumper.do_dump to return ruby 1.9 hash syntax 
+      # wraps Puppet::Pops::Model::TreeDumper.do_dump to return ruby 1.9 hash syntax
       # instead of the older < 1.9 syntax
       #
       # == Parameters:
@@ -39,9 +39,9 @@ module Retrospec
       def dump_transform(d)
         # This is a bit messy, ideally need to send a patch upstream to puppet
         # https://github.com/puppetlabs/puppet/blob/master/lib/puppet/pops/visitor.rb#L34
-        # The value we get back from puppet do_dump command dumps ruby hashs using the old 
+        # The value we get back from puppet do_dump command dumps ruby hashs using the old
         # ruby syntax e.g. { "key" => "value" }.  this function munges the output to use
-        # the new format e.g. { key: 'value' } 
+        # the new format e.g. { key: 'value' }
         dump = do_dump(d)
         if dump.kind_of?(Array) and dump[1] == :"=>"
           key = dump[0].tr('"','')
@@ -383,8 +383,22 @@ module Retrospec
       end
 
       # x[y] prints as (slice x y)
+      # @return [String] the value of the array expression
+      # @param [Puppet::Pops::Model::AccessExpression]
       def dump_AccessExpression o
-        "#{dump_transform(o.left_expr).capitalize}" + dump_transform(o.keys).to_s.gsub("\"",'')
+        # o.keys.pop is the item to get in the array
+        # o.left_expr is the array
+        if o.left_expr.is_a?(::Puppet::Pops::Model::QualifiedReference)
+          "#{dump_transform(o.left_expr).capitalize}" + dump_transform(o.keys).to_s.gsub("\"",'')
+        else
+          begin
+            arr = dump_transform(o.left_expr)
+            element_number = dump_transform(o.keys[0]).to_i
+            arr.at(element_number)
+          rescue NoMethodError => e
+            puts "Invalid access of array element, check array variables in your puppet code?".fatal
+          end
+        end
       end
 
       def dump_LiteralFloat o
