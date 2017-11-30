@@ -12,6 +12,8 @@ The project was named retrospec because there are many times when you need to re
 
 If you like this project, star it and tell people!
 
+See the [Website](https://www.puppet-retrospec.com)
+
 Table of Contents
 =================
 
@@ -63,11 +65,11 @@ Adds ability to create module data.  With the release of puppet 4.9 we can now u
 Use the module_data generater to auto setup module data in your puppet module.  `retrospec puppet module_data`
 
 ### 4/20/17
-With all the changes in hiera recently and the ability to provide data in puppet modules.  I thought it would be a good 
+With all the changes in hiera recently and the ability to provide data in puppet modules.  I thought it would be a good
 time to create a generator for retrospec to create hiera backends and data in module scaffolding. With the 1.6.0 release
 you are now a simple step away to retrofitting data into your module.
 
-Just run `retrospec puppet module_data` to auto create the scaffolding. 
+Just run `retrospec puppet module_data` to auto create the scaffolding.
 
 Note: You must be using puppet 4.7+ (PE 2016.4.x) to actually use data in a module, but there is nothing stopping
 you from creating the scaffolding.
@@ -116,7 +118,7 @@ puppet
   -a, --available-plugins       Show an online list of available plugins
   -v, --version                 Print version and exit
   -h, --help                    Show this message
-  
+
 ```
 ### Module Path
 By default the module path is dynamically set based on the current directory.
@@ -344,24 +346,6 @@ describe 'apache' do
       #:default_ssl_crl_path => undef,
       #:default_ssl_crl => undef,
       #:service_enable => true,
-      #:purge_configs => true,
-      #:purge_vdir => false,
-      #:serveradmin => "root@localhost",
-      #:sendfile => false,
-      #:error_documents => false,
-      #:httpd_dir => $apache::params::httpd_dir,
-      #:confd_dir => $apache::params::confd_dir,
-      #:vhost_dir => $apache::params::vhost_dir,
-      #:vhost_enable_dir => $apache::params::vhost_enable_dir,
-      #:mod_dir => $apache::params::mod_dir,
-      #:mod_enable_dir => $apache::params::mod_enable_dir,
-      #:mpm_module => $apache::params::mpm_module,
-      #:conf_template => $apache::params::conf_template,
-      #:servername => $apache::params::servername,
-      #:user => $apache::params::user,
-      #:group => $apache::params::group,
-      #:keepalive => $apache::params::keepalive,
-      #:keepalive_timeout => $apache::params::keepalive_timeout,
       #:logroot => $apache::params::logroot,
       #:ports_file => $apache::params::ports_file,
       #:server_tokens => "OS",
@@ -421,53 +405,6 @@ describe 'apache' do
   it do
     is_expected.to contain_exec('mkdir $apache::params::mod_dir').
              with({"creates"=>"$apache::params::mod_dir",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_file('$apache::params::mod_dir').
-             with({"ensure"=>"directory",
-                   "recurse"=>"true",
-                   "purge"=>"true",
-                   "notify"=>"Class[Apache::Service]",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_exec('mkdir $apache::params::mod_enable_dir').
-             with({"creates"=>"$apache::params::mod_enable_dir",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_file('$apache::params::mod_enable_dir').
-             with({"ensure"=>"directory",
-                   "recurse"=>"true",
-                   "purge"=>"true",
-                   "notify"=>"Class[Apache::Service]",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_exec('mkdir $apache::params::vhost_dir').
-             with({"creates"=>"$apache::params::vhost_dir",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_file('$apache::params::vhost_dir').
-             with({"ensure"=>"directory",
-                   "recurse"=>"true",
-                   "purge"=>"true",
-                   "notify"=>"Class[Apache::Service]",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_exec('mkdir $vhost_load_dir').
-             with({"creates"=>"$vhost_load_dir",
-                   "require"=>"Package[httpd]"})
-  end
-  it do
-    is_expected.to contain_file('$apache::params::vhost_enable_dir').
-             with({"ensure"=>"directory",
-                   "recurse"=>"true",
-                   "purge"=>"true",
-                   "notify"=>"Class[Apache::Service]",
                    "require"=>"Package[httpd]"})
   end
   it do

@@ -112,7 +112,7 @@ module Retrospec
             sub_command_help = ''
           end
           plugin_opts = Trollop.options(args) do
-            version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman"
+            version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman at NWOPS, LLC"
             banner <<-EOS
 Generates puppet rspec test code and puppet module components.
 
