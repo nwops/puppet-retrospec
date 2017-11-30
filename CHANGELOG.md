@@ -9,6 +9,7 @@
  * Fixes #81 - pass correct git ref [@witjoh]
  * Fixes #74 - parameters with a default value of arrays cause error
  * Adds more documentation to methods
+ * Fixes timestamp bug when creating the gem in rubygems.org
 ## 1.5.0
  * Adds ability to generate bolt tasks for puppet modules
 ## 1.4.1
