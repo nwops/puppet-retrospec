@@ -1,6 +1,7 @@
 # Retrospec Puppet Release Notes
 
 ## Unreleased
+ * Require the base generate for module data
 
 ## 1.6.0
  * Fixes #77 - class requirements is not coded correctly

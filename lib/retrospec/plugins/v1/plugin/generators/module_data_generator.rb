@@ -1,5 +1,6 @@
 require 'retrospec/plugins/v1/module_helpers'
 require 'retrospec/plugins/v1'
+require 'retrospec/plugins/v1/plugin/generators/base_generator'
 
 module Retrospec
   module Puppet
