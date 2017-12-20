@@ -273,6 +273,10 @@ module Retrospec
         result
       end
 
+
+      # @note this is the starting point where a test is created.  A resource can include a class or define
+      # each resource contains parameters which can have variables or functions as values.
+      # @param o [Puppet::Pops::Model::ResourceBody]
       def dump_ResourceBody o
         type_name = dump_transform(o.eContainer.type_name).gsub('::', '__')
         title = dump_transform(o.title).inspect
@@ -282,19 +286,22 @@ module Retrospec
         if o.operations.count > 0
           result[-1] += '.with('
           result << [:break]
+          # each operation should be a resource parameter and value
           o.operations.each do |p|
+            next unless p
             # this is a bit of a hack but the correct fix is to patch puppet
             result << dump_transform(p) << :break
           end
           result.pop  # remove last line break which is easier than using conditional in loop
+          result << [:dedent, :break, ')']
           unless [::Puppet::Pops::Model::CallNamedFunctionExpression, ::Puppet::Pops::Model::BlockExpression].include?(o.eContainer.eContainer.class)
             result << dump_Resource_Relationship(o)
           end
-          result << [:dedent, :break, ')']
           result << [:end]
           result << [:dedent]
+          result << [:break]
         else
-          result << [:dedent,:dedent, :break,'end',:dedent, '  ']
+          result << [:dedent,:dedent, :break,'end',:dedent, '  ', :break]
         end
         result
       end
@@ -330,6 +337,7 @@ module Retrospec
       end
 
       # this doesn't return anything as we use it to store variables
+      # @param o [Puppet::Pops::Model::AssignmentExpression]
       def dump_AssignmentExpression o
         oper = o.operator.to_s
         result = []
@@ -354,6 +362,7 @@ module Retrospec
         end
       end
 
+      # @param o [Puppet::Pops::Model::BlockExpression]
       def dump_BlockExpression o
         result = [:break]
         o.statements.each {|x| result << dump_transform(x) }
@@ -361,6 +370,7 @@ module Retrospec
       end
 
       # this is the beginning of the resource not the body itself
+      # @param o [Puppet::Pops::Model::ResourceExpression]
       def dump_ResourceExpression o
         result = []
         o.bodies.each do |b|
@@ -371,11 +381,13 @@ module Retrospec
 
       # defines the resource expression and outputs -> when used
       # this would be the place to insert relationsip matchers
+      # @param o [Puppet::Pops::Model::RelationshipExpression]
       def dump_RelationshipExpression o
         [dump_transform(o.left_expr), dump_transform(o.right_expr)]
       end
 
       # Produces (name => expr) or (name +> expr)
+      # @param o [Puppet::Pops::Model::AttributeOperation]
       def dump_AttributeOperation o
         key = o.attribute_name
         value = dump_transform(o.value_expr) || nil
@@ -384,7 +396,7 @@ module Retrospec
 
       # x[y] prints as (slice x y)
       # @return [String] the value of the array expression
-      # @param [Puppet::Pops::Model::AccessExpression]
+      # @param o [Puppet::Pops::Model::AccessExpression]
       def dump_AccessExpression o
         # o.keys.pop is the item to get in the array
         # o.left_expr is the array

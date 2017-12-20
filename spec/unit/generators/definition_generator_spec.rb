@@ -66,7 +66,7 @@ describe Retrospec::Puppet::Generators::DefinitionGenerator do
   end
 
   it 'should have resources' do
-    resources = ["\n  it do\n    is_expected.to contain_notify('hello')\n  end  "]
+    resources = ["\n  it do\n    is_expected.to contain_notify('hello')\n  end  \n"]
     expect(context.resources).to eq(resources)
   end
 
