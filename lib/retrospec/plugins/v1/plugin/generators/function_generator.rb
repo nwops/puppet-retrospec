@@ -33,6 +33,11 @@ module Retrospec
           end
         end
 
+        # @return [String] - returns the main class name by reading the init.pp file
+        def main_class_name
+          File.read(File.join(module_path, 'manifests', 'init.pp')).scan(/\s*class\s(\w+)/).flatten.first || ''
+        end
+
         # returns v3,v4, native to specify the function type
         def function_type
           context.function_type
@@ -176,6 +181,11 @@ Generates a new function with the given name.
             File.extname(function_file) == '.pp'
         end
 
+        # @return [String] - returns the namespaced function name ie. stdlib::round
+        def namespaced_name
+          [main_class_name, function_name].join('::')
+        end
+
         # @return [Boolean] true if the function file is a v4 function
         def v4_function?(function_file)
           # mod_name/lib/puppet/functions
@@ -220,6 +230,7 @@ Generates a new function with the given name.
               puts "Function syntax is bad for #{file}, skipping".warning
               next  # lets skip functions that have bad syntax
             end
+            # separate out namepsace for v4 and native functions, place them in directories like classes/defines
             spec_path = File.join(spec_file_dir, "#{file_data.name}_spec.rb")
             spec_files << spec_path
             safe_create_template_file(spec_path, File.join(template_dir, template_file), file_data)

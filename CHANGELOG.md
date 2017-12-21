@@ -2,7 +2,9 @@
 
 ## Unreleased
  * Require the base generate for module data
-
+ * Fixes #85 - native functions do not contain module name
+ * Fixes #92 - that requires throws errors
+ 
 ## 1.6.0
  * Fixes #77 - class requirements is not coded correctly
  * Fixes #75 - pdk cannot include retrospec due to character limit

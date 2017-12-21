@@ -321,6 +321,16 @@ describe 'function_generator' do
         expect(generator.v4_function?(path)).to eq false
       end
 
+      it 'returns main class name' do
+        allow(generator).to receive(:function_type).and_return('native')
+        expect(generator.main_class_name).to eq('sample_module')
+      end
+
+      it 'creates namespaced function name' do
+        allow(generator).to receive(:function_type).and_return('native')
+        expect(generator.namespaced_name).to eq('sample_module::awesome_parser')
+      end
+
       it 'return native template path' do
         allow(generator).to receive(:function_type).and_return('native')
         expect(generator.template_dir).to match(/functions\/native/)
