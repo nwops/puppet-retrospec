@@ -230,8 +230,10 @@ Generates a new function with the given name.
               puts "Function syntax is bad for #{file}, skipping".warning
               next  # lets skip functions that have bad syntax
             end
-            # separate out namepsace for v4 and native functions, place them in directories like classes/defines
-            spec_path = File.join(spec_file_dir, "#{file_data.name}_spec.rb")
+            # separate out namespace for v4 and native functions
+            # TODO should we create sub directories for triple namespace functions one::two::three?
+            file_name = file_data.name.to_s.split('::').last
+            spec_path = File.join(spec_file_dir, "#{file_name}_spec.rb")
             spec_files << spec_path
             safe_create_template_file(spec_path, File.join(template_dir, template_file), file_data)
           end

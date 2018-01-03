@@ -1,9 +1,10 @@
 # Retrospec Puppet Release Notes
 
 ## Unreleased
- * Require the base generate for module data
+ * Require the base generator for module data
  * Fixes #85 - native functions do not contain module name
  * Fixes #92 - that requires throws errors
+ * Fixes #93 - native functions spec tests contain full namespaced name
  
 ## 1.6.0
  * Fixes #77 - class requirements is not coded correctly
