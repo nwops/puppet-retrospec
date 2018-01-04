@@ -1,6 +1,10 @@
 # Retrospec Puppet Release Notes
 
 ## Unreleased
+
+## 1.6.1
+
+### Bug Fixes
  * Require the base generator for module data
  * Fixes #85 - native functions do not contain module name
  * Fixes #92 - that requires throws errors
