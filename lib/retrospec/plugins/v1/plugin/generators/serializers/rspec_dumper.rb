@@ -222,6 +222,7 @@ module Retrospec
         name_prefix = o.captures_rest ? '*' : ''
         name_part = "#{name_prefix}#{o.name}"
         data_type = dump_transform(dump_transform(o.value)).first || dump_transform(o.type_expr)
+
         # records what is most likely a variable of some time and its value
         variable_value = dump_transform(o.value)
         # need a case for Puppet::Pops::Model::LambdaExpression
@@ -309,6 +310,12 @@ module Retrospec
       def method_missing(name, *args, &block)
         logger.debug("Method #{name} called".warning)
         []
+      end
+
+      # @param o [Puppet::Pops::Model::NamedAccessExpression]
+      # ie. $::var1.split(';')
+      def dump_NamedAccessExpression o
+        [do_dump(o.left_expr), ".", do_dump(o.right_expr)]
       end
 
       # Interpolated strings are shown as (cat seg0 seg1 ... segN)
@@ -411,6 +418,18 @@ module Retrospec
             puts "Invalid access of array element, check array variables in your puppet code?".fatal
           end
         end
+      end
+
+
+      # @return [String] the value of the expression or example value
+      # @param o [Puppet::Pops::Model::CallMethodExpression]
+      def dump_CallMethodExpression o
+        # ie. ["call-method", [".", "$::facttest", "split"], "/"]
+        result = [o.rval_required ? "# some_value" : do_dump(o.functor_expr),'(' ]
+        o.arguments.collect {|a| result << do_dump(a) }
+        results << ')'
+        result << do_dump(o.lambda) if o.lambda
+        result
       end
 
       def dump_LiteralFloat o

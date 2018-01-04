@@ -84,7 +84,9 @@ describe 'HostClassGenerator' do
        File.join(spec_files_path, 'one_resource_spec.rb'),
        File.join(spec_files_path, 'params_spec.rb'),
        File.join(spec_files_path, 'array_param_spec.rb'),
-       File.join(spec_files_path, 'sub', 'settings_spec.rb')]
+       File.join(spec_files_path, 'sub', 'settings_spec.rb'),
+      File.join(spec_files_path, 'parameter_logic_spec.rb')]
+
     end
 
     after(:each) do
