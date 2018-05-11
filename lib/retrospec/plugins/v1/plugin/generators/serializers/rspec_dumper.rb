@@ -454,7 +454,11 @@ module Retrospec
       end
 
       def dump_LiteralList o
-        o.values.collect {|x| dump_transform(x)}
+        dump_transform(o.values)
+      end
+
+      def dump_KeyedEntry o
+        [do_dump(o.key), do_dump(o.value)]
       end
 
       def dump_LiteralHash o
