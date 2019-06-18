@@ -165,18 +165,25 @@ module Retrospec
           end
         end
 
-        # returns the filename of the type
+        # returns the base filename of the type
         def generate_file_name(type_name)
           tokens = type_name.split('::')
           file_name = tokens.pop
-          "#{file_name}_spec.rb"
         end
 
         # generates a file path for spec tests based on the resource name.  An added option
         # is to generate directory names for each parent resource as a default option
         def item_spec_path
-          file_name = generate_file_name(type_name)
-          tokens = type_name.split('::')
+          file_name = generate_file_name(type_name.downcase)
+          path = generate_path("#{file_name}_spec.rb")
+          File.join(spec_path, path )
+        end
+
+        # @return [String] - a generated path
+        # @param file_name - the base name of the file to create
+        # @param iname - the type name or name of item
+        def generate_path(file_name, iname = type_name)
+          tokens = iname.split('::')
           # if there are only two tokens ie. tomcat::params we dont need to create a subdirectory
           if tokens.count > 2
             # this is a deep level resource ie. tomcat::config::server::connector
@@ -187,11 +194,11 @@ module Retrospec
             tokens.pop
             # so lets make a directory structure out of it
             dir_name = File.join(tokens) # config/server
-            dir_name = File.join(spec_path, dir_name, file_name) # spec/classes/tomcat/config/server
+            dir_name = File.join(dir_name, file_name) # spec/classes/tomcat/config/server
           else
-            dir_name = File.join(spec_path, file_name)
+            dir_name = File.join(file_name)
           end
-          dir_name
+          dir_name.downcase
         end
 
         def ast
