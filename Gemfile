@@ -12,6 +12,7 @@ group :development do
 end
 
 group :test do
+  gem 'rb-readline'
   gem 'bundler', '~> 2.0'
   gem 'fakefs', :require => 'fakefs/safe'
   gem 'json_pure', '= 2.0.1' # force this gem as 2.0.2 requires ruby > 2.0.0

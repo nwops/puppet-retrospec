@@ -37,8 +37,6 @@ describe 'HostClassGenerator' do
     File.read(generator.generate_spec_file)
   end
 
-
-
   it 'should create spec file' do
     expect(generator.run).to eq(spec_file)
     expect(File.exist?(spec_file)).to eq(true)
