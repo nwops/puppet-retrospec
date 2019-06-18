@@ -68,6 +68,7 @@ module Retrospec
         def self.generate_spec_files(module_path, config_data)
           manifests = manifest_files(module_path)
           files = Retrospec::Puppet::Generators::HostClassGenerator.generate_spec_files(module_path, config_data)
+          files << Retrospec::Puppet::Generators::DataTypeGenerator.generate_spec_files(module_path, config_data)
           files << Retrospec::Puppet::Generators::DefinitionGenerator.generate_spec_files(module_path, config_data)
           files.flatten
         end

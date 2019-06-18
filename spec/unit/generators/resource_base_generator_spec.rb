@@ -34,7 +34,12 @@ describe Retrospec::Puppet::Generators::ResourceBaseGenerator do
      File.join(spec_files_path, 'classes', 'sub', 'settings_spec.rb'),
      File.join(spec_files_path, 'defines', 'sub', 'settings_define_spec.rb'),
      File.join(spec_files_path, 'classes', 'parameter_logic_spec.rb'),
-    File.join(spec_files_path, 'defines', 'one_define_spec.rb')]
+    File.join(spec_files_path, 'defines', 'one_define_spec.rb'),
+    File.join(spec_files_path, 'type_aliases', 'ext', 'sudoers_entry_spec.rb'),
+    File.join(spec_files_path, 'type_aliases','sudoers_entry_spec.rb')
+
+
+  ]
   end
 
   it 'should generate a bunch of files' do

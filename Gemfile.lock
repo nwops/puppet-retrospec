@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    puppet-retrospec (1.7.0)
+    puppet-retrospec (1.8.0)
       awesome_print
       facets
       optimist (~> 3.0.0)

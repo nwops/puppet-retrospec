@@ -9,8 +9,8 @@ module Retrospec
 
         def initialize(module_path, spec_object = {})
           super
-          @singular_name = 'datatype'
-          @plural_name = 'types'
+          @singular_name = 'type_alias'
+          @plural_name = 'type_aliases'
         end
 
         def self.manifest_files(module_path)
@@ -34,39 +34,9 @@ module Retrospec
           manifest_files(module_path).map do |file|
             datatype = new(module_path, config_data.merge({:manifest_file => file}))
             next unless datatype.resource_type == ::Puppet::Pops::Model::TypeAlias
-            # next unless definition.resource_type == ::Puppet::Pops::Model::ResourceTypeDefinition
             datatype.generate_spec_file
           end.flatten
         end
-
-        # def run
-        #   generate_lib_files
-        #   generate_spec_files
-        # end
-
-        # def generate_lib_files
-        #   []
-        # end
-
-        # def generate_spec_files
-        #   template_file = File.join(template_dir,spec_template_file )
-        #   context = load_context_data
-        #   logger.debug("\nUsing template #{template_file}\n")
-        #   safe_create_template_file(item_spec_path, template_file, context)
-        #   item_spec_path
-        # end
-
-        # def item_path
-        #   File.join(lib_path, "#{item_name}.pp")
-        # end
-
-        # def spec_path
-        #   File.join(module_path, 'spec', plural_name)
-        # end
-
-        # def lib_path
-        #   File.join(module_path, plural_name)
-        # end
 
         # returns the path to the templates
         # first looks inside the external templates directory for specific file
@@ -74,50 +44,14 @@ module Retrospec
         # when developing new templates.
         def template_dir
           if config_data[:template_dir]
-            external_templates = Dir.glob(File.expand_path(File.join(config_data[:template_dir], 'datatypes', '*.erb')))
+            external_templates = Dir.glob(File.expand_path(File.join(config_data[:template_dir], 'type_aliases', '*.erb')))
           end
           if external_templates and external_templates.count > 0
-            File.join(config_data[:template_dir], 'datatypes')
+            File.join(config_data[:template_dir], 'type_aliases')
           else
-            File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'datatypes'))
+            File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'templates', 'type_aliases'))
           end
         end
-
-        # def self.generate_spec_files(module_path, config_data)
-        #   files = []
-        #   manifest_files(module_path).map do |file|
-        #     datatype = new(module_path, config_data.merge({:manifest_file => file}))
-        #     #next unless hostclass.resource_type == ::Puppet::Pops::Model::HostClassDefinition
-            
-        #     #hostclass.generate_spec_file
-        #   end
-        # end
-
-        
-
-        # def self.manifest_files(module_path)
-        #   Dir.glob(File.join(module_path, 'types', '**', '*.pp'))
-        # end
-
-        # # used to display subcommand options to the cli
-        # # the global options are passed in for your usage
-        # # http://optimist.rubyforge.org
-        # # all options here are available in the config passed into config object
-        # # returns the parameters
-        # def self.run_cli(global_opts, args=ARGV)
-        #   sub_command_opts = Optimist.options(args) do
-        #     banner <<-EOS
-        #     ""
-        #     EOS
-        #     opt :name, "The name of the datatype you wish to create including the namespace", :type => :string, :required => true, :short => '-n'
-        #   end
-        #   unless sub_command_opts[:name]
-        #     Optimist.educate
-        #     exit 1
-        #   end
-        #   plugin_data = global_opts.merge(sub_command_opts)
-        #   plugin_data
-        # end
       end
     end
   end

@@ -1,8 +1,7 @@
 require 'retrospec-puppet'
 require 'rspec'
 require 'puppet'
-require 'rb-readline'
-require 'pry'
+
 def fixture_modules_path
   @fixture_module_path ||= File.expand_path(File.join(fixtures_path, 'modules'))
 end

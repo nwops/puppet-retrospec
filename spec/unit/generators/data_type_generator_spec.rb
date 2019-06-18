@@ -23,11 +23,7 @@ describe 'datatype_generator' do
   end
 
   let(:spec_files_path) do
-    File.join(module_path, 'spec', 'types')
-  end
-
-  let(:datatypes_path) do
-    File.join(module_path, 'types')
+    File.join(module_path, 'spec', 'type_aliases')
   end
 
   let(:datatypes_path) do
@@ -46,15 +42,6 @@ describe 'datatype_generator' do
   let(:generator) do
     Retrospec::Puppet::Generators::DataTypeGenerator.new(module_path, generator_opts)
   end
-
-#   it 'should create files without error' do
-#     expect(generator.class.generate_lib_files).to eq([File.join(datatypes_path, 'sudoers_entry.pp')])
-#   end
-
-#   it 'should create datatype file' do
-#     generator.generate_lib_files
-#     expect(File.exist?(File.join(datatypes_path, 'sudoers_entry.pp'))).to eq(true)
-#   end
 
   it 'should create datatype spec file' do
     Retrospec::Puppet::Generators::DataTypeGenerator.generate_spec_files(module_path, generator_opts)
