@@ -58,10 +58,6 @@ module Retrospec
           File.join(module_path, 'tasks', "#{item_name}.json")
         end
 
-        def item_spec_path
-          File.join(spec_path, plural_name, "#{item_name}_spec.rb")
-        end
-
         def enable_beaker_tasks?
           false
         end

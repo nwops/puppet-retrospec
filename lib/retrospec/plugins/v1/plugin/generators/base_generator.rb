@@ -46,6 +46,42 @@ module Retrospec
           raise NotImplementedError
         end
 
+        # generates a file path for spec tests based on the resource name.  An added option
+        # is to generate directory names for each parent resource as a default option
+        def item_spec_path
+          file_name = generate_file_name(item_name.downcase)
+          path = generate_path("#{file_name}_spec.rb", item_name)
+          File.join(spec_path, path )
+        end
+
+        # returns the base filename of the type
+        def generate_file_name(iname)
+          tokens = iname.split('::')
+          file_name = tokens.pop
+        end
+
+        # @return [String] - a generated path
+        # @param file_name - the base name of the file to create
+        # @param iname - the type name or name of item
+        def generate_path(file_name, iname = item_name)
+          tokens = iname.split('::')
+          # if there are only two tokens ie. tomcat::params we dont need to create a subdirectory
+          if tokens.count > 2
+            # this is a deep level resource ie. tomcat::config::server::connector
+            # however we don't need the tomcat directory so we can just remove it
+            # this should leave us with config/server/connector_spec.rb
+            tokens.delete_at(0)
+            # remove the last token since its the class name
+            tokens.pop
+            # so lets make a directory structure out of it
+            dir_name = File.join(tokens) # config/server
+            dir_name = File.join(dir_name, file_name) # spec/classes/tomcat/config/server
+          else
+            dir_name = File.join(file_name)
+          end
+          dir_name.downcase
+        end
+
         # run is the main method that gets called automatically
         def run
           generate_lib_files
@@ -57,10 +93,6 @@ module Retrospec
 
         def item_path
           File.join(lib_path, "#{item_name}.rb")
-        end
-
-        def item_spec_path
-          File.join(spec_path, "#{item_name}_spec.rb")
         end
 
         def spec_path

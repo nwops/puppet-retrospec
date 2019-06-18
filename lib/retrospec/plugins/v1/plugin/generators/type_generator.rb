@@ -29,7 +29,7 @@ module Retrospec
           if CORE_TYPES.include?(spec_object[:name])
             raise Retrospec::Puppet::Generators::CoreTypeException
           end
-          @context = OpenStruct.new(:type_name => spec_object[:name], :parameters => spec_object[:parameters],
+          @context = OpenStruct.new(:type_name => spec_object[:name], name: spec_object[:name], :parameters => spec_object[:parameters],
                                     :properties => spec_object[:properties], :providers => spec_object[:providers])
         end
 
