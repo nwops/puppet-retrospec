@@ -23,8 +23,8 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.rubygems_version = "2.4.5.1"
   s.summary = "Generates puppet rspec test code based on the classes and defines inside the manifests directory. Aims to reduce some of the boilerplate coding with default test patterns."
-  s.add_runtime_dependency(%q<trollop>, [">= 0"])
-  s.add_runtime_dependency(%q<retrospec>, [">= 0.6.2"])
+  s.add_runtime_dependency(%q<optimist>, ["~> 3.0.0"])
+  s.add_runtime_dependency(%q<retrospec>, ["~> 0.7.0"])
   s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
   s.add_runtime_dependency(%q<facets>, [">= 0"])
   s.add_development_dependency(%q<rdoc>, ["~> 3.12"])

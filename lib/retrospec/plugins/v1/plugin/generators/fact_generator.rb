@@ -19,10 +19,10 @@ module Retrospec
 
         # used to display subcommand options to the cli
         # the global options are passed in for your usage
-        # http://trollop.rubyforge.org
+        # http://optimist.rubyforge.org
         # all options here are available in the config passed into config object
         def self.run_cli(global_opts, args=ARGV)
-          sub_command_opts = Trollop.options(args) do
+          sub_command_opts = Optimist.options(args) do
             banner <<-EOS
 Generates a new fact with the given name
 
@@ -30,7 +30,7 @@ Generates a new fact with the given name
             opt :name, 'The name of the fact you wish to create', :type => :string, :require => :true, :short => '-n'
           end
           unless sub_command_opts[:name]
-            Trollop.educate
+            Optimist.educate
             exit 1
           end
           plugin_data = global_opts.merge(sub_command_opts)

@@ -74,12 +74,12 @@ module Retrospec
 
         # used to display subcommand options to the cli
         # the global options are passed in for your usage
-        # http://trollop.rubyforge.org
+        # http://optimist.rubyforge.org
         # all options here are available in the config passed into config object
         # returns the parameters
         def self.run_cli(global_opts, args = ARGV)
           backend_types = %w(hiera data_hash lookup_key data_dig)
-          sub_command_opts = Trollop.options(args) do
+          sub_command_opts = Optimist.options(args) do
             banner <<-EOS
 Generate the scaffolding required to use data in a module from hiera or a custom hiera backend.
  * Data in module is only available in puppet 4.7+
@@ -101,10 +101,10 @@ Options:
                 :type => :string, :required => false, default: 'native', :short => '-t'
           end
           unless backend_types.include?(sub_command_opts[:backend_type])
-            Trollop.die :backend_type, "must be one of #{backend_types.join(', ')}"
+            Optimist.die :backend_type, "must be one of #{backend_types.join(', ')}"
           end
           unless %w(native v4).include?(sub_command_opts[:function_type])
-            Trollop.die :function_type, "must be one of #{%w(native v4).join(', ')}"
+            Optimist.die :function_type, "must be one of #{%w(native v4).join(', ')}"
           end
 
           plugin_data = global_opts.merge(sub_command_opts)

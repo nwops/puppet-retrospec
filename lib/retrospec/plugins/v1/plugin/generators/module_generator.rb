@@ -20,14 +20,14 @@ module Retrospec
 
         # used to display subcommand options to the cli
         # the global options are passed in for your usage
-        # http://trollop.rubyforge.org
+        # http://optimist.rubyforge.org
         # all options here are available in the config passed into config object
         # returns a new instance of this class
         def self.run_cli(global_opts, args=ARGV)
           namespace     = global_opts['plugins::puppet::namespace'] || 'namespace'
           author        = global_opts['plugins::puppet::author'] || 'author_name'
           license       = global_opts['plugins::puppet::default_license'] || 'Apache-2.0'
-          sub_command_opts = Trollop.options(args) do
+          sub_command_opts = Optimist.options(args) do
             banner <<-EOS
 Generates a new module with the given name and namespace
             EOS
@@ -40,7 +40,7 @@ Generates a new module with the given name and namespace
             opt :license, "The license type for the module", :default => license, :type => :string, :short => '-l'
           end
           unless sub_command_opts[:name]
-            Trollop.educate
+            Optimist.educate
             exit 1
           end
           plugin_data = global_opts.merge(sub_command_opts)

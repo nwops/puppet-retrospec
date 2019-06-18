@@ -83,13 +83,13 @@ module Retrospec
 
         # used to display subcommand options to the cli
         # the global options are passed in for your usage
-        # http://trollop.rubyforge.org
+        # http://optimist.rubyforge.org
         # all options here are available in the config passed into config object
         # returns the parameters
         def self.run_cli(global_opts, args = ARGV)
           task_types = %w(bash generic ruby python node powershell)
           task_type  = global_opts['plugins::puppet::default_task_type'] || 'bash'
-          sub_command_opts = Trollop.options(args) do
+          sub_command_opts = Optimist.options(args) do
             banner <<-EOS
 Creates a new puppet bolt task for your module
 
@@ -102,7 +102,7 @@ Example: retrospec puppet new_task -n reboot -p "name, ttl, message"
                                                                                     :default => task_type
           end
           unless sub_command_opts[:name]
-            Trollop.educate
+            Optimist.educate
             exit 1
           end
           plugin_data = global_opts.merge(sub_command_opts)

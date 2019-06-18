@@ -2,8 +2,8 @@ source 'http://rubygems.org'
 
 gem 'awesome_print'
 gem 'facets'
-gem 'retrospec', '>= 0.6.1'
-gem 'trollop'
+gem 'retrospec', git: 'https://github.com/nwops/retrospec.git'
+gem 'optimist', '~> 3.0.0'
 
 group :development do
   gem 'pry'
@@ -12,7 +12,7 @@ group :development do
 end
 
 group :test do
-  gem 'bundler', '~> 1.0'
+  gem 'bundler', '~> 2.0'
   gem 'fakefs', :require => 'fakefs/safe'
   gem 'json_pure', '= 2.0.1' # force this gem as 2.0.2 requires ruby > 2.0.0
   gem 'puppet', '4.10.8', :path => 'vendor/pup410'

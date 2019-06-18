@@ -34,11 +34,11 @@ module Retrospec::Puppet::Generators
 
     # used to display subcommand options to the cli
     # the global options are passed in for your usage
-    # http://trollop.rubyforge.org
+    # http://optimist.rubyforge.org
     # all options here are available in the config passed into config object
     # returns the parameters
     def self.run_cli(global_opts, args=ARGV)
-      sub_command_opts = Trollop.options(args) do
+      sub_command_opts = Optimist.options(args) do
         banner <<-EOS
 Generates a new provider with the given name.
 
@@ -47,7 +47,7 @@ Generates a new provider with the given name.
         opt :type, 'The type name of the provider', :type => :string, :required => true, :short => '-t'
       end
       unless sub_command_opts[:name]
-        Trollop.educate
+        Optimist.educate
         exit 1
       end
       plugin_data = global_opts.merge(sub_command_opts)

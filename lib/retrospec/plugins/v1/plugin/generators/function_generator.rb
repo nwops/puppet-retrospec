@@ -45,14 +45,14 @@ module Retrospec
 
         # used to display subcommand options to the cli
         # the global options are passed in for your usage
-        # http://trollop.rubyforge.org
+        # http://optimist.rubyforge.org
         # all options here are available in the config passed into config object
         # returns the parameters
         def self.run_cli(global_opts, args=ARGV)
           func_types = %w(v3 v4 native)
           func_type  = global_opts['plugins::puppet::default_function_version'] || 'v4'
           test_type  = global_opts['plugins::puppet::default_function_test_type'] || 'rspec'
-          sub_command_opts = Trollop.options(args) do
+          sub_command_opts = Optimist.options(args) do
             banner <<-EOS
 Generates a new function with the given name.
 
@@ -67,11 +67,11 @@ Generates a new function with the given name.
 
           unless func_types.include? sub_command_opts[:type].downcase
             puts "Invalid type, must be one of #{func_types.join(',')}"
-            Trollop.educate
+            Optimist.educate
             exit 1
           end
           unless sub_command_opts[:name]
-            Trollop.educate
+            Optimist.educate
             exit 1
           end
           plugin_data = global_opts.merge(sub_command_opts)

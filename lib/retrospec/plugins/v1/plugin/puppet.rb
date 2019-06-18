@@ -90,7 +90,7 @@ module Retrospec
 
         # used to display subcommand options to the global_config cli
         # the global options are passed in for your usage
-        # http://trollop.rubyforge.org
+        # http://optimist.rubyforge.org
         # all options here are available in the config passed into the initialize code
         # this is the only entry point into the plugin
         # @param global_opts [Hash] - the global options for retrospec supplied on the cli
@@ -111,7 +111,7 @@ module Retrospec
           else
             sub_command_help = ''
           end
-          plugin_opts = Trollop.options(args) do
+          plugin_opts = Optimist.options(args) do
             version "Retrospec puppet plugin: #{Retrospec::Puppet::VERSION} (c) Corey Osman at NWOPS, LLC"
             banner <<-EOS
 Generates puppet rspec test code and puppet module components.
