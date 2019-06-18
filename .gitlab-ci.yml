@@ -5,40 +5,7 @@ before_script:
   - bundle install --without development build
   - bundle exec ruby lib/retrospec/plugins/v1/plugin/templates/clone-hook
 
-image: ruby:2.1
-
-ruby193:
-  stage: test
-  tags:
-    - ruby
-  script:
-    - "bundle exec rake spec"
-  image: ruby:1.9.3
-  allow_failure: true
-
-ruby2.0:
-  stage: test
-  tags:
-    - ruby
-  script:
-    - "bundle exec rake spec"
-  image: ruby:2.0
-
-ruby2.1:
-  stage: test
-  tags:
-    - ruby
-  script:
-    - "bundle exec rake spec"
-  image: ruby:2.1
-
-ruby2.2:
-  stage: test
-  tags:
-    - ruby
-  script:
-    - "bundle exec rake spec"
-  image: ruby:2.2
+image: ruby:2.5
 
 ruby2.3:
   stage: test
@@ -47,6 +14,22 @@ ruby2.3:
   script:
     - "bundle exec rake spec"
   image: ruby:2.3
+
+ruby2.4:
+  stage: test
+  tags:
+    - ruby
+  script:
+    - "bundle exec rake spec"
+  image: ruby:2.4
+
+ruby2.5:
+  stage: test
+  tags:
+    - ruby
+  script:
+    - "bundle exec rake spec"
+  image: ruby:2.5
 
 stages:
   - validate
