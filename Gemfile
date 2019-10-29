@@ -21,6 +21,6 @@ group :test do
   gem 'facter'
   gem 'rspec', '~> 3.2'
   gem 'rubocop'
-  gem 'yard', '~> 0.7'
+  gem 'yard', '~> 0.9'
   gem 'puppet-retrospec', :path => './'
 end
