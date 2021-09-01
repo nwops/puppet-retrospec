@@ -7,7 +7,7 @@ gem 'optimist', '~> 3.0.0'
 
 group :development do
   gem 'pry'
-  gem 'rdoc', '~> 3.12'
+  gem 'rdoc', '~> 6.3'
   gem 'overcommit'
 end
 
