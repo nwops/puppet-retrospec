@@ -27,6 +27,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<retrospec>, ["~> 0.7.0"])
   s.add_runtime_dependency(%q<awesome_print>, [">= 0"])
   s.add_runtime_dependency(%q<facets>, [">= 0"])
-  s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+  s.add_development_dependency(%q<rdoc>, "~> 6.4")
   s.add_development_dependency(%q<pry>, [">= 0"])
 end
