@@ -1,3 +1,5 @@
+This project is EOL and was somewhat superceded by PDK and now AI generators, additionally the signifant changes in puppet 5 broke API compability. 
+
 Puppet-Retrospec
 ================
 A retrospec plugin for puppet that generates puppet rspec test code based on the current code inside your module.
